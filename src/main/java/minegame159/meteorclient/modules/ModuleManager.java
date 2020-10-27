@@ -21,7 +21,6 @@ import minegame159.meteorclient.utils.Chat;
 import minegame159.meteorclient.utils.KeyAction;
 import minegame159.meteorclient.utils.Savable;
 import minegame159.meteorclient.utils.Utils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -172,7 +171,7 @@ public class ModuleManager extends Savable<ModuleManager> implements Listenable 
     private final Listener<GameJoinedEvent> onGameJoined = new Listener<>(event -> {
         synchronized (active) {
             for (ToggleModule module : active) {
-                MeteorClient.EVENT_BUS.subscribe(module);
+                Meteor.INSTANCE.getEventBus().subscribe(module);
                 module.onActivate();
             }
         }
@@ -182,7 +181,7 @@ public class ModuleManager extends Savable<ModuleManager> implements Listenable 
     private final Listener<GameDisconnectedEvent> onGameDisconnected = new Listener<>(event -> {
         synchronized (active) {
             for (ToggleModule module : active) {
-                MeteorClient.EVENT_BUS.unsubscribe(module);
+                Meteor.INSTANCE.getEventBus().unsubscribe(module);
                 module.onDeactivate();
             }
         }
