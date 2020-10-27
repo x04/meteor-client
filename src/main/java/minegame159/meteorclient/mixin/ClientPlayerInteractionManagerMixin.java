@@ -1,6 +1,6 @@
 package minegame159.meteorclient.mixin;
 
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.AttackEntityEvent;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.events.StartBreakingBlockEvent;
@@ -36,7 +36,7 @@ public abstract class ClientPlayerInteractionManagerMixin implements IClientPlay
     @Inject(method = "attackEntity", at = @At("HEAD"), cancellable = true)
     private void onAttackEntity(PlayerEntity player, Entity target, CallbackInfo info) {
         AttackEntityEvent event = EventStore.attackEntityEvent(target);
-        MeteorClient.EVENT_BUS.post(event);
+        Meteor.INSTANCE.getEventBus().post(event);
 
         if (event.isCancelled()) info.cancel();
     }
@@ -44,7 +44,7 @@ public abstract class ClientPlayerInteractionManagerMixin implements IClientPlay
     @Inject(method = "attackBlock", at = @At("HEAD"), cancellable = true)
     private void onAttackBlock(BlockPos blockPos, Direction direction, CallbackInfoReturnable<Boolean> info) {
         StartBreakingBlockEvent event = EventStore.startBreakingBlockEvent(blockPos, direction);
-        MeteorClient.EVENT_BUS.post(event);
+        Meteor.INSTANCE.getEventBus().post(event);
 
         if (event.isCancelled()) info.cancel();
     }
@@ -69,7 +69,7 @@ public abstract class ClientPlayerInteractionManagerMixin implements IClientPlay
 
     @Inject(method = "breakBlock", at = @At("HEAD"))
     private void onBreakBlock(BlockPos blockPos, CallbackInfoReturnable<Boolean> info) {
-        MeteorClient.EVENT_BUS.post(EventStore.breakBlockEvent(blockPos));
+        Meteor.INSTANCE.getEventBus().post(EventStore.breakBlockEvent(blockPos));
     }
 
     @Override

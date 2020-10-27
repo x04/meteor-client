@@ -1,6 +1,6 @@
 package minegame159.meteorclient.commands.commands;
 
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.commands.Command;
 import minegame159.meteorclient.utils.Chat;
 import minegame159.meteorclient.utils.Utils;
@@ -22,7 +22,7 @@ public class Peek extends Command {
 
     @Override
     public void run(String[] args) {
-        PlayerEntity player = MinecraftClient.getInstance().player;
+        PlayerEntity player = Meteor.INSTANCE.getMinecraft().player;
 
         ItemStack itemStack;
         if (Utils.isShulker(player.getMainHandStack().getItem())) itemStack = player.getMainHandStack();
@@ -33,7 +33,7 @@ public class Peek extends Command {
         }
 
         Utils.getItemsInContainerItem(itemStack, ITEMS);
-        MeteorClient.INSTANCE.screenToOpen = new PeekShulkerBoxScreen(new ShulkerBoxScreenHandler(0, player.inventory, new SimpleInventory(ITEMS)), player.inventory, itemStack.getName());
+        Meteor.INSTANCE.setScreenToOpen(new PeekShulkerBoxScreen(new ShulkerBoxScreenHandler(0, player.inventory, new SimpleInventory(ITEMS)), player.inventory, itemStack.getName()));
     }
 
     private static class PeekShulkerBoxScreen extends ShulkerBoxScreen {

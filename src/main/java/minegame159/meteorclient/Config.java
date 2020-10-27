@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Config extends Savable<Config> {
-    public static Config INSTANCE;
+    public static Config INSTANCE = new Config();
 
     public final Version version = new Version("0.3.6");
     private String prefix = ".";
@@ -24,7 +24,7 @@ public class Config extends Savable<Config> {
     private Map<Category, Color> categoryColors = new HashMap<>();
 
     public Config() {
-        super(new File(MeteorClient.FOLDER, "config.nbt"));
+        super(new File(Meteor.INSTANCE.getFolder(), "config.nbt"));
     }
 
     public void setPrefix(String prefix) {
@@ -70,7 +70,7 @@ public class Config extends Savable<Config> {
         Version v029 = new Version("0.2.9");
 
         if (lastVer.isLowerThan(v029) && version.isAtLeast(v029)) {
-            MeteorClient.INSTANCE.resetFont();
+            Meteor.INSTANCE.resetFont();
         }
 
         return this;

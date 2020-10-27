@@ -8,7 +8,7 @@ import com.google.gson.GsonBuilder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.ChunkDataEvent;
 import minegame159.meteorclient.modules.Category;
 import minegame159.meteorclient.modules.ToggleModule;
@@ -253,11 +253,11 @@ private final Setting<Integer> minimumDistance = sgGeneral.add(new IntSetting.Bu
     }
 
     private File getJsonFile() {
-        return new File(new File(new File(MeteorClient.FOLDER, "stashes"), Utils.getWorldName()), "stashes.json");
+        return new File(new File(new File(Meteor.INSTANCE.getFolder(), "stashes"), Utils.getWorldName()), "stashes.json");
     }
 
     private File getCsvFile() {
-        return new File(new File(new File(MeteorClient.FOLDER, "stashes"), Utils.getWorldName()), "stashes.csv");
+        return new File(new File(new File(Meteor.INSTANCE.getFolder(), "stashes"), Utils.getWorldName()), "stashes.csv");
     }
 
     public static class Chunk {

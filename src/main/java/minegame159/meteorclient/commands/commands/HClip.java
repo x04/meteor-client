@@ -1,8 +1,8 @@
 package minegame159.meteorclient.commands.commands;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.commands.Command;
 import minegame159.meteorclient.utils.Chat;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
@@ -20,7 +20,7 @@ public class HClip extends Command {
 
         try {
             double blocks = Double.parseDouble(args[0]);
-            ClientPlayerEntity player = MinecraftClient.getInstance().player;
+            ClientPlayerEntity player = Meteor.INSTANCE.getMinecraft().player;
 
             Vec3d forward = Vec3d.fromPolar(0, player.yaw).normalize();
             player.updatePosition(player.getX() + forward.x * blocks, player.getY(), player.getZ() + forward.z * blocks);

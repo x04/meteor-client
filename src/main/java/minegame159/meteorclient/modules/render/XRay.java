@@ -1,6 +1,6 @@
 package minegame159.meteorclient.modules.render;
 
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.modules.Category;
 import minegame159.meteorclient.modules.ModuleManager;
 import minegame159.meteorclient.modules.ToggleModule;
@@ -45,7 +45,7 @@ public class XRay extends ToggleModule {
         FullBright fullBright = ModuleManager.INSTANCE.get(FullBright.class);
         if (!fullBrightWasActive && fullBright.isActive()) fullBright.toggle();
 
-        if (!MeteorClient.IS_DISCONNECTING) mc.worldRenderer.reload();
+        if (Meteor.INSTANCE.isInGame()) mc.worldRenderer.reload();
     }
 
     public boolean isBlocked(Block block) {

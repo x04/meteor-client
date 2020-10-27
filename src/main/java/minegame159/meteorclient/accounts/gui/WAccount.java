@@ -1,11 +1,11 @@
 package minegame159.meteorclient.accounts.gui;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.accounts.Account;
 import minegame159.meteorclient.accounts.AccountManager;
 import minegame159.meteorclient.gui.GuiConfig;
 import minegame159.meteorclient.gui.widgets.*;
 import minegame159.meteorclient.utils.MeteorExecutor;
-import net.minecraft.client.MinecraftClient;
 
 public class WAccount extends WTable {
     public WAccount(AccountsScreen screen, Account<?> account) {
@@ -14,7 +14,7 @@ public class WAccount extends WTable {
 
         // Name
         WLabel name = add(new WLabel(account.getUsername())).getWidget();
-        if (MinecraftClient.getInstance().getSession().getUsername().equalsIgnoreCase(account.getUsername())) name.color = GuiConfig.INSTANCE.loggedInText;
+        if (Meteor.INSTANCE.getMinecraft().getSession().getUsername().equalsIgnoreCase(account.getUsername())) name.color = GuiConfig.INSTANCE.loggedInText;
 
         // Account Type
         WLabel type = add(new WLabel("(" + account.getType() + ")")).fillX().right().getWidget();
@@ -27,7 +27,7 @@ public class WAccount extends WTable {
             login.setText("...");
             screen.locked = true;
 
-            MeteorExecutor.execute(() -> {
+            MeteorExecutor.INSTANCE.execute(() -> {
                 if (account.login()) {
                     name.setText(account.getUsername());
 

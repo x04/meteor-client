@@ -2,7 +2,7 @@ package minegame159.meteorclient.modules.misc;
 
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.GameJoinedEvent;
 import minegame159.meteorclient.events.OpenScreenEvent;
 import minegame159.meteorclient.mixininterface.IAbstractButtonWidget;
@@ -35,7 +35,7 @@ public class AutoReconnect extends ToggleModule {
 
     public AutoReconnect() {
         super(Category.Misc, "auto-reconnect", "Automatically reconnects when kicked from server.");
-        MeteorClient.EVENT_BUS.subscribe(new Listener<GameJoinedEvent>(event -> {
+        Meteor.INSTANCE.getEventBus().subscribe(new Listener<GameJoinedEvent>(event -> {
             lastServerInfo = mc.isInSingleplayer() ? null : mc.getCurrentServerEntry();
         }));
     }

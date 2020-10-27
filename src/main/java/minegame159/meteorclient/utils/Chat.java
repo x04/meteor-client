@@ -1,7 +1,7 @@
 package minegame159.meteorclient.utils;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.modules.Module;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 
@@ -28,11 +28,11 @@ public class Chat {
     }
 
     private static void sendMsg(Module module, String msg, Formatting color) {
-        if (MinecraftClient.getInstance().world == null) return;
+        if (Meteor.INSTANCE.getMinecraft().world == null) return;
         if (module != null) {
-            MinecraftClient.getInstance().player.sendMessage(new LiteralText(String.format("%s[%sMeteor%s] %s[%s] %s%s", Formatting.GRAY, Formatting.BLUE,Formatting.GRAY, Formatting.AQUA, module.title, color, msg)), false);
+            Meteor.INSTANCE.getMinecraft().player.sendMessage(new LiteralText(String.format("%s[%sMeteor%s] %s[%s] %s%s", Formatting.GRAY, Formatting.BLUE,Formatting.GRAY, Formatting.AQUA, module.title, color, msg)), false);
         } else {
-            MinecraftClient.getInstance().player.sendMessage(new LiteralText(String.format("%s[%sMeteor%s] %s%s", Formatting.GRAY, Formatting.BLUE, Formatting.GRAY, color, msg)), false);
+            Meteor.INSTANCE.getMinecraft().player.sendMessage(new LiteralText(String.format("%s[%sMeteor%s] %s%s", Formatting.GRAY, Formatting.BLUE, Formatting.GRAY, color, msg)), false);
         }
     }
 

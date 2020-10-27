@@ -2,6 +2,7 @@ package minegame159.meteorclient.gui.screens.topbar;
 
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.WaypointListChangedEvent;
 import minegame159.meteorclient.gui.widgets.WButton;
 import minegame159.meteorclient.utils.Utils;
@@ -9,7 +10,6 @@ import minegame159.meteorclient.waypoints.Waypoint;
 import minegame159.meteorclient.waypoints.Waypoints;
 import minegame159.meteorclient.waypoints.gui.EditWaypointScreen;
 import minegame159.meteorclient.waypoints.gui.WWaypoint;
-import net.minecraft.client.MinecraftClient;
 
 public class TopBarWaypoints extends TopBarWindowScreen {
     public TopBarWaypoints() {
@@ -27,7 +27,7 @@ public class TopBarWaypoints extends TopBarWindowScreen {
         // Add
         if (Utils.canUpdate()) {
             WButton add = add(new WButton("Add")).fillX().expandX().getWidget();
-            add.action = () -> MinecraftClient.getInstance().openScreen(new EditWaypointScreen(null));
+            add.action = () -> Meteor.INSTANCE.getMinecraft().openScreen(new EditWaypointScreen(null));
         }
     }
 

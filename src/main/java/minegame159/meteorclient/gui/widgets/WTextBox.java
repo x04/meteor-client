@@ -2,11 +2,11 @@ package minegame159.meteorclient.gui.widgets;
 
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.gui.GuiConfig;
 import minegame159.meteorclient.gui.GuiKeyEvents;
 import minegame159.meteorclient.gui.renderer.GuiRenderer;
 import minegame159.meteorclient.gui.renderer.Region;
-import net.minecraft.client.MinecraftClient;
 import org.lwjgl.glfw.GLFW;
 
 public class WTextBox extends WWidget {
@@ -95,7 +95,7 @@ public class WTextBox extends WWidget {
     protected boolean onKeyPressed(int key, int mods) {
         if (focused) {
             if (key == GLFW.GLFW_KEY_V && (mods == GLFW.GLFW_MOD_CONTROL || mods == GLFW.GLFW_MOD_SUPER)) {
-                String clipboard = MinecraftClient.getInstance().keyboard.getClipboard();
+                String clipboard = Meteor.INSTANCE.getMinecraft().keyboard.getClipboard();
                 int addedChars = 0;
 
                 StringBuilder sb = new StringBuilder(text.length() + clipboard.length());
@@ -120,10 +120,10 @@ public class WTextBox extends WWidget {
                 resetCursorTimer();
                 return true;
             } else if (key == GLFW.GLFW_KEY_C && (mods == GLFW.GLFW_MOD_CONTROL || mods == GLFW.GLFW_MOD_SUPER)) {
-                MinecraftClient.getInstance().keyboard.setClipboard(text);
+                Meteor.INSTANCE.getMinecraft().keyboard.setClipboard(text);
                 return true;
             } else if (key == GLFW.GLFW_KEY_X && (mods == GLFW.GLFW_MOD_CONTROL || mods == GLFW.GLFW_MOD_SUPER)) {
-                MinecraftClient.getInstance().keyboard.setClipboard(text);
+                Meteor.INSTANCE.getMinecraft().keyboard.setClipboard(text);
                 String preText = text;
                 text = "";
 

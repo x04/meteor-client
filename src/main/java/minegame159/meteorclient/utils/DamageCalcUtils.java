@@ -1,9 +1,6 @@
 package minegame159.meteorclient.utils;
 
-//Created by squidoodly 18/04/2020
-//Updated by squidoodly 19/06/2020
-//Updated by squidoodly 24/07/2020
-
+import minegame159.meteorclient.Meteor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -14,7 +11,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.Items;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.explosion.Explosion;
@@ -23,7 +20,7 @@ import java.util.Objects;
 
 public class DamageCalcUtils {
 
-    public static MinecraftClient mc = MinecraftClient.getInstance();
+    public static MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
 
     //Always Calculate damage, then armour, then enchantments, then potion effect
     public static double crystalDamage(LivingEntity player, Vec3d crystal){

@@ -1,6 +1,6 @@
 package minegame159.meteorclient.mixin;
 
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.events.packets.SendPacketEvent;
 import minegame159.meteorclient.modules.ModuleManager;
@@ -28,36 +28,36 @@ public abstract class ClientPlayNetworkHandlerMixin {
 
     @Inject(at = @At("TAIL"), method = "onGameJoin")
     private void onGameJoin(GameJoinS2CPacket packet, CallbackInfo info) {
-        MeteorClient.IS_DISCONNECTING = false;
-        MeteorClient.EVENT_BUS.post(EventStore.gameJoinedEvent());
+        Meteor.INSTANCE.setInGame(true);
+        Meteor.INSTANCE.getEventBus().post(EventStore.gameJoinedEvent());
     }
 
     @Inject(at = @At("HEAD"), method = "sendPacket", cancellable = true)
     public void onSendPacket(Packet packet, CallbackInfo info) {
         SendPacketEvent event = EventStore.sendPacketEvent(packet);
-        MeteorClient.EVENT_BUS.post(event);
+        Meteor.INSTANCE.getEventBus().post(event);
         if (event.isCancelled()) info.cancel();
     }
 
     @Inject(at = @At("HEAD"), method = "onPlaySound")
     private void onPlaySound(PlaySoundS2CPacket packet, CallbackInfo info) {
-        MeteorClient.EVENT_BUS.post(EventStore.playSoundPacketEvent(packet));
+        Meteor.INSTANCE.getEventBus().post(EventStore.playSoundPacketEvent(packet));
     }
 
     @Inject(method = "onChunkData", at = @At("TAIL"))
     private void onChunkData(ChunkDataS2CPacket packet, CallbackInfo info) {
         WorldChunk chunk = client.world.getChunk(packet.getX(), packet.getZ());
-        MeteorClient.EVENT_BUS.post(EventStore.chunkDataEvent(chunk));
+        Meteor.INSTANCE.getEventBus().post(EventStore.chunkDataEvent(chunk));
     }
 
     @Inject(method = "onScreenHandlerSlotUpdate", at = @At("TAIL"))
     private void onContainerSlotUpdate(ScreenHandlerSlotUpdateS2CPacket packet, CallbackInfo info) {
-        MeteorClient.EVENT_BUS.post(EventStore.containerSlotUpdateEvent(packet));
+        Meteor.INSTANCE.getEventBus().post(EventStore.containerSlotUpdateEvent(packet));
     }
 
     @Inject(method = "onEntitiesDestroy", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;removeEntity(I)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void onEntityDestroy(EntitiesDestroyS2CPacket packet, CallbackInfo info, int i, int j) {
-        MeteorClient.EVENT_BUS.post(EventStore.entityDestroyEvent(client.world.getEntityById(j)));
+        Meteor.INSTANCE.getEventBus().post(EventStore.entityDestroyEvent(client.world.getEntityById(j)));
     }
 
     @Redirect(method = "onExplosion", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
@@ -78,7 +78,7 @@ public abstract class ClientPlayNetworkHandlerMixin {
         Entity entity = client.world.getEntityById(packet.getCollectorEntityId());
 
         if (itemEntity instanceof ItemEntity && entity == client.player) {
-            MeteorClient.EVENT_BUS.post(EventStore.pickItemsEvent(((ItemEntity) itemEntity).getStack(), packet.getStackAmount()));
+            Meteor.INSTANCE.getEventBus().post(EventStore.pickItemsEvent(((ItemEntity) itemEntity).getStack(), packet.getStackAmount()));
         }
     }
 }

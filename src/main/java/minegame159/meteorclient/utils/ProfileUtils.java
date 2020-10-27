@@ -1,7 +1,7 @@
 package minegame159.meteorclient.utils;
 
 import minegame159.meteorclient.Config;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.accounts.AccountManager;
 import minegame159.meteorclient.friends.FriendManager;
 import minegame159.meteorclient.macros.MacroManager;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileUtils {
-    private static final File FOLDER = new File(MeteorClient.FOLDER, "profiles");
+    private static final File FOLDER = new File(Meteor.INSTANCE.getFolder(), "profiles");
 
     public static List<String> getProfiles() {
       String[] childs = FOLDER.list();

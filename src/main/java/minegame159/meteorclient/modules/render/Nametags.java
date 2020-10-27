@@ -5,7 +5,7 @@ package minegame159.meteorclient.modules.render;
 
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.friends.FriendManager;
 import minegame159.meteorclient.events.RenderEvent;
 import minegame159.meteorclient.mixininterface.IBakedQuad;
@@ -211,7 +211,7 @@ public class Nametags extends ToggleModule {
         boolean hasArmor = false;
         int maxEnchantCount = 0;
         if (displayArmor.get() || displayArmorEnchants.get()) {
-            MeteorClient.FONT_2X.scale = 0.5 * enchantTextScale.get();
+            Meteor.INSTANCE.getFont2x().scale = 0.5 * enchantTextScale.get();
             for (int i = 0; i < 4; i++) {
                 ItemStack itemStack = entity.inventory.armor.get(i);
                 Map<Enchantment, Integer> enchantments = EnchantmentHelper.get(itemStack);
@@ -228,19 +228,19 @@ public class Nametags extends ToggleModule {
                 if (displayArmorEnchants.get()) {
                     for (Enchantment enchantment : enchantmentsToShowScale.keySet()) {
                         String enchantName = Utils.getEnchantShortName(enchantment) + " " + enchantmentsToShowScale.get(enchantment);
-                        armorWidths[i] = Math.max(armorWidths[i], MeteorClient.FONT_2X.getStringWidth(enchantName));
+                        armorWidths[i] = Math.max(armorWidths[i], Meteor.INSTANCE.getFont2x().getStringWidth(enchantName));
                     }
 
                     maxEnchantCount = Math.max(maxEnchantCount, enchantmentsToShowScale.size());
                 }
             }
-            MeteorClient.FONT_2X.scale = 0.5;
+            Meteor.INSTANCE.getFont2x().scale = 0.5;
         }
 
         // Setup size
-        double nameWidth = MeteorClient.FONT_2X.getStringWidth(name);
-        double healthWidth = MeteorClient.FONT_2X.getStringWidth(healthText);
-        double pingWidth = MeteorClient.FONT_2X.getStringWidth(pingText);
+        double nameWidth = Meteor.INSTANCE.getFont2x().getStringWidth(name);
+        double healthWidth = Meteor.INSTANCE.getFont2x().getStringWidth(healthText);
+        double pingWidth = Meteor.INSTANCE.getFont2x().getStringWidth(pingText);
         double width = nameWidth + healthWidth;
         if(displayPing.get()){
             width += pingWidth;
@@ -250,9 +250,9 @@ public class Nametags extends ToggleModule {
         width = Math.max(width, armorWidth);
         double widthHalf = width / 2;
 
-        double heightDown = MeteorClient.FONT_2X.getHeight();
+        double heightDown = Meteor.INSTANCE.getFont2x().getHeight();
         double armorHeight = (hasArmor ? 16 : 0);
-        armorHeight = Math.max(armorHeight, maxEnchantCount * MeteorClient.FONT_2X.getHeight() * enchantTextScale.get());
+        armorHeight = Math.max(armorHeight, maxEnchantCount * Meteor.INSTANCE.getFont2x().getHeight() * enchantTextScale.get());
         double heightUp = armorHeight;
 
         // Render background
@@ -343,14 +343,14 @@ public class Nametags extends ToggleModule {
         else healthColor = healthStage1.get();
 
         // Render name, health enchant and texts
-        MeteorClient.FONT_2X.begin();
-        double hX = MeteorClient.FONT_2X.renderStringWithShadow(name, -widthHalf, 0, FriendManager.INSTANCE.getColor(entity, normalName.get()));
-        MeteorClient.FONT_2X.renderStringWithShadow(healthText, hX + (width - nameWidth - healthWidth), 0, healthColor);
-        MeteorClient.FONT_2X.renderStringWithShadow(pingText, hX + 3, 0, pingColor.get());
+        Meteor.INSTANCE.getFont2x().begin();
+        double hX = Meteor.INSTANCE.getFont2x().renderStringWithShadow(name, -widthHalf, 0, FriendManager.INSTANCE.getColor(entity, normalName.get()));
+        Meteor.INSTANCE.getFont2x().renderStringWithShadow(healthText, hX + (width - nameWidth - healthWidth), 0, healthColor);
+        Meteor.INSTANCE.getFont2x().renderStringWithShadow(pingText, hX + 3, 0, pingColor.get());
         double itemX = -widthHalf;
 
         if (maxEnchantCount > 0) {
-            MeteorClient.FONT_2X.scale = 0.5 * enchantTextScale.get();
+            Meteor.INSTANCE.getFont2x().scale = 0.5 * enchantTextScale.get();
 
             for (int i = 0; i < 4; i++) {
                 ItemStack itemStack = entity.inventory.armor.get(i);
@@ -364,24 +364,24 @@ public class Nametags extends ToggleModule {
 
                 double aW = armorWidths[i];
                 double enchantY = 0;
-                double addY = (armorHeight - enchantmentsToShow.size() * MeteorClient.FONT_2X.getHeight()) / 2;
+                double addY = (armorHeight - enchantmentsToShow.size() * Meteor.INSTANCE.getFont2x().getHeight()) / 2;
                 if (displayOnItem.get() == Position.ABOVE) {
                     addY -= 16;
                 }
 
                 for (Enchantment enchantment : enchantmentsToShow.keySet()) {
                     String enchantName = Utils.getEnchantShortName(enchantment) + " " + enchantmentsToShow.get(enchantment);
-                    MeteorClient.FONT_2X.renderStringWithShadow(enchantName, itemX + ((aW - MeteorClient.FONT_2X.getStringWidth(enchantName)) / 2), -heightUp + enchantY + addY, enchantmentTextColor.get());
+                    Meteor.INSTANCE.getFont2x().renderStringWithShadow(enchantName, itemX + ((aW - Meteor.INSTANCE.getFont2x().getStringWidth(enchantName)) / 2), -heightUp + enchantY + addY, enchantmentTextColor.get());
 
-                    enchantY += MeteorClient.FONT_2X.getHeight();
+                    enchantY += Meteor.INSTANCE.getFont2x().getHeight();
                 }
 
                 itemX += armorWidths[i] + itemSpacing;
             }
 
-            MeteorClient.FONT_2X.scale = 0.5;
+            Meteor.INSTANCE.getFont2x().scale = 0.5;
         }
-        MeteorClient.FONT_2X.end();
+        Meteor.INSTANCE.getFont2x().end();
 
         Matrices.pop();
     }

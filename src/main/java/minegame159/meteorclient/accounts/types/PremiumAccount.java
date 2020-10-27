@@ -6,6 +6,7 @@ import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.accounts.Account;
 import minegame159.meteorclient.accounts.AccountType;
 import minegame159.meteorclient.accounts.ProfileResponse;
@@ -13,7 +14,6 @@ import minegame159.meteorclient.accounts.ProfileSkinResponse;
 import minegame159.meteorclient.mixininterface.IMinecraftClient;
 import minegame159.meteorclient.utils.HttpUtils;
 import minegame159.meteorclient.utils.NbtException;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Session;
 import net.minecraft.nbt.CompoundTag;
 
@@ -82,7 +82,7 @@ public class PremiumAccount extends Account<PremiumAccount> {
     }
 
     private YggdrasilUserAuthentication getAuth() {
-        YggdrasilUserAuthentication auth = (YggdrasilUserAuthentication) new YggdrasilAuthenticationService(((IMinecraftClient) MinecraftClient.getInstance()).getProxy(), "").createUserAuthentication(Agent.MINECRAFT);
+        YggdrasilUserAuthentication auth = (YggdrasilUserAuthentication) new YggdrasilAuthenticationService(((IMinecraftClient) Meteor.INSTANCE.getMinecraft()).getProxy(), "").createUserAuthentication(Agent.MINECRAFT);
 
         auth.setUsername(name);
         auth.setPassword(password);

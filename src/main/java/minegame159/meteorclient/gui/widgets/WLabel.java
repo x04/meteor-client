@@ -1,9 +1,9 @@
 package minegame159.meteorclient.gui.widgets;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.gui.GuiConfig;
 import minegame159.meteorclient.gui.renderer.GuiRenderer;
 import minegame159.meteorclient.utils.Color;
-import net.minecraft.client.MinecraftClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class WLabel extends WWidget {
         lines.add(text);
         recalculate = true;
 
-        maxWidth = Math.max(MinecraftClient.getInstance().getWindow().getFramebufferWidth() / 2, 512);
+        maxWidth = Math.max(Meteor.INSTANCE.getMinecraft().getWindow().getFramebufferWidth() / 2, 512);
     }
 
     public WLabel(String text) {

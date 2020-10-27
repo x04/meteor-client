@@ -1,79 +1,74 @@
 package minegame159.meteorclient;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.zero.alpine.bus.EventBus;
 import me.zero.alpine.bus.EventManager;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listenable;
 import me.zero.alpine.listener.Listener;
 import minegame159.meteorclient.accounts.AccountManager;
-import minegame159.meteorclient.commands.CommandManager;
 import minegame159.meteorclient.commands.commands.Ignore;
 import minegame159.meteorclient.events.TickEvent;
 import minegame159.meteorclient.friends.FriendManager;
+import minegame159.meteorclient.gui.GuiKeyEvents;
+import minegame159.meteorclient.gui.screens.topbar.TopBarModules;
 import minegame159.meteorclient.macros.MacroManager;
 import minegame159.meteorclient.modules.ModuleManager;
 import minegame159.meteorclient.modules.misc.DiscordPresence;
-import minegame159.meteorclient.gui.GuiKeyEvents;
-import minegame159.meteorclient.gui.screens.topbar.TopBarModules;
 import minegame159.meteorclient.rendering.MFont;
 import minegame159.meteorclient.rendering.MyFont;
-import minegame159.meteorclient.utils.*;
+import minegame159.meteorclient.utils.Capes;
+import minegame159.meteorclient.utils.KeyBinds;
 import minegame159.meteorclient.waypoints.Waypoints;
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.io.*;
 
-public class MeteorClient implements ClientModInitializer, Listenable {
-    public static MeteorClient INSTANCE;
-    public static final EventBus EVENT_BUS = new EventManager();
-    public static MFont FONT, FONT_2X;
-    public static MyFont FONT_GUI, FONT_GUI_TITLE;
-    public static boolean IS_DISCONNECTING;
-    public static final File FOLDER = new File(FabricLoader.getInstance().getGameDir().toString(), "meteor-client");
+@Getter
+public enum Meteor implements Listenable {
+    INSTANCE;
 
-    private MinecraftClient mc;
+    Meteor() { }
 
-    public Screen screenToOpen;
+    private MinecraftClient minecraft;
 
-    @Override
-    public void onInitializeClient() {
-        if (INSTANCE == null) {
-            KeyBinds.Register();
+    private final EventBus eventBus = new EventManager();
+    private final Logger logger = LogManager.getLogger();
+    private final File folder = new File(FabricLoader.getInstance().getGameDir().toString(), "meteor-client");
 
-            INSTANCE = this;
-            return;
-        }
+    private MFont font, font2x;
+    private MyFont guiFont, guiTitleFont;
 
-        System.out.println("Initializing Meteor Client.");
+    @Setter private boolean inGame;
+    @Setter private Screen screenToOpen;
 
-        mc = MinecraftClient.getInstance();
-        Utils.mc = mc;
-        EntityUtils.mc = mc;
-
-        Config.INSTANCE = new Config();
-        Config.INSTANCE.load();
-        loadFont();
-
-        MeteorExecutor.init();
-        ModuleManager.INSTANCE = new ModuleManager();
-        CommandManager.init();
-        EChestMemory.init();
-        Capes.init();
-
-        load();
-        Ignore.load();
-        Waypoints.loadIcons();
-
-        EVENT_BUS.subscribe(this);
+    public void init() {
+        logger.info("Initializing Meteor.");
+        minecraft = MinecraftClient.getInstance();
+        eventBus.subscribe(this);
         Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
     }
 
-    public void load() {
+    public void reload() {
+        logger.info("Configuring Meteor.");
+
+        Config.INSTANCE.load();
+        loadFont();
+
+        initManagers();
+        Ignore.load();
+        Waypoints.loadIcons();
+    }
+
+    private void initManagers() {
+        ModuleManager.INSTANCE.init();
         if (!ModuleManager.INSTANCE.load()) ModuleManager.INSTANCE.get(DiscordPresence.class).toggle(false);
         FriendManager.INSTANCE.load();
         MacroManager.INSTANCE.load();
@@ -91,27 +86,27 @@ public class MeteorClient implements ClientModInitializer, Listenable {
     }
 
     private void openClickGui() {
-        mc.openScreen(new TopBarModules());
+        minecraft.openScreen(new TopBarModules());
     }
 
     @EventHandler
     private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        Capes.tick();
+        Capes.INSTANCE.tick();
 
-        if (screenToOpen != null && mc.currentScreen == null) {
-            mc.openScreen(screenToOpen);
+        if (screenToOpen != null && minecraft.currentScreen == null) {
+            minecraft.openScreen(screenToOpen);
             screenToOpen = null;
         }
 
-        if (KeyBinds.OPEN_CLICK_GUI.isPressed() && mc.currentScreen == null && GuiKeyEvents.postKeyEvents()) {
+        if (KeyBinds.OPEN_CLICK_GUI.isPressed() && minecraft.currentScreen == null && GuiKeyEvents.postKeyEvents()) {
             openClickGui();
         }
 
-        mc.player.getActiveStatusEffects().values().removeIf(statusEffectInstance -> statusEffectInstance.getDuration() <= 0);
+        minecraft.player.getActiveStatusEffects().values().removeIf(statusEffectInstance -> statusEffectInstance.getDuration() <= 0);
     });
 
     private void loadFont() {
-        File[] files = FOLDER.exists() ? FOLDER.listFiles() : new File[0];
+        File[] files = folder.exists() ? folder.listFiles() : new File[0];
         File fontFile = null;
         if (files != null) {
             for (File file : files) {
@@ -124,10 +119,10 @@ public class MeteorClient implements ClientModInitializer, Listenable {
 
         if (fontFile == null) {
             try {
-                fontFile = new File(FOLDER, "JetBrainsMono-Regular.ttf");
+                fontFile = new File(folder, "JetBrainsMono-Regular.ttf");
                 fontFile.getParentFile().mkdirs();
 
-                InputStream in = MeteorClient.class.getResourceAsStream("/assets/meteor-client/JetBrainsMono-Regular.ttf");
+                InputStream in = Meteor.class.getResourceAsStream("/assets/meteor-client/JetBrainsMono-Regular.ttf");
                 OutputStream out = new FileOutputStream(fontFile);
 
                 byte[] bytes = new byte[255];
@@ -142,18 +137,18 @@ public class MeteorClient implements ClientModInitializer, Listenable {
         }
 
         try {
-            FONT = new MFont(Font.createFont(Font.TRUETYPE_FONT, fontFile).deriveFont(16f), true, true);
-            FONT_2X = new MFont(Font.createFont(Font.TRUETYPE_FONT, fontFile).deriveFont(16f * 2), true, true);
-            FONT_2X.scale = 0.5;
-            FONT_GUI = new MyFont(fontFile, 18);
-            FONT_GUI_TITLE = new MyFont(fontFile, 22);
+            font = new MFont(Font.createFont(Font.TRUETYPE_FONT, fontFile).deriveFont(16f), true, true);
+            font2x = new MFont(Font.createFont(Font.TRUETYPE_FONT, fontFile).deriveFont(16f * 2), true, true);
+            font2x.scale = 0.5;
+            guiFont = new MyFont(fontFile, 18);
+            guiTitleFont = new MyFont(fontFile, 22);
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
     }
 
     public void resetFont() {
-        File[] files = FOLDER.exists() ? FOLDER.listFiles() : new File[0];
+        File[] files = folder.exists() ? folder.listFiles() : new File[0];
         if (files != null) {
             for (File file : files) {
                 if (file.getName().endsWith(".ttf") || file.getName().endsWith(".TTF")) {

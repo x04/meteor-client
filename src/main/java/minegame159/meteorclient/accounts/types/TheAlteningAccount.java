@@ -7,10 +7,10 @@ import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.accounts.*;
 import minegame159.meteorclient.mixininterface.IMinecraftClient;
 import minegame159.meteorclient.utils.HttpUtils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Session;
 
 import java.nio.charset.StandardCharsets;
@@ -58,7 +58,7 @@ public class TheAlteningAccount extends Account<TheAlteningAccount> {
 
     @Override
     public boolean login() {
-        YggdrasilMinecraftSessionService service = (YggdrasilMinecraftSessionService) MinecraftClient.getInstance().getSessionService();
+        YggdrasilMinecraftSessionService service = (YggdrasilMinecraftSessionService) Meteor.INSTANCE.getMinecraft().getSessionService();
         AccountUtils.setBaseUrl(service, SESSION + "/session/minecraft/");
         AccountUtils.setJoinUrl(service, SESSION + "/session/minecraft/join");
         AccountUtils.setCheckUrl(service, SESSION + "/session/minecraft/hasJoined");
@@ -78,7 +78,7 @@ public class TheAlteningAccount extends Account<TheAlteningAccount> {
     }
 
     private YggdrasilUserAuthentication getAuth() {
-        YggdrasilUserAuthentication auth = (YggdrasilUserAuthentication) new YggdrasilAuthenticationService(((IMinecraftClient) MinecraftClient.getInstance()).getProxy(), "", Environment.create(AUTH, ACCOUNT, SESSION, "The Altening")).createUserAuthentication(Agent.MINECRAFT);
+        YggdrasilUserAuthentication auth = (YggdrasilUserAuthentication) new YggdrasilAuthenticationService(((IMinecraftClient) Meteor.INSTANCE.getMinecraft()).getProxy(), "", Environment.create(AUTH, ACCOUNT, SESSION, "The Altening")).createUserAuthentication(Agent.MINECRAFT);
 
         auth.setUsername(name);
         auth.setPassword("Meteor on Crack!");

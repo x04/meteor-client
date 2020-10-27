@@ -1,6 +1,6 @@
 package minegame159.meteorclient.macros;
 
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.utils.NbtUtils;
 import minegame159.meteorclient.utils.Savable;
@@ -17,13 +17,13 @@ public class MacroManager extends Savable<MacroManager> implements Iterable<Macr
     private List<Macro> macros = new ArrayList<>();
 
     private MacroManager() {
-        super(new File(MeteorClient.FOLDER, "macros.nbt"));
+        super(new File(Meteor.INSTANCE.getFolder(), "macros.nbt"));
     }
 
     public void add(Macro macro) {
         macros.add(macro);
-        MeteorClient.EVENT_BUS.subscribe(macro);
-        MeteorClient.EVENT_BUS.post(EventStore.macroListChangedEvent());
+        Meteor.INSTANCE.getEventBus().subscribe(macro);
+        Meteor.INSTANCE.getEventBus().post(EventStore.macroListChangedEvent());
         save();
     }
 
@@ -33,8 +33,8 @@ public class MacroManager extends Savable<MacroManager> implements Iterable<Macr
 
     public void remove(Macro macro) {
         if (macros.remove(macro)) {
-            MeteorClient.EVENT_BUS.unsubscribe(macro);
-            MeteorClient.EVENT_BUS.post(EventStore.macroListChangedEvent());
+            Meteor.INSTANCE.getEventBus().unsubscribe(macro);
+            Meteor.INSTANCE.getEventBus().post(EventStore.macroListChangedEvent());
             save();
         }
     }
@@ -55,7 +55,7 @@ public class MacroManager extends Savable<MacroManager> implements Iterable<Macr
     public MacroManager fromTag(CompoundTag tag) {
         macros = NbtUtils.listFromTag(tag.getList("macros", 10), tag1 -> new Macro().fromTag((CompoundTag) tag1));
 
-        for (Macro macro : macros) MeteorClient.EVENT_BUS.subscribe(macro);
+        for (Macro macro : macros) Meteor.INSTANCE.getEventBus().subscribe(macro);
         return this;
     }
 }

@@ -2,12 +2,12 @@ package minegame159.meteorclient.gui.screens;
 
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.ModuleBindChangedEvent;
+import minegame159.meteorclient.gui.widgets.*;
 import minegame159.meteorclient.modules.Module;
 import minegame159.meteorclient.modules.ModuleManager;
 import minegame159.meteorclient.modules.ToggleModule;
-import minegame159.meteorclient.gui.widgets.*;
-import net.minecraft.client.MinecraftClient;
 import org.lwjgl.glfw.GLFW;
 
 public class ModuleScreen extends WindowScreen {
@@ -87,7 +87,7 @@ public class ModuleScreen extends WindowScreen {
             bottomTable.add(new WLabel("Active:"));
             WCheckbox active = bottomTable.add(new WCheckbox(((ToggleModule) module).isActive())).getWidget();
             active.action = () -> {
-                if (((ToggleModule) module).isActive() != active.checked) ((ToggleModule) module).toggle(MinecraftClient.getInstance().world != null);
+                if (((ToggleModule) module).isActive() != active.checked) ((ToggleModule) module).toggle(Meteor.INSTANCE.getMinecraft().world != null);
             };
 
             //   Visible

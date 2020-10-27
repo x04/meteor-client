@@ -3,7 +3,7 @@ package minegame159.meteorclient.modules.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EntityAddedEvent;
 import minegame159.meteorclient.events.RenderEvent;
 import minegame159.meteorclient.events.TickEvent;
@@ -212,16 +212,16 @@ public class LogoutSpots extends ToggleModule {
             Matrices.scale(-scale, -scale, scale);
 
             // Render background
-            double i = MeteorClient.FONT_2X.getStringWidth(name) / 2.0 + MeteorClient.FONT_2X.getStringWidth(healthText) / 2.0;
+            double i = Meteor.INSTANCE.getFont2x().getStringWidth(name) / 2.0 + Meteor.INSTANCE.getFont2x().getStringWidth(healthText) / 2.0;
             ShapeBuilder.begin(null, GL11.GL_TRIANGLES, VertexFormats.POSITION_COLOR);
             ShapeBuilder.quad(-i - 1, -1, 0, -i - 1, 8, 0, i + 1, 8, 0, i + 1, -1, 0, BACKGROUND);
             ShapeBuilder.end();
 
             // Render name and health texts
-            MeteorClient.FONT_2X.begin();
-            double hX = MeteorClient.FONT_2X.renderString(name, -i, 0, TEXT);
-            MeteorClient.FONT_2X.renderString(healthText, hX, 0, healthColor);
-            MeteorClient.FONT_2X.end();
+            Meteor.INSTANCE.getFont2x().begin();
+            double hX = Meteor.INSTANCE.getFont2x().renderString(name, -i, 0, TEXT);
+            Meteor.INSTANCE.getFont2x().renderString(healthText, hX, 0, healthColor);
+            Meteor.INSTANCE.getFont2x().end();
 
             Matrices.pop();
         }

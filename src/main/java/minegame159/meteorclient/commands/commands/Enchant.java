@@ -1,6 +1,7 @@
 package minegame159.meteorclient.commands.commands;
 //Created by squidoodly 27/05/2020
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.commands.Command;
 import minegame159.meteorclient.utils.Chat;
 import minegame159.meteorclient.utils.Utils;
@@ -13,7 +14,7 @@ public class Enchant extends Command {
         super("enchant", "Enchants the currently held item with almost every enchantment (must be in creative)");
     }
 
-    private final MinecraftClient mc = MinecraftClient.getInstance();
+    private final MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
 
     @Override
     public void run(String[] args) {

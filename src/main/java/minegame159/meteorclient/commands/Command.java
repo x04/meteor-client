@@ -1,5 +1,6 @@
 package minegame159.meteorclient.commands;
 
+import minegame159.meteorclient.Meteor;
 import net.minecraft.client.MinecraftClient;
 
 public abstract class Command {
@@ -11,7 +12,7 @@ public abstract class Command {
     public Command(String name, String description) {
         this.name = name;
         this.description = description;
-        MC = MinecraftClient.getInstance();
+        MC = Meteor.INSTANCE.getMinecraft();
     }
 
     public abstract void run(String[] args);

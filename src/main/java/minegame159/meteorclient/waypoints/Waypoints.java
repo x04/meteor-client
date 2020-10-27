@@ -3,7 +3,7 @@ package minegame159.meteorclient.waypoints;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listenable;
 import me.zero.alpine.listener.Listener;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.events.GameDisconnectedEvent;
 import minegame159.meteorclient.events.GameJoinedEvent;
@@ -36,18 +36,18 @@ public class Waypoints extends Savable<Waypoints> implements Listenable, Iterabl
 
     private Waypoints() {
         super(null);
-        MeteorClient.EVENT_BUS.subscribe(this);
+        Meteor.INSTANCE.getEventBus().subscribe(this);
     }
 
     public void add(Waypoint waypoint) {
         waypoints.add(waypoint);
-        MeteorClient.EVENT_BUS.post(EventStore.waypointListChangedEvent());
+        Meteor.INSTANCE.getEventBus().post(EventStore.waypointListChangedEvent());
         save();
     }
 
     public void remove(Waypoint waypoint) {
         if (waypoints.remove(waypoint)) {
-            MeteorClient.EVENT_BUS.post(EventStore.waypointListChangedEvent());
+            Meteor.INSTANCE.getEventBus().post(EventStore.waypointListChangedEvent());
             save();
         }
     }
@@ -74,7 +74,7 @@ public class Waypoints extends Savable<Waypoints> implements Listenable, Iterabl
         for (Waypoint waypoint : this) {
             if (!waypoint.visible || !checkDimension(waypoint)) continue;
 
-            Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
+            Camera camera = Meteor.INSTANCE.getMinecraft().gameRenderer.getCamera();
 
             // Compute scale
             double dist = Utils.distanceToCamera(waypoint.x, waypoint.y, waypoint.z);
@@ -97,7 +97,7 @@ public class Waypoints extends Savable<Waypoints> implements Listenable, Iterabl
             double y = waypoint.y;
             double z = waypoint.z;
 
-            double maxViewDist = MinecraftClient.getInstance().options.viewDistance * 16;
+            double maxViewDist = Meteor.INSTANCE.getMinecraft().options.viewDistance * 16;
             if (dist > maxViewDist) {
                 double dx = waypoint.x - camera.getPos().x;
                 double dy = waypoint.y - camera.getPos().y;
@@ -132,20 +132,20 @@ public class Waypoints extends Savable<Waypoints> implements Listenable, Iterabl
             String distText = Math.round(dist) + " blocks";
 
             // Render background
-            double i = MeteorClient.FONT_2X.getStringWidth(waypoint.name) / 2.0;
-            double i2 = MeteorClient.FONT_2X.getStringWidth(distText) / 2.0;
+            double i = Meteor.INSTANCE.getFont2x().getStringWidth(waypoint.name) / 2.0;
+            double i2 = Meteor.INSTANCE.getFont2x().getStringWidth(distText) / 2.0;
             ShapeBuilder.begin(null, GL11.GL_TRIANGLES, VertexFormats.POSITION_COLOR);
-            ShapeBuilder.quad(-i - 1, -1 - MeteorClient.FONT_2X.getHeight(), 0, -i - 1, 8 - MeteorClient.FONT_2X.getHeight(), 0, i + 1, 8 - MeteorClient.FONT_2X.getHeight(), 0, i + 1, -1 - MeteorClient.FONT_2X.getHeight(), 0, BACKGROUND);
+            ShapeBuilder.quad(-i - 1, -1 - Meteor.INSTANCE.getFont2x().getHeight(), 0, -i - 1, 8 - Meteor.INSTANCE.getFont2x().getHeight(), 0, i + 1, 8 - Meteor.INSTANCE.getFont2x().getHeight(), 0, i + 1, -1 - Meteor.INSTANCE.getFont2x().getHeight(), 0, BACKGROUND);
             ShapeBuilder.quad(-i2 - 1, -1, 0, -i2 - 1, 8, 0, i2 + 1, 8, 0, i2 + 1, -1, 0, BACKGROUND);
             ShapeBuilder.end();
 
             waypoint.renderIcon(-8, 9, 0, a, 16);
 
             // Render name text
-            MeteorClient.FONT_2X.begin();
-            MeteorClient.FONT_2X.renderString(waypoint.name, -i, -MeteorClient.FONT_2X.getHeight(), TEXT);
-            MeteorClient.FONT_2X.renderString(distText, -i2, 0, TEXT);
-            MeteorClient.FONT_2X.end();
+            Meteor.INSTANCE.getFont2x().begin();
+            Meteor.INSTANCE.getFont2x().renderString(waypoint.name, -i, -Meteor.INSTANCE.getFont2x().getHeight(), TEXT);
+            Meteor.INSTANCE.getFont2x().renderString(distText, -i2, 0, TEXT);
+            Meteor.INSTANCE.getFont2x().end();
 
             Matrices.pop();
 
@@ -156,7 +156,7 @@ public class Waypoints extends Savable<Waypoints> implements Listenable, Iterabl
 
     @Override
     public File getFile() {
-        return new File(new File(MeteorClient.FOLDER, "waypoints"), Utils.getWorldName() + ".nbt");
+        return new File(new File(Meteor.INSTANCE.getFolder(), "waypoints"), Utils.getWorldName() + ".nbt");
     }
 
     @Override
@@ -179,7 +179,7 @@ public class Waypoints extends Savable<Waypoints> implements Listenable, Iterabl
     }
 
     public static void loadIcons() {
-        File iconsFolder = new File(new File(MeteorClient.FOLDER, "waypoints"), "icons");
+        File iconsFolder = new File(new File(Meteor.INSTANCE.getFolder(), "waypoints"), "icons");
         iconsFolder.mkdirs();
 
         for (String builtinIcon : BUILTIN_ICONS) {

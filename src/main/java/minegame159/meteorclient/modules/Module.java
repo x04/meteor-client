@@ -1,7 +1,7 @@
 package minegame159.meteorclient.modules;
 
 import me.zero.alpine.listener.Listenable;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.gui.WidgetScreen;
 import minegame159.meteorclient.gui.screens.ModuleScreen;
@@ -33,7 +33,7 @@ public abstract class Module implements Listenable, ISerializable<Module> {
     public boolean toggleOnKeyRelease = false;
 
     public Module(Category category, String name, String description) {
-        this.mc = MinecraftClient.getInstance();
+        this.mc = Meteor.INSTANCE.getMinecraft();
         this.category = category;
         this.name = name;
         this.title = Utils.nameToTitle(name);
@@ -88,7 +88,7 @@ public abstract class Module implements Listenable, ISerializable<Module> {
 
     public void setKey(int key, boolean postEvent) {
         this.key = key;
-        if (postEvent) MeteorClient.EVENT_BUS.post(EventStore.moduleBindChangedEvent(this));
+        if (postEvent) Meteor.INSTANCE.getEventBus().post(EventStore.moduleBindChangedEvent(this));
     }
     public void setKey(int key) {
         setKey(key, true);

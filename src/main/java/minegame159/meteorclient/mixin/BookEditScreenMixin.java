@@ -1,7 +1,7 @@
 package minegame159.meteorclient.mixin;
 
 import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
-import net.minecraft.client.MinecraftClient;
+import minegame159.meteorclient.Meteor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.BookEditScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -58,10 +58,10 @@ public abstract class BookEditScreenMixin extends Screen {
                 e.printStackTrace();
             }
 
-            GLFW.glfwSetClipboardString(MinecraftClient.getInstance().getWindow().getHandle(), Base64.getEncoder().encodeToString(bytes.array));
+            GLFW.glfwSetClipboardString(Meteor.INSTANCE.getMinecraft().getWindow().getHandle(), Base64.getEncoder().encodeToString(bytes.array));
         }));
         addButton(new ButtonWidget(4, 4 + 16 + 4, 70, 16, new LiteralText("Paste"), button -> {
-            byte[] bytes = Base64.getDecoder().decode(GLFW.glfwGetClipboardString(MinecraftClient.getInstance().getWindow().getHandle()));
+            byte[] bytes = Base64.getDecoder().decode(GLFW.glfwGetClipboardString(Meteor.INSTANCE.getMinecraft().getWindow().getHandle()));
             DataInputStream in = new DataInputStream(new ByteArrayInputStream(bytes));
 
             try {

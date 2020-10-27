@@ -3,11 +3,11 @@ package minegame159.meteorclient.macros;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listenable;
 import me.zero.alpine.listener.Listener;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.KeyEvent;
 import minegame159.meteorclient.utils.ISerializable;
 import minegame159.meteorclient.utils.KeyAction;
 import minegame159.meteorclient.utils.NbtUtils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -32,9 +32,9 @@ public class Macro implements Listenable, ISerializable<Macro> {
 
     @EventHandler
     private final Listener<KeyEvent> onKey = new Listener<>(event -> {
-        if (event.action == KeyAction.Press && event.key == key && MinecraftClient.getInstance().currentScreen == null) {
+        if (event.action == KeyAction.Press && event.key == key && Meteor.INSTANCE.getMinecraft().currentScreen == null) {
             for (String command : messages) {
-                MinecraftClient.getInstance().player.sendChatMessage(command);
+                Meteor.INSTANCE.getMinecraft().player.sendChatMessage(command);
             }
             event.cancel();
         }

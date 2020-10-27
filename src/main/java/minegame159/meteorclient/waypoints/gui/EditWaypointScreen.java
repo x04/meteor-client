@@ -1,5 +1,6 @@
 package minegame159.meteorclient.waypoints.gui;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.gui.screens.WindowScreen;
 import minegame159.meteorclient.gui.screens.settings.ColorSettingScreen;
 import minegame159.meteorclient.gui.widgets.*;
@@ -20,7 +21,7 @@ public class EditWaypointScreen extends WindowScreen {
         this.waypoint = newWaypoint ? new Waypoint() : waypoint;
 
         if (newWaypoint) {
-            MinecraftClient mc = MinecraftClient.getInstance();
+            MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
 
             this.waypoint.x = (int) mc.player.getX();
             this.waypoint.y = (int) mc.player.getY() + 2;
@@ -55,7 +56,7 @@ public class EditWaypointScreen extends WindowScreen {
         add(new WLabel("Color:"));
         t = add(new WTable()).getWidget();
         t.add(new WQuad(waypoint.color));
-        t.add(new WButton(WButton.ButtonRegion.Edit)).getWidget().action = () -> MinecraftClient.getInstance().openScreen(new ColorSettingScreen(new ColorSetting("", "", waypoint.color, color -> waypoint.color.set(color), null)));
+        t.add(new WButton(WButton.ButtonRegion.Edit)).getWidget().action = () -> Meteor.INSTANCE.getMinecraft().openScreen(new ColorSettingScreen(new ColorSetting("", "", waypoint.color, color -> waypoint.color.set(color), null)));
         row();
 
         add(new WHorizontalSeparator());

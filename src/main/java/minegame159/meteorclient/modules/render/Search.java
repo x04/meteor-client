@@ -124,7 +124,7 @@ public class Search extends ToggleModule {
     private final Listener<ChunkDataEvent> onChunkData = new Listener<>(event -> searchChunk(event.chunk, event));
 
     private void searchChunk(Chunk chunk, ChunkDataEvent event) {
-        MeteorExecutor.execute(() -> {
+        MeteorExecutor.INSTANCE.execute(() -> {
             MyChunk myChunk = new MyChunk(chunk.getPos().x, chunk.getPos().z);
 
             for (int x = chunk.getPos().getStartX(); x <= chunk.getPos().getEndX(); x++) {
@@ -147,7 +147,7 @@ public class Search extends ToggleModule {
     }
 
     public void onBlockUpdate(BlockPos blockPos, BlockState blockState) {
-        MeteorExecutor.execute(() -> {
+        MeteorExecutor.INSTANCE.execute(() -> {
             int chunkX = blockPos.getX() >> 4;
             int chunkZ = blockPos.getZ() >> 4;
             long key = ChunkPos.toLong(chunkX, chunkZ);

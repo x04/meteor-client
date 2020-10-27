@@ -1,6 +1,5 @@
 package minegame159.meteorclient.utils;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -16,8 +15,6 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 
 public class EntityUtils {
-    public static MinecraftClient mc;
-
     public static boolean isPlayer(Entity entity) {
         return entity instanceof PlayerEntity;
     }

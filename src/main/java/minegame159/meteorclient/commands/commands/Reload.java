@@ -1,6 +1,6 @@
 package minegame159.meteorclient.commands.commands;
 
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.commands.Command;
 
 public class Reload extends Command {
@@ -10,6 +10,6 @@ public class Reload extends Command {
 
     @Override
     public void run(String[] args) {
-        MeteorClient.INSTANCE.load();
+        Meteor.INSTANCE.reload();
     }
 }

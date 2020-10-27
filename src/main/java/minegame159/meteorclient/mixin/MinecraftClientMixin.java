@@ -1,6 +1,6 @@
 package minegame159.meteorclient.mixin;
 
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.events.OpenScreenEvent;
 import minegame159.meteorclient.mixininterface.IMinecraftClient;
@@ -51,15 +51,15 @@ public abstract class MinecraftClientMixin implements IMinecraftClient {
     @Shadow @Nullable public Screen currentScreen;
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void onInit(CallbackInfo info) {
-        MeteorClient.INSTANCE.onInitializeClient();
+    public void onInit(CallbackInfo info) {
+        Meteor.INSTANCE.reload();
     }
 
     @Inject(at = @At("TAIL"), method = "tick")
     private void onTick(CallbackInfo info) {
         if (Utils.canUpdate()) {
             world.getProfiler().swap("meteor-client_update");
-            MeteorClient.EVENT_BUS.post(EventStore.tickEvent());
+            Meteor.INSTANCE.getEventBus().post(EventStore.tickEvent());
         }
     }
 
@@ -68,7 +68,7 @@ public abstract class MinecraftClientMixin implements IMinecraftClient {
         if (screen instanceof WidgetScreen) screen.mouseMoved(mouse.getX() * window.getScaleFactor(), mouse.getY() * window.getScaleFactor());
 
         OpenScreenEvent event = EventStore.openScreenEvent(screen);
-        MeteorClient.EVENT_BUS.post(event);
+        Meteor.INSTANCE.getEventBus().post(event);
 
         if (event.isCancelled()) {
             info.cancel();

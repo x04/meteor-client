@@ -1,6 +1,6 @@
 package minegame159.meteorclient.mixin;
 
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.events.packets.ReceivePacketEvent;
 import minegame159.meteorclient.utils.Utils;
@@ -17,16 +17,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ClientConnectionMixin {
     @Inject(method = "disconnect", at = @At("HEAD"))
     private void onDisconnect(Text disconnectReason, CallbackInfo info) {
-        if (Utils.canUpdate() && !MeteorClient.IS_DISCONNECTING) {
-            MeteorClient.IS_DISCONNECTING = true;
-            MeteorClient.EVENT_BUS.post(EventStore.gameDisconnectedEvent(disconnectReason));
+        if (Utils.canUpdate() && !Meteor.INSTANCE.isInGame()) {
+            Meteor.INSTANCE.setInGame(false);
+            Meteor.INSTANCE.getEventBus().post(EventStore.gameDisconnectedEvent(disconnectReason));
         }
     }
 
     @Inject(method = "handlePacket", at = @At("HEAD"), cancellable = true)
     private static <T extends PacketListener> void onHandlePacket(Packet<T> packet, PacketListener listener, CallbackInfo info) {
         ReceivePacketEvent event = EventStore.receivePacketEvent(packet);
-        MeteorClient.EVENT_BUS.post(event);
+        Meteor.INSTANCE.getEventBus().post(event);
 
         if (event.isCancelled()) info.cancel();
     }

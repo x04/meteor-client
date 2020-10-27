@@ -1,6 +1,6 @@
 package minegame159.meteorclient.mixin;
 
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.CharTypedEvent;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.events.KeyEvent;
@@ -41,7 +41,7 @@ public abstract class KeyboardMixin {
                 ((IKeyBinding) shulkerPeek).setPressed(shulkerPeek.matchesKey(key, scancode) && (i == GLFW.GLFW_PRESS || i == GLFW.GLFW_REPEAT));
 
                 if (!Utils.canUpdate() && i == GLFW.GLFW_PRESS) {
-                    MeteorClient.INSTANCE.onKeyInMainMenu(key);
+                    Meteor.INSTANCE.onKeyInMainMenu(key);
 
                     if (client.currentScreen instanceof WidgetScreen) {
                         ModuleManager.INSTANCE.onKeyOnlyBinding = true;
@@ -54,7 +54,7 @@ public abstract class KeyboardMixin {
 
                 if (!client.isPaused() && (client.currentScreen == null || client.currentScreen instanceof WidgetScreen)) {
                     KeyEvent event = EventStore.keyEvent(key, KeyAction.get(i));
-                    MeteorClient.EVENT_BUS.post(event);
+                    Meteor.INSTANCE.getEventBus().post(event);
 
                     if (event.isCancelled()) info.cancel();
                 }
@@ -66,7 +66,7 @@ public abstract class KeyboardMixin {
     private void onChar(long window, int i, int j, CallbackInfo info) {
         if (Utils.canUpdate() && !client.isPaused() && (client.currentScreen == null || client.currentScreen instanceof WidgetScreen)) {
             CharTypedEvent event = EventStore.charTypedEvent((char) i);
-            MeteorClient.EVENT_BUS.post(event);
+            Meteor.INSTANCE.getEventBus().post(event);
 
             if (event.isCancelled()) info.cancel();
         }

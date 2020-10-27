@@ -3,7 +3,7 @@ package minegame159.meteorclient.utils;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listenable;
 import me.zero.alpine.listener.Listener;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.GameJoinedEvent;
 import minegame159.meteorclient.events.packets.ReceivePacketEvent;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
@@ -22,7 +22,7 @@ public class TickRate implements Listenable {
     private long timeGameJoined;
 
     private TickRate() {
-        MeteorClient.EVENT_BUS.subscribe(this);
+        Meteor.INSTANCE.getEventBus().subscribe(this);
     }
 
     @EventHandler

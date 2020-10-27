@@ -3,7 +3,7 @@ package minegame159.meteorclient.macros;
 import me.zero.alpine.event.EventPriority;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.events.KeyEvent;
 import minegame159.meteorclient.gui.screens.WindowScreen;
@@ -66,7 +66,7 @@ public class EditMacroScreen extends WindowScreen {
                 }
             } else {
                 MacroManager.INSTANCE.save();
-                MeteorClient.EVENT_BUS.post(EventStore.macroListChangedEvent());
+                Meteor.INSTANCE.getEventBus().post(EventStore.macroListChangedEvent());
                 onClose();
             }
         };

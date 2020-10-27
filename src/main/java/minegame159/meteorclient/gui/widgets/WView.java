@@ -1,9 +1,9 @@
 package minegame159.meteorclient.gui.widgets;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.gui.GuiConfig;
 import minegame159.meteorclient.gui.renderer.GuiRenderer;
 import minegame159.meteorclient.utils.Utils;
-import net.minecraft.client.MinecraftClient;
 
 public class WView extends WTable {
     public double maxHeight;
@@ -17,7 +17,7 @@ public class WView extends WTable {
     public WView(boolean onlyWhenMouseOver) {
         this.onlyWhenMouseOver = onlyWhenMouseOver;
 
-        maxHeight = MinecraftClient.getInstance().getWindow().getFramebufferHeight() - 128;
+        maxHeight = Meteor.INSTANCE.getMinecraft().getWindow().getFramebufferHeight() - 128;
         pad(0);
     }
 
@@ -82,7 +82,7 @@ public class WView extends WTable {
 
     private void moveWidgets(double deltaY) {
         for (Cell<?> cell : getCells()) move(cell.getWidget(), 0, deltaY, false);
-        mouseMoved(MinecraftClient.getInstance().mouse.getX(), MinecraftClient.getInstance().mouse.getY());
+        mouseMoved(Meteor.INSTANCE.getMinecraft().mouse.getX(), Meteor.INSTANCE.getMinecraft().mouse.getY());
     }
 
     @Override

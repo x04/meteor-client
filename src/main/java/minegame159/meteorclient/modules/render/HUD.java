@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import minegame159.meteorclient.Config;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.*;
 import minegame159.meteorclient.mixininterface.IClientPlayerInteractionManager;
 import minegame159.meteorclient.mixininterface.IMinecraftClient;
@@ -465,13 +465,13 @@ public class HUD extends ToggleModule {
 
     @EventHandler
     private final Listener<Render2DEvent> onRender2D = new Listener<>(event -> {
-        MeteorClient.FONT.begin();
+        Meteor.INSTANCE.getFont().begin();
         renderPlayerModel(event);
         renderTopCenter(event);
         renderTopLeft(event);
         renderTopRight(event);
         renderBottomRight(event);
-        MeteorClient.FONT.end();
+        Meteor.INSTANCE.getFont().end();
 
         if (armorEnabled.get()) {
             int x = event.screenWidth / 2 + 12;
@@ -495,9 +495,9 @@ public class HUD extends ToggleModule {
                     mc.getItemRenderer().renderGuiItemIcon(itemStack, x, y);
                     if(!itemStack.isEmpty() && itemStack.isDamageable()) {
                         String message = Integer.toString(itemStack.getMaxDamage() - itemStack.getDamage());
-                        MeteorClient.FONT.scale = scale.get();
-                        MeteorClient.FONT.renderStringWithShadow(message, x + ((15 - (MeteorClient.FONT.getStringWidth(message))) / 2) + 1, y - 5, white);
-                        MeteorClient.FONT.scale = 1;
+                        Meteor.INSTANCE.getFont().scale = scale.get();
+                        Meteor.INSTANCE.getFont().renderStringWithShadow(message, x + ((15 - (Meteor.INSTANCE.getFont().getStringWidth(message))) / 2) + 1, y - 5, white);
+                        Meteor.INSTANCE.getFont().scale = 1;
                     }
 
                     x += 20;
@@ -509,9 +509,9 @@ public class HUD extends ToggleModule {
                     mc.getItemRenderer().renderGuiItemIcon(itemStack, x, y);
                     if(!itemStack.isEmpty() && itemStack.isDamageable()) {
                         String message = Integer.toString(Math.round(((itemStack.getMaxDamage() - itemStack.getDamage()) * 100f) / (float) itemStack.getMaxDamage()));
-                        MeteorClient.FONT.scale = scale.get();
-                        MeteorClient.FONT.renderStringWithShadow(message, x + ((15 - (MeteorClient.FONT.getStringWidth(message))) / 2) + 1, y - 5, white);
-                        MeteorClient.FONT.scale = 1;
+                        Meteor.INSTANCE.getFont().scale = scale.get();
+                        Meteor.INSTANCE.getFont().renderStringWithShadow(message, x + ((15 - (Meteor.INSTANCE.getFont().getStringWidth(message))) / 2) + 1, y - 5, white);
+                        Meteor.INSTANCE.getFont().scale = 1;
                     }
 
                     x += 20;
@@ -546,7 +546,7 @@ public class HUD extends ToggleModule {
         int y = 4;
         if (userWelcome.get()) {
             drawInfoCenter("Welcome to Meteor Client, ", mc.player.getGameProfile().getName() + "!", y, white, purple);
-            y += MeteorClient.FONT.getHeight() + 4;
+            y += Meteor.INSTANCE.getFont().getHeight() + 4;
         }
 
         float timeSinceLastTick = TickRate.INSTANCE.getTimeSinceLastTick();
@@ -560,7 +560,7 @@ public class HUD extends ToggleModule {
         if (serverLagNotifier.get()) {
             if (timeSinceLastTick >= 1f) {
                 drawInfoCenter("Since last tick: ", String.format("%.1f", timeSinceLastTick), y, white, warningColor);
-                y += MeteorClient.FONT.getHeight() + 4;
+                y += Meteor.INSTANCE.getFont().getHeight() + 4;
             }
         }
     }
@@ -656,13 +656,13 @@ public class HUD extends ToggleModule {
                 else renderMMQuad(x2 - 1, z2 - 1, 2, 2, color);
             }
 
-            double w = MeteorClient.FONT.getStringWidth("N");
-            MeteorClient.FONT.renderStringWithShadow("N", 2 + 50 - w / 2, 4, white);
-            w = MeteorClient.FONT.getStringWidth("S");
-            MeteorClient.FONT.renderStringWithShadow("S", 2 + 50 - w / 2, 2 + 100 - MeteorClient.FONT.getHeight() - 2, white);
-            MeteorClient.FONT.renderStringWithShadow("W", 4, 2 + 50 - MeteorClient.FONT.getHeight() / 2, white);
-            w = MeteorClient.FONT.getStringWidth("E");
-            MeteorClient.FONT.renderStringWithShadow("E", 2 + 100 - w - 2, 2 + 50 - MeteorClient.FONT.getHeight() / 2, white);
+            double w = Meteor.INSTANCE.getFont().getStringWidth("N");
+            Meteor.INSTANCE.getFont().renderStringWithShadow("N", 2 + 50 - w / 2, 4, white);
+            w = Meteor.INSTANCE.getFont().getStringWidth("S");
+            Meteor.INSTANCE.getFont().renderStringWithShadow("S", 2 + 50 - w / 2, 2 + 100 - Meteor.INSTANCE.getFont().getHeight() - 2, white);
+            Meteor.INSTANCE.getFont().renderStringWithShadow("W", 4, 2 + 50 - Meteor.INSTANCE.getFont().getHeight() / 2, white);
+            w = Meteor.INSTANCE.getFont().getStringWidth("E");
+            Meteor.INSTANCE.getFont().renderStringWithShadow("E", 2 + 100 - w - 2, 2 + 50 - Meteor.INSTANCE.getFont().getHeight() / 2, white);
 
             ShapeBuilder.end();
             y += 100 * mmScale.get() + 2;
@@ -670,23 +670,23 @@ public class HUD extends ToggleModule {
 
         if (waterMark.get()) {
             drawInfo("Meteor Client ", Config.INSTANCE.version.getOriginalString(), y);
-            y += MeteorClient.FONT.getHeight() + 2;
+            y += Meteor.INSTANCE.getFont().getHeight() + 2;
         }
 
         if (fps.get()) {
-            drawInfo("FPS: ", ((IMinecraftClient) MinecraftClient.getInstance()).getFps() + "", y);
-            y += MeteorClient.FONT.getHeight() + 2;
+            drawInfo("FPS: ", ((IMinecraftClient) Meteor.INSTANCE.getMinecraft()).getFps() + "", y);
+            y += Meteor.INSTANCE.getFont().getHeight() + 2;
         }
 
         PlayerListEntry playerListEntry = mc.getNetworkHandler().getPlayerListEntry(mc.player.getUuid());
         if (ping.get() && playerListEntry != null) {
             drawInfo("Ping: ", playerListEntry.getLatency() + "", y);
-            y += MeteorClient.FONT.getHeight() + 2;
+            y += Meteor.INSTANCE.getFont().getHeight() + 2;
         }
 
         if (tps.get()) {
             drawInfo("TPS: ", String.format("%.1f", TickRate.INSTANCE.getTickRate()), y);
-            y += MeteorClient.FONT.getHeight() + 2;
+            y += Meteor.INSTANCE.getFont().getHeight() + 2;
         }
       
         if (speed.get()) {
@@ -698,13 +698,13 @@ public class HUD extends ToggleModule {
             }
 
             drawInfo("Speed: ", String.format("%.1f", length * 20), y);
-            y += MeteorClient.FONT.getHeight() + 2;
+            y += Meteor.INSTANCE.getFont().getHeight() + 2;
         }
 
         if (biome.get()) {
             playerBlockPos.set(mc.player.getX(), mc.player.getY(), mc.player.getZ());
             drawInfo("Biome: ", Arrays.stream(mc.world.getBiome(playerBlockPos).getCategory().getName().split("_")).map(StringUtils::capitalize).collect(Collectors.joining(" ")), y);
-            y += MeteorClient.FONT.getHeight() + 2;
+            y += Meteor.INSTANCE.getFont().getHeight() + 2;
         }
 
         if (time.get()) {
@@ -712,7 +712,7 @@ public class HUD extends ToggleModule {
             ticks += 6000;
             if (ticks > 24000) ticks -= 24000;
             drawInfo("Time: ", String.format("%02d:%02d", ticks / 1000, (int) (ticks % 1000 / 1000.0 * 60)), y);
-            y += MeteorClient.FONT.getHeight() + 2;
+            y += Meteor.INSTANCE.getFont().getHeight() + 2;
         }
 
         if (durability.get()) {
@@ -720,12 +720,12 @@ public class HUD extends ToggleModule {
             if (!mc.player.getMainHandStack().isEmpty() && mc.player.getMainHandStack().isDamageable()) amount = mc.player.getMainHandStack().getMaxDamage() - mc.player.getMainHandStack().getDamage();
 
             drawInfo("Durability: ", amount == null ? "" : amount.toString(), y);
-            y += MeteorClient.FONT.getHeight() + 2;
+            y += Meteor.INSTANCE.getFont().getHeight() + 2;
         }
 
         if (breakingBlock.get()) {
             drawInfo("Breaking block: ", String.format("%.0f%%", ((IClientPlayerInteractionManager) mc.interactionManager).getBreakingProgress() * 100), y);
-            y += MeteorClient.FONT.getHeight() + 2;
+            y += Meteor.INSTANCE.getFont().getHeight() + 2;
         }
 
         if (lookingAt.get()) {
@@ -734,7 +734,7 @@ public class HUD extends ToggleModule {
             else if (mc.crosshairTarget.getType() == HitResult.Type.ENTITY) text = ((EntityHitResult) mc.crosshairTarget).getEntity().getDisplayName().getString();
 
             drawInfo("Looking At: ", text, y);
-            y += MeteorClient.FONT.getHeight() + 2;
+            y += Meteor.INSTANCE.getFont().getHeight() + 2;
         }
 
         if (entities.get()) {
@@ -742,34 +742,34 @@ public class HUD extends ToggleModule {
                 if (!renderInfo.render) continue;
 
                 drawEntityCount(renderInfo, y);
-                y += MeteorClient.FONT.getHeight() + 2;
+                y += Meteor.INSTANCE.getFont().getHeight() + 2;
             }
         }
 
         if (combatInfo.get()) {
-            y += MeteorClient.FONT.getHeight() + 2;
+            y += Meteor.INSTANCE.getFont().getHeight() + 2;
             drawCombatInfo(KillAura.class, "KA", y);
-            y += MeteorClient.FONT.getHeight() + 2;
+            y += Meteor.INSTANCE.getFont().getHeight() + 2;
             drawCombatInfo(CrystalAura.class, "CA", y);
-            y += MeteorClient.FONT.getHeight() + 2;
+            y += Meteor.INSTANCE.getFont().getHeight() + 2;
             drawCombatInfo(BedAura.class, "BA", y);
-            y += MeteorClient.FONT.getHeight() + 2;
+            y += Meteor.INSTANCE.getFont().getHeight() + 2;
             drawCombatInfo(Surround.class, "SR", y);
-            y += MeteorClient.FONT.getHeight() + 2;
+            y += Meteor.INSTANCE.getFont().getHeight() + 2;
             drawCombatInfo(AutoTrap.class, "AT", y);
-            y += MeteorClient.FONT.getHeight() + 2;
+            y += Meteor.INSTANCE.getFont().getHeight() + 2;
         }
     }
 
     private void drawCombatInfo(Class<? extends ToggleModule> module, String name, double y) {
         boolean on = ModuleManager.INSTANCE.isActive(module);
-        double x = MeteorClient.FONT.renderStringWithShadow(name, 2, y, white);
-        MeteorClient.FONT.renderStringWithShadow(on ? " ON" : " OFF", x, y, on ? green : red);
+        double x = Meteor.INSTANCE.getFont().renderStringWithShadow(name, 2, y, white);
+        Meteor.INSTANCE.getFont().renderStringWithShadow(on ? " ON" : " OFF", x, y, on ? green : red);
     }
 
     private void drawInfo(String text1, String text2, double x, double y, Color text1Color) {
-        MeteorClient.FONT.renderStringWithShadow(text1, x, y, text1Color);
-        MeteorClient.FONT.renderStringWithShadow(text2, x + MeteorClient.FONT.getStringWidth(text1), y, gray);
+        Meteor.INSTANCE.getFont().renderStringWithShadow(text1, x, y, text1Color);
+        Meteor.INSTANCE.getFont().renderStringWithShadow(text2, x + Meteor.INSTANCE.getFont().getStringWidth(text1), y, gray);
     }
     private void drawInfo(String text1, String text2, double y, Color text1Color) {
         drawInfo(text1, text2, 2, y, text1Color);
@@ -779,23 +779,23 @@ public class HUD extends ToggleModule {
     }
 
     private void drawInfoCenter(String text1, String text2, double x, double y, Color text1Color, Color text2Color) {
-        MeteorClient.FONT.renderStringWithShadow(text1, x, y, text1Color);
-        MeteorClient.FONT.renderStringWithShadow(text2, x + MeteorClient.FONT.getStringWidth(text1), y, text2Color);
+        Meteor.INSTANCE.getFont().renderStringWithShadow(text1, x, y, text1Color);
+        Meteor.INSTANCE.getFont().renderStringWithShadow(text2, x + Meteor.INSTANCE.getFont().getStringWidth(text1), y, text2Color);
     }
 
     private void drawInfoCenter(String text1, String text2, double y, Color text1Color, Color text2Color) {
-        drawInfoCenter(text1, text2, mc.getWindow().getScaledWidth() / 2 - (MeteorClient.FONT.getStringWidth(text1)+MeteorClient.FONT.getStringWidth(text2))  / 2, y, text1Color, text2Color);
+        drawInfoCenter(text1, text2, mc.getWindow().getScaledWidth() / 2 - (Meteor.INSTANCE.getFont().getStringWidth(text1)+ Meteor.INSTANCE.getFont().getStringWidth(text2))  / 2, y, text1Color, text2Color);
     }
     private void drawInfoRight(String text1, String text2, double y, Color text1Color) {
-        drawInfo(text1, text2, mc.getWindow().getScaledWidth() - MeteorClient.FONT.getStringWidth(text1) - MeteorClient.FONT.getStringWidth(text2) - 2, y, text1Color);
+        drawInfo(text1, text2, mc.getWindow().getScaledWidth() - Meteor.INSTANCE.getFont().getStringWidth(text1) - Meteor.INSTANCE.getFont().getStringWidth(text2) - 2, y, text1Color);
     }
     private void drawInfoRight(String text1, String text2, double y) {
         drawInfoRight(text1, text2, y, white);
     }
 
     private void drawEntityCount(EntityInfo entityInfo, double y) {
-        MeteorClient.FONT.renderStringWithShadow(entityInfo.countStr, 2, y, gray);
-        MeteorClient.FONT.renderStringWithShadow(entityInfo.name, 2 + (maxLetterCount - entityInfo.countStr.length()) * 4 + 4 + MeteorClient.FONT.getStringWidth(entityInfo.countStr), y, white);
+        Meteor.INSTANCE.getFont().renderStringWithShadow(entityInfo.countStr, 2, y, gray);
+        Meteor.INSTANCE.getFont().renderStringWithShadow(entityInfo.name, 2 + (maxLetterCount - entityInfo.countStr.length()) * 4 + 4 + Meteor.INSTANCE.getFont().getStringWidth(entityInfo.countStr), y, white);
     }
 
     private void renderTopRight(Render2DEvent event) {
@@ -807,14 +807,14 @@ public class HUD extends ToggleModule {
                 String infoString = module.getInfoString();
                 double x;
                 if (infoString == null) {
-                    x = event.screenWidth - MeteorClient.FONT.getStringWidth(module.title) - 2;
-                    MeteorClient.FONT.renderStringWithShadow(module.title, x, y, module.color);
+                    x = event.screenWidth - Meteor.INSTANCE.getFont().getStringWidth(module.title) - 2;
+                    Meteor.INSTANCE.getFont().renderStringWithShadow(module.title, x, y, module.color);
                 } else {
-                    x = event.screenWidth - MeteorClient.FONT.getStringWidth(module.title + " " + infoString) - 2;
-                    MeteorClient.FONT.renderStringWithShadow(module.title, x, y, module.color);
-                    MeteorClient.FONT.renderStringWithShadow(module.getInfoString(), x + MeteorClient.FONT.getStringWidth(module.title + " "), y, gray);
+                    x = event.screenWidth - Meteor.INSTANCE.getFont().getStringWidth(module.title + " " + infoString) - 2;
+                    Meteor.INSTANCE.getFont().renderStringWithShadow(module.title, x, y, module.color);
+                    Meteor.INSTANCE.getFont().renderStringWithShadow(module.getInfoString(), x + Meteor.INSTANCE.getFont().getStringWidth(module.title + " "), y, gray);
                 }
-                y += MeteorClient.FONT.getHeight() + 1;
+                y += Meteor.INSTANCE.getFont().getHeight() + 1;
             }
         }
     }
@@ -827,14 +827,14 @@ public class HUD extends ToggleModule {
         }
 
         modules.sort((o1, o2) -> {
-            int a = Double.compare(o1.getInfoString() == null ? MeteorClient.FONT.getStringWidth(o1.title) : MeteorClient.FONT.getStringWidth(o1.title + " " + o1.getInfoString()), o2.getInfoString() == null ? MeteorClient.FONT.getStringWidth(o2.title) : MeteorClient.FONT.getStringWidth(o2.title + " " + o2.getInfoString()));
+            int a = Double.compare(o1.getInfoString() == null ? Meteor.INSTANCE.getFont().getStringWidth(o1.title) : Meteor.INSTANCE.getFont().getStringWidth(o1.title + " " + o1.getInfoString()), o2.getInfoString() == null ? Meteor.INSTANCE.getFont().getStringWidth(o2.title) : Meteor.INSTANCE.getFont().getStringWidth(o2.title + " " + o2.getInfoString()));
             if (a == 0) return 0;
             return a < 0 ? 1 : -1;
         });
     }
 
     private void renderBottomRight(Render2DEvent event) {
-        double y = event.screenHeight - MeteorClient.FONT.getHeight() - 2;
+        double y = event.screenHeight - Meteor.INSTANCE.getFont().getHeight() - 2;
 
         if (rotation.get()) {
             Direction direction = Direction.fromRotation(mc.gameRenderer.getCamera().getYaw());
@@ -855,7 +855,7 @@ public class HUD extends ToggleModule {
             if (pitch > 180) pitch -= 360;
 
             drawInfoRight(String.format("%s %s ", StringUtils.capitalize(direction.getName()), axis), String.format("(%.1f, %.1f)", yaw, pitch), y);
-            y -= MeteorClient.FONT.getHeight() + 2;
+            y -= Meteor.INSTANCE.getFont().getHeight() + 2;
         }
 
         if (position.get()) {
@@ -866,21 +866,21 @@ public class HUD extends ToggleModule {
             switch (Utils.getDimension()) {
                 case Overworld:
                     drawPosition(event.screenWidth, "Nether Pos: ", y, x1 / 8.0, y1, z1 / 8.0);
-                    y -= MeteorClient.FONT.getHeight() + 2;
+                    y -= Meteor.INSTANCE.getFont().getHeight() + 2;
                     drawPosition(event.screenWidth, "Pos: ", y, x1, y1, z1);
-                    y -= MeteorClient.FONT.getHeight() + 2;
+                    y -= Meteor.INSTANCE.getFont().getHeight() + 2;
                     break;
 
                 case Nether:
                     drawPosition(event.screenWidth, "Overworld Pos: ", y, x1 * 8.0, y1, z1 * 8.0);
-                    y -= MeteorClient.FONT.getHeight() + 2;
+                    y -= Meteor.INSTANCE.getFont().getHeight() + 2;
                     drawPosition(event.screenWidth, "Pos: ", y, x1, y1, z1);
-                    y -= MeteorClient.FONT.getHeight() + 2;
+                    y -= Meteor.INSTANCE.getFont().getHeight() + 2;
                     break;
 
                 case End:
                     drawPosition(event.screenWidth, "Pos: ", y, x1, y1, z1);
-                    y -= MeteorClient.FONT.getHeight() + 2;
+                    y -= Meteor.INSTANCE.getFont().getHeight() + 2;
                     break;
             }
         }
@@ -895,7 +895,7 @@ public class HUD extends ToggleModule {
                 white.b = Color.toRGBAB(c);
 
                 drawInfoRight(statusEffect.getName().getString(), " " + (statusEffectInstance.getAmplifier() + 1) + " (" + StatusEffectUtil.durationToString(statusEffectInstance, 1) + ")", y, white);
-                y -= MeteorClient.FONT.getHeight() + 2;
+                y -= Meteor.INSTANCE.getFont().getHeight() + 2;
 
                 white.r = white.g = white.b = 255;
             }
@@ -904,10 +904,10 @@ public class HUD extends ToggleModule {
 
     private void drawPosition(int screenWidth, String text, double yy, double x, double y, double z) {
         String msg1 = String.format("%.1f %.1f %.1f", x, y, z);
-        double x1 = screenWidth - MeteorClient.FONT.getStringWidth(msg1) - 2;
-        double x2 = screenWidth - MeteorClient.FONT.getStringWidth(msg1) - MeteorClient.FONT.getStringWidth(text) - 2;
-        MeteorClient.FONT.renderStringWithShadow(msg1, x1, yy, gray);
-        MeteorClient.FONT.renderStringWithShadow(text, x2, yy, white);
+        double x1 = screenWidth - Meteor.INSTANCE.getFont().getStringWidth(msg1) - 2;
+        double x2 = screenWidth - Meteor.INSTANCE.getFont().getStringWidth(msg1) - Meteor.INSTANCE.getFont().getStringWidth(text) - 2;
+        Meteor.INSTANCE.getFont().renderStringWithShadow(msg1, x1, yy, gray);
+        Meteor.INSTANCE.getFont().renderStringWithShadow(text, x2, yy, white);
     }
 
     private void sendNotification(){

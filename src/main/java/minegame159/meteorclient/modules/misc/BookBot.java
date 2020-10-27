@@ -4,7 +4,7 @@ package minegame159.meteorclient.modules.misc;
 
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.TickEvent;
 import minegame159.meteorclient.mixininterface.IClientPlayerInteractionManager;
 import minegame159.meteorclient.mixininterface.ITextHandler;
@@ -170,7 +170,7 @@ public class BookBot extends ToggleModule {
         }else if(mode.get() == Mode.File){
             if (firstTime) {
                 //Fetch the file and initialise the IntList
-                File file = new File(MeteorClient.FOLDER, fileName.get());
+                File file = new File(Meteor.INSTANCE.getFolder(), fileName.get());
 
                 //Check if the file exists.
                 if (!file.exists()) {

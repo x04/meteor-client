@@ -2,6 +2,7 @@ package minegame159.meteorclient.accounts.gui;
 
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.accounts.Account;
 import minegame159.meteorclient.accounts.AccountManager;
 import minegame159.meteorclient.events.AccountListChangedEvent;
@@ -10,7 +11,6 @@ import minegame159.meteorclient.gui.screens.WindowScreen;
 import minegame159.meteorclient.gui.widgets.WButton;
 import minegame159.meteorclient.gui.widgets.WTable;
 import minegame159.meteorclient.utils.MeteorExecutor;
-import net.minecraft.client.MinecraftClient;
 
 public class AccountsScreen extends WindowScreen {
     public AccountsScreen() {
@@ -33,9 +33,9 @@ public class AccountsScreen extends WindowScreen {
 
         // Add account
         WTable t = add(new WTable()).fillX().expandX().getWidget();
-        addButton(t, "Cracked", () -> MinecraftClient.getInstance().openScreen(new AddCrackedAccountScreen()));
-        addButton(t, "Premium", () -> MinecraftClient.getInstance().openScreen(new AddPremiumAccountScreen()));
-        addButton(t, "The Altening", () -> MinecraftClient.getInstance().openScreen(new AddTheAlteningAccountScreen()));
+        addButton(t, "Cracked", () -> Meteor.INSTANCE.getMinecraft().openScreen(new AddCrackedAccountScreen()));
+        addButton(t, "Premium", () -> Meteor.INSTANCE.getMinecraft().openScreen(new AddPremiumAccountScreen()));
+        addButton(t, "The Altening", () -> Meteor.INSTANCE.getMinecraft().openScreen(new AddTheAlteningAccountScreen()));
     }
 
     private void addButton(WTable t, String text, Runnable action) {
@@ -53,7 +53,7 @@ public class AccountsScreen extends WindowScreen {
         add.setText("...");
         screen.locked = true;
 
-        MeteorExecutor.execute(() -> {
+        MeteorExecutor.INSTANCE.execute(() -> {
             if (account.fetchInfo() && account.fetchHead()) {
                 AccountManager.INSTANCE.add(account);
                 screen.locked = false;

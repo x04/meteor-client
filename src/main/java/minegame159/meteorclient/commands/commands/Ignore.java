@@ -2,7 +2,7 @@ package minegame159.meteorclient.commands.commands;
 
 //Created by squidoodly 01/07/2020
 
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.commands.Command;
 import minegame159.meteorclient.utils.Chat;
 
@@ -33,7 +33,7 @@ public class Ignore extends Command {
     }
 
     public static void load() {
-        File file = new File(MeteorClient.FOLDER, "ignored_players.txt");
+        File file = new File(Meteor.INSTANCE.getFolder(), "ignored_players.txt");
         if (file.exists()) {
             try {
                 BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -50,7 +50,7 @@ public class Ignore extends Command {
 
     public static void save() {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(new File(MeteorClient.FOLDER, "ignored_players.txt")));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(new File(Meteor.INSTANCE.getFolder(), "ignored_players.txt")));
             for (String name: Ignore.ignoredPlayers) {
                 writer.write(name);
                 writer.write(" OwO\n");

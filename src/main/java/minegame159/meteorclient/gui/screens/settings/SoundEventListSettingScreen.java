@@ -1,9 +1,9 @@
 package minegame159.meteorclient.gui.screens.settings;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.gui.widgets.WLabel;
 import minegame159.meteorclient.gui.widgets.WWidget;
 import minegame159.meteorclient.settings.Setting;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.WeightedSoundSet;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
@@ -23,7 +23,7 @@ public class SoundEventListSettingScreen extends LeftRightListSettingScreen<Soun
 
     @Override
     protected String getValueName(SoundEvent value) {
-        WeightedSoundSet soundSet = MinecraftClient.getInstance().getSoundManager().get(value.getId());
+        WeightedSoundSet soundSet = Meteor.INSTANCE.getMinecraft().getSoundManager().get(value.getId());
         if (soundSet == null) return value.getId().getPath();
 
         Text text = soundSet.getSubtitle();

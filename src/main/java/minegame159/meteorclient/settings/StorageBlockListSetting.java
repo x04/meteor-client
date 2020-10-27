@@ -1,9 +1,9 @@
 package minegame159.meteorclient.settings;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.gui.screens.settings.StorageBlockListSettingScreen;
 import minegame159.meteorclient.gui.widgets.WButton;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -25,7 +25,7 @@ public class StorageBlockListSetting extends Setting<List<BlockEntityType<?>>> {
         value = new ArrayList<>(defaultValue);
 
         widget = new WButton("Select");
-        ((WButton) widget).action = () -> MinecraftClient.getInstance().openScreen(new StorageBlockListSettingScreen(this));
+        ((WButton) widget).action = () -> Meteor.INSTANCE.getMinecraft().openScreen(new StorageBlockListSettingScreen(this));
     }
 
     @Override

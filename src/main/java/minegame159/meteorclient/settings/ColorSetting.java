@@ -1,11 +1,11 @@
 package minegame159.meteorclient.settings;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.gui.screens.settings.ColorSettingScreen;
 import minegame159.meteorclient.gui.widgets.WButton;
 import minegame159.meteorclient.gui.widgets.WQuad;
 import minegame159.meteorclient.gui.widgets.WTable;
 import minegame159.meteorclient.utils.Color;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.function.Consumer;
@@ -23,7 +23,7 @@ public class ColorSetting extends Setting<Color> {
         button.action = () -> {
             ColorSettingScreen colorSettingScreen = new ColorSettingScreen(this);
             colorSettingScreen.action = () -> quad.color.set(get());
-            MinecraftClient.getInstance().openScreen(colorSettingScreen);
+            Meteor.INSTANCE.getMinecraft().openScreen(colorSettingScreen);
         };
     }
 

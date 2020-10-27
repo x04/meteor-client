@@ -1,9 +1,9 @@
 package minegame159.meteorclient.settings;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.gui.screens.settings.EntityTypeListSettingScreen;
 import minegame159.meteorclient.gui.widgets.WButton;
 import minegame159.meteorclient.utils.EntityUtils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -26,7 +26,7 @@ public class EntityTypeListSetting extends Setting<List<EntityType<?>>> {
         value = new ArrayList<>(defaultValue);
         
         widget = new WButton("Select");
-        ((WButton) widget).action = () -> MinecraftClient.getInstance().openScreen(new EntityTypeListSettingScreen(this));
+        ((WButton) widget).action = () -> Meteor.INSTANCE.getMinecraft().openScreen(new EntityTypeListSettingScreen(this));
     }
 
     @Override

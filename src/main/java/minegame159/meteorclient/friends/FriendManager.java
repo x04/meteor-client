@@ -1,6 +1,6 @@
 package minegame159.meteorclient.friends;
 
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.utils.Color;
 import minegame159.meteorclient.utils.NbtUtils;
@@ -22,13 +22,13 @@ public class FriendManager extends Savable<FriendManager> implements Iterable<Fr
     private List<Friend> friends = new ArrayList<>();
 
     private FriendManager() {
-        super(new File(MeteorClient.FOLDER, "friends.nbt"));
+        super(new File(Meteor.INSTANCE.getFolder(), "friends.nbt"));
     }
 
     public boolean add(Friend friend) {
         if (!friends.contains(friend)) {
             friends.add(friend);
-            MeteorClient.EVENT_BUS.post(EventStore.friendListChangedEvent());
+            Meteor.INSTANCE.getEventBus().post(EventStore.friendListChangedEvent());
             save();
             return true;
         }
@@ -80,7 +80,7 @@ public class FriendManager extends Savable<FriendManager> implements Iterable<Fr
 
     public boolean remove(Friend friend) {
         if (friends.remove(friend)) {
-            MeteorClient.EVENT_BUS.post(EventStore.friendListChangedEvent());
+            Meteor.INSTANCE.getEventBus().post(EventStore.friendListChangedEvent());
             save();
             return true;
         }

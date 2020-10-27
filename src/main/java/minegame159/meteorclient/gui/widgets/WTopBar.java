@@ -1,5 +1,6 @@
 package minegame159.meteorclient.gui.widgets;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.gui.GuiConfig;
 import minegame159.meteorclient.gui.renderer.GuiRenderer;
 import minegame159.meteorclient.gui.renderer.Region;
@@ -36,10 +37,10 @@ public class WTopBar extends WTable {
 
         @Override
         protected void onAction(int button) {
-            Screen screen = MinecraftClient.getInstance().currentScreen;
+            Screen screen = Meteor.INSTANCE.getMinecraft().currentScreen;
 
             if (!(screen instanceof TopBarScreen) || ((TopBarScreen) screen).type != type) {
-                MinecraftClient mc = MinecraftClient.getInstance();
+                MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
 
                 double mouseX = mc.mouse.getX();
                 double mouseY = mc.mouse.getY();
@@ -57,7 +58,7 @@ public class WTopBar extends WTable {
             if (pressed) color = GuiConfig.INSTANCE.backgroundPressed;
             else if (mouseOver) color = GuiConfig.INSTANCE.backgroundHovered;
 
-            Screen screen = MinecraftClient.getInstance().currentScreen;
+            Screen screen = Meteor.INSTANCE.getMinecraft().currentScreen;
             if (screen instanceof TopBarScreen && ((TopBarScreen) screen).type == type) color = GuiConfig.INSTANCE.backgroundPressed;
 
             renderer.quad(Region.FULL, x, y, width, height, color);

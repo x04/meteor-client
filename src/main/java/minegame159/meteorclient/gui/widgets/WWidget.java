@@ -1,7 +1,7 @@
 package minegame159.meteorclient.gui.widgets;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.gui.renderer.GuiRenderer;
-import net.minecraft.client.MinecraftClient;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -52,7 +52,7 @@ public abstract class WWidget {
 
     public void move(double deltaX, double deltaY, boolean callMouseMoved) {
         move(this, deltaX, deltaY, callMouseMoved);
-        if (callMouseMoved) mouseMoved(MinecraftClient.getInstance().mouse.getX(), MinecraftClient.getInstance().mouse.getY());
+        if (callMouseMoved) mouseMoved(Meteor.INSTANCE.getMinecraft().mouse.getX(), Meteor.INSTANCE.getMinecraft().mouse.getY());
     }
     protected void move(WWidget widget, double deltaX, double deltaY, boolean callMouseMoved) {
         widget.x += deltaX;
@@ -116,7 +116,7 @@ public abstract class WWidget {
         if (mouseOver) mouseOverTimer += delta / 20.0;
         onRender(renderer, mouseX, mouseY, delta);
         for (Cell<?> cell : cells) {
-            if (cell.widget.y > MinecraftClient.getInstance().getWindow().getFramebufferHeight()) break;
+            if (cell.widget.y > Meteor.INSTANCE.getMinecraft().getWindow().getFramebufferHeight()) break;
             onRenderWidget(cell.getWidget(), renderer, mouseX, mouseY, delta);
         }
         if (mouseOver && mouseOverTimer >= 1 && tooltip != null) renderer.tooltip = tooltip;

@@ -1,6 +1,6 @@
 package minegame159.meteorclient.mixin;
 
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.events.PlaySoundEvent;
 import net.minecraft.client.sound.SoundInstance;
@@ -15,7 +15,7 @@ public class SoundSystemMixin {
     @Inject(method = "play(Lnet/minecraft/client/sound/SoundInstance;)V", at = @At("HEAD"), cancellable = true)
     private void onPlay(SoundInstance soundInstance, CallbackInfo info) {
         PlaySoundEvent event = EventStore.playSoundEvent(soundInstance);
-        MeteorClient.EVENT_BUS.post(event);
+        Meteor.INSTANCE.getEventBus().post(event);
 
         if (event.isCancelled()) info.cancel();
     }

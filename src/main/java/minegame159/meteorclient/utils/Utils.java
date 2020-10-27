@@ -2,6 +2,7 @@ package minegame159.meteorclient.utils;
 
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.gui.GuiConfig;
 import minegame159.meteorclient.mixininterface.IMinecraftClient;
 import minegame159.meteorclient.mixininterface.IMinecraftServer;
@@ -47,8 +48,6 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class Utils {
-    public static MinecraftClient mc;
-
     public static boolean blockRenderingBlockEntitiesInXray;
     public static boolean firstTimeTitleScreen = true;
 
@@ -67,7 +66,7 @@ public class Utils {
     }
 
     public static Dimension getDimension() {
-        switch (MinecraftClient.getInstance().world.getRegistryKey().getValue().getPath()) {
+        switch (Meteor.INSTANCE.getMinecraft().world.getRegistryKey().getValue().getPath()) {
             case "the_nether": return Dimension.Nether;
             case "the_end":    return Dimension.End;
             default:           return Dimension.Overworld;
@@ -94,11 +93,11 @@ public class Utils {
     }
 
     public static double getScaledWindowWidthGui() {
-        return mc.getWindow().getFramebufferWidth() / GuiConfig.INSTANCE.guiScale;
+        return Meteor.INSTANCE.getMinecraft().getWindow().getFramebufferWidth() / GuiConfig.INSTANCE.guiScale;
     }
 
     public static double getScaledWindowHeightGui() {
-        return mc.getWindow().getFramebufferHeight() / GuiConfig.INSTANCE.guiScale;
+        return Meteor.INSTANCE.getMinecraft().getWindow().getFramebufferHeight() / GuiConfig.INSTANCE.guiScale;
     }
 
     public static Object2IntMap<StatusEffect> createStatusEffectMap() {
@@ -159,6 +158,7 @@ public class Utils {
     }
 
     public static String getWorldName() {
+        MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
         if (mc.isInSingleplayer()) {
             // Singleplayer
             File folder = ((IMinecraftServer) mc.getServer()).getSession().getWorldDirectory(mc.world.getRegistryKey());
@@ -238,6 +238,8 @@ public class Utils {
     }
 
     public static boolean place(BlockState blockState, BlockPos blockPos, boolean swingHand, boolean checkFaceVisibility, boolean checkForEntities) {
+        MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
+
         // Calculate eyes pos
         ((IVec3d) eyesPos).set(mc.player.getX(), mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()), mc.player.getZ());
 
@@ -285,10 +287,13 @@ public class Utils {
     }
 
     public static float getNeededYaw(Vec3d vec) {
+        MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
         return mc.player.yaw + MathHelper.wrapDegrees((float) Math.toDegrees(Math.atan2(vec.z - mc.player.getZ(), vec.x - mc.player.getX())) - 90f - mc.player.yaw);
     }
 
     public static float getNeededPitch(Vec3d vec) {
+        MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
+
         double diffX = vec.x - mc.player.getX();
         double diffY = vec.y - (mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()));
         double diffZ = vec.z - mc.player.getZ();
@@ -299,7 +304,7 @@ public class Utils {
     }
 
     public static double distanceToCamera(double x, double y, double z) {
-        Camera camera = mc.gameRenderer.getCamera();
+        Camera camera = Meteor.INSTANCE.getMinecraft().gameRenderer.getCamera();
         return Math.sqrt(camera.getPos().squaredDistanceTo(x, y, z));
     }
     public static double distanceToCamera(Entity entity) {
@@ -307,7 +312,8 @@ public class Utils {
     }
 
     public static boolean canUpdate() {
-        return mc.world != null || mc.player != null;
+        MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
+        return mc != null && mc.world != null && mc.player != null;
     }
 
     public static int random(int min, int max) {
@@ -318,6 +324,7 @@ public class Utils {
     }
 
     public static void sendMessage(String msg, Object... args) {
+        MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
         if (mc.player == null) return;
 
         msg = String.format(msg, args);
@@ -332,10 +339,10 @@ public class Utils {
     }
 
     public static void leftClick() {
-        ((IMinecraftClient) mc).leftClick();
+        ((IMinecraftClient) Meteor.INSTANCE.getMinecraft()).leftClick();
     }
     public static void rightClick() {
-        ((IMinecraftClient) mc).rightClick();
+        ((IMinecraftClient) Meteor.INSTANCE.getMinecraft()).rightClick();
     }
 
     public static Module tryToGetModule(String[] args) {
@@ -370,19 +377,13 @@ public class Utils {
     }
 
     public static int clamp(int value, int min, int max) {
-        if (value < min) return min;
-        if (value > max) return max;
-        return value;
+        return Math.max(min, Math.min(value, max));
     }
     public static float clamp(float value, float min, float max) {
-        if (value < min) return min;
-        if (value > max) return max;
-        return value;
+        return Math.max(min, Math.min(value, max));
     }
     public static double clamp(double value, double min, double max) {
-        if (value < min) return min;
-        if (value > max) return max;
-        return value;
+        return Math.max(min, Math.min(value, max));
     }
 
     public static void addEnchantment(ItemStack itemStack, Enchantment enchantment, int level) {

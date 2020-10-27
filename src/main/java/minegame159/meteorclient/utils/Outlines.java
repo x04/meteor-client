@@ -1,5 +1,6 @@
 package minegame159.meteorclient.utils;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.mixin.WorldRendererAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
@@ -21,7 +22,7 @@ public class Outlines {
 
     public static void load() {
         try {
-            MinecraftClient mc = MinecraftClient.getInstance();
+            MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
 
             if (outlinesShader != null) {
                 outlinesShader.close();
@@ -40,11 +41,11 @@ public class Outlines {
 
     public static void beginRender() {
         outlinesFbo.clear(MinecraftClient.IS_SYSTEM_MAC);
-        MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+        Meteor.INSTANCE.getMinecraft().getFramebuffer().beginWrite(false);
     }
 
     public static void endRender(float tickDelta) {
-        WorldRenderer worldRenderer = MinecraftClient.getInstance().worldRenderer;
+        WorldRenderer worldRenderer = Meteor.INSTANCE.getMinecraft().worldRenderer;
         WorldRendererAccessor wra = (WorldRendererAccessor) worldRenderer;
 
         Framebuffer fbo = worldRenderer.getEntityOutlinesFramebuffer();
@@ -53,11 +54,11 @@ public class Outlines {
         wra.setEntityOutlinesFramebuffer(fbo);
 
         outlinesShader.render(tickDelta);
-        MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+        Meteor.INSTANCE.getMinecraft().getFramebuffer().beginWrite(false);
     }
 
     public static void renderFbo() {
-        MinecraftClient mc = MinecraftClient.getInstance();
+        MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
 
         outlinesFbo.draw(mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight(), false);
     }

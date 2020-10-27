@@ -1,7 +1,7 @@
 package minegame159.meteorclient.utils;
 
 import me.zero.alpine.listener.Listener;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.BlockActivateEvent;
 import minegame159.meteorclient.events.OpenScreenEvent;
 import net.minecraft.block.EnderChestBlock;
@@ -13,15 +13,10 @@ import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.util.collection.DefaultedList;
 
 public class EChestMemory {
-    private static final MinecraftClient MC = MinecraftClient.getInstance();
+    private static final MinecraftClient MC = Meteor.INSTANCE.getMinecraft();
 
     private static int echestOpenedState;
     public static final DefaultedList<ItemStack> ITEMS = DefaultedList.ofSize(27, ItemStack.EMPTY);
-
-    public static void init() {
-        MeteorClient.EVENT_BUS.subscribe(onBlockActivate);
-        MeteorClient.EVENT_BUS.subscribe(onOpenScreenEvent);
-    }
 
     private static final Listener<BlockActivateEvent> onBlockActivate = new Listener<>(event -> {
         if (event.blockState.getBlock() instanceof EnderChestBlock && echestOpenedState == 0) echestOpenedState = 1;
@@ -45,4 +40,9 @@ public class EChestMemory {
 
         echestOpenedState = 0;
     });
+
+    static {
+        Meteor.INSTANCE.getEventBus().subscribe(onBlockActivate);
+        Meteor.INSTANCE.getEventBus().subscribe(onOpenScreenEvent);
+    }
 }

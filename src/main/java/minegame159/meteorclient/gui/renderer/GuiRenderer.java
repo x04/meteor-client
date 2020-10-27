@@ -2,7 +2,7 @@ package minegame159.meteorclient.gui.renderer;
 
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.gui.GuiConfig;
 import minegame159.meteorclient.gui.widgets.WWidget;
 import minegame159.meteorclient.rendering.MeshBuilder;
@@ -39,7 +39,7 @@ public class GuiRenderer {
         mb.begin(GL11.GL_TRIANGLES, VertexFormats.POSITION_COLOR_TEXTURE);
 
         if (root) {
-            Window window = MinecraftClient.getInstance().getWindow();
+            Window window = Meteor.INSTANCE.getMinecraft().getWindow();
             beginScissor(0, 0, window.getFramebufferWidth(), window.getFramebufferHeight(), false);
         }
     }
@@ -48,18 +48,18 @@ public class GuiRenderer {
     }
 
     public void end(boolean root) {
-        double mouseX = MinecraftClient.getInstance().mouse.getX();
-        double mouseY = MinecraftClient.getInstance().mouse.getY();
+        double mouseX = Meteor.INSTANCE.getMinecraft().mouse.getX();
+        double mouseY = Meteor.INSTANCE.getMinecraft().mouse.getY();
         double tooltipWidth = tooltip != null ? textWidth(tooltip) : 0;
 
         if (root && tooltipWidth > 0) {
             quad(Region.FULL, mouseX + 8, mouseY + 8, tooltipWidth + 8, textHeight() + 8, GuiConfig.INSTANCE.background);
         }
 
-        MinecraftClient.getInstance().getTextureManager().bindTexture(TEXTURE);
+        Meteor.INSTANCE.getMinecraft().getTextureManager().bindTexture(TEXTURE);
         mb.end(true);
 
-        MeteorClient.FONT_GUI.begin();
+        Meteor.INSTANCE.getGuiFont().begin();
         if (root && tooltipWidth > 0) {
             text(tooltip, mouseX + 8 + 4, mouseY + 8 + 4, false, GuiConfig.INSTANCE.text);
         }
@@ -68,7 +68,7 @@ public class GuiRenderer {
             textPool.free(text);
         }
         texts.clear();
-        MeteorClient.FONT_GUI.end();
+        Meteor.INSTANCE.getGuiFont().end();
 
         if (root) endScissor();
 
@@ -183,23 +183,23 @@ public class GuiRenderer {
         texts.add(textPool.get().set(text, x, y, shadow, color, false));
     }
     public double textWidth(String text, int length) {
-        return MeteorClient.FONT_GUI.getWidth(text, length);
+        return Meteor.INSTANCE.getGuiFont().getWidth(text, length);
     }
     public double textWidth(String text) {
-        return MeteorClient.FONT_GUI.getWidth(text);
+        return Meteor.INSTANCE.getGuiFont().getWidth(text);
     }
     public double textHeight() {
-        return MeteorClient.FONT_GUI.getHeight();
+        return Meteor.INSTANCE.getGuiFont().getHeight();
     }
 
     public void title(String text, double x, double y, Color color) {
         texts.add(textPool.get().set(text, x, y, false, color, true));
     }
     public double titleWidth(String text) {
-        return MeteorClient.FONT_GUI_TITLE.getWidth(text);
+        return Meteor.INSTANCE.getGuiTitleFont().getWidth(text);
     }
     public double titleHeight() {
-        return MeteorClient.FONT_GUI_TITLE.getHeight();
+        return Meteor.INSTANCE.getGuiTitleFont().getHeight();
     }
 
     public void post(Runnable task) {
@@ -250,7 +250,7 @@ public class GuiRenderer {
         }
 
         public void apply() {
-            glScissor(x, MinecraftClient.getInstance().getWindow().getFramebufferHeight() - y - height, width, height);
+            glScissor(x, Meteor.INSTANCE.getMinecraft().getWindow().getFramebufferHeight() - y - height, width, height);
         }
     }
 
@@ -273,7 +273,7 @@ public class GuiRenderer {
         }
 
         public void render() {
-            MyFont font = title ? MeteorClient.FONT_GUI_TITLE : MeteorClient.FONT_GUI;
+            MyFont font = title ? Meteor.INSTANCE.getGuiTitleFont() : Meteor.INSTANCE.getGuiFont();
             font.render(text, x, y, color);
         }
     }

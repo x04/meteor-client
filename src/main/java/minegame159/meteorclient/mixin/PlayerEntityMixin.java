@@ -1,6 +1,6 @@
 package minegame159.meteorclient.mixin;
 
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.mixininterface.IPlayerEntity;
 import minegame159.meteorclient.modules.ModuleManager;
@@ -30,7 +30,7 @@ public class PlayerEntityMixin implements IPlayerEntity {
 
     @Inject(method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;", at = @At("HEAD"))
     private void onDropItem(ItemStack stack, boolean bl, boolean bl2, CallbackInfoReturnable<ItemEntity> info) {
-        MeteorClient.EVENT_BUS.post(EventStore.dropItemEvent(stack));
+        Meteor.INSTANCE.getEventBus().post(EventStore.dropItemEvent(stack));
     }
 
     @Override

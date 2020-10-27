@@ -2,7 +2,7 @@ package minegame159.meteorclient.mixin;
 
 import minegame159.meteorclient.CommandDispatcher;
 import minegame159.meteorclient.Config;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.events.SendMessageEvent;
 import minegame159.meteorclient.modules.ModuleManager;
@@ -34,7 +34,7 @@ public abstract class ClientPlayerEntityMixin {
 
         if (!msg.startsWith(Config.INSTANCE.getPrefix()) && !msg.startsWith("/")) {
             SendMessageEvent event = EventStore.sendMessageEvent(msg);
-            MeteorClient.EVENT_BUS.post(event);
+            Meteor.INSTANCE.getEventBus().post(event);
 
             ignoreChatMessage = true;
             sendChatMessage(event.msg);

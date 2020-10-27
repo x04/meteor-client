@@ -1,11 +1,11 @@
 package minegame159.meteorclient.gui.screens.topbar;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.gui.GuiConfig;
 import minegame159.meteorclient.gui.WidgetScreen;
 import minegame159.meteorclient.settings.*;
 import minegame159.meteorclient.utils.AlignmentX;
 import minegame159.meteorclient.utils.Color;
-import net.minecraft.client.MinecraftClient;
 
 public class TopBarGui extends TopBarWindowScreen {
     public TopBarGui() {
@@ -26,8 +26,8 @@ public class TopBarGui extends TopBarWindowScreen {
                 .noSlider()
                 .onChanged(aDouble -> {
                     GuiConfig.INSTANCE.guiScale = aDouble;
-                    if (MinecraftClient.getInstance().currentScreen instanceof WidgetScreen) {
-                        ((WidgetScreen) MinecraftClient.getInstance().currentScreen).root.invalidate();
+                    if (Meteor.INSTANCE.getMinecraft().currentScreen instanceof WidgetScreen) {
+                        ((WidgetScreen) Meteor.INSTANCE.getMinecraft().currentScreen).root.invalidate();
                     }
                 })
                 .onModuleActivated(doubleSetting -> doubleSetting.set(GuiConfig.INSTANCE.guiScale))

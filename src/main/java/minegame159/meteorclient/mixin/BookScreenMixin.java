@@ -1,7 +1,7 @@
 package minegame159.meteorclient.mixin;
 
 import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
-import net.minecraft.client.MinecraftClient;
+import minegame159.meteorclient.Meteor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -50,7 +50,7 @@ public class BookScreenMixin extends Screen {
                 e.printStackTrace();
             }
 
-            GLFW.glfwSetClipboardString(MinecraftClient.getInstance().getWindow().getHandle(), Base64.getEncoder().encodeToString(bytes.array));
+            GLFW.glfwSetClipboardString(Meteor.INSTANCE.getMinecraft().getWindow().getHandle(), Base64.getEncoder().encodeToString(bytes.array));
         }));
     }
 }

@@ -1,13 +1,14 @@
 package minegame159.meteorclient.commands.commands;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.commands.Command;
 import minegame159.meteorclient.utils.Chat;
 import minegame159.meteorclient.utils.InvUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -18,7 +19,7 @@ public class Drop extends Command {
 
     @Override
     public void run(String[] args) {
-        MinecraftClient mc = MinecraftClient.getInstance();
+        MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
 
         if (mc.player.isSpectator()) {
             Chat.error("Can't drop items while in spectator.");

@@ -3,7 +3,7 @@ package minegame159.meteorclient.modules.misc;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listenable;
 import me.zero.alpine.listener.Listener;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.*;
 import minegame159.meteorclient.modules.Category;
 import minegame159.meteorclient.modules.ToggleModule;
@@ -32,7 +32,7 @@ public class Announcer extends ToggleModule {
     public void onActivate() {
         for (Feature feature : features) {
             if (feature.isEnabled()) {
-                MeteorClient.EVENT_BUS.subscribe(feature);
+                Meteor.INSTANCE.getEventBus().subscribe(feature);
                 feature.reset();
             }
         }
@@ -42,7 +42,7 @@ public class Announcer extends ToggleModule {
     public void onDeactivate() {
         for (Feature feature : features) {
             if (feature.isEnabled()) {
-                MeteorClient.EVENT_BUS.unsubscribe(feature);
+                Meteor.INSTANCE.getEventBus().unsubscribe(feature);
             }
         }
     }
@@ -68,10 +68,10 @@ public class Announcer extends ToggleModule {
                     .defaultValue(true)
                     .onChanged(aBoolean -> {
                         if (isActive() && isEnabled()) {
-                            MeteorClient.EVENT_BUS.subscribe(this);
+                            Meteor.INSTANCE.getEventBus().subscribe(this);
                             reset();
                         } else if (isActive() && !isEnabled()) {
-                            MeteorClient.EVENT_BUS.unsubscribe(this);
+                            Meteor.INSTANCE.getEventBus().unsubscribe(this);
                         }
                     })
                     .build()

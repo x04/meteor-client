@@ -1,7 +1,7 @@
 package minegame159.meteorclient.mixin;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.utils.InvUtils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
@@ -37,7 +37,7 @@ public abstract class GenericContainerScreenMixin extends HandledScreen<GenericC
                 }
             }
 
-            if (empty) MinecraftClient.getInstance().player.closeHandledScreen();
+            if (empty) Meteor.INSTANCE.getMinecraft().player.closeHandledScreen();
         }));
 
         // Dump

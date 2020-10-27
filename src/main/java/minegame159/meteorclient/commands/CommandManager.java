@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 public class CommandManager {
     private static final List<Command> commands = new ArrayList<>();
 
-    public static void init() {
+    static {
         addCommand(new Bind());
         addCommand(new ClearChat());
         addCommand(new Commands());

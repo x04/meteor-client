@@ -1,7 +1,7 @@
 package minegame159.meteorclient.modules;
 
 import minegame159.meteorclient.Config;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.settings.Setting;
 import minegame159.meteorclient.settings.SettingGroup;
@@ -24,7 +24,7 @@ public abstract class ToggleModule extends Module {
         if (!active) {
             active = true;
             ModuleManager.INSTANCE.addActive(this);
-            MeteorClient.EVENT_BUS.subscribe(this);
+            Meteor.INSTANCE.getEventBus().subscribe(this);
 
             for (SettingGroup sg : settings) {
                 for (Setting setting : sg) {
@@ -37,7 +37,7 @@ public abstract class ToggleModule extends Module {
         else {
             active = false;
             ModuleManager.INSTANCE.removeActive(this);
-            MeteorClient.EVENT_BUS.unsubscribe(this);
+            Meteor.INSTANCE.getEventBus().unsubscribe(this);
             if (onActivateDeactivate) onDeactivate();
         }
     }
@@ -77,7 +77,7 @@ public abstract class ToggleModule extends Module {
 
     public void setVisible(boolean visible) {
         this.visible = visible;
-        MeteorClient.EVENT_BUS.post(EventStore.moduleVisibilityChangedEvent(this));
+        Meteor.INSTANCE.getEventBus().post(EventStore.moduleVisibilityChangedEvent(this));
     }
 
     public boolean isVisible() {

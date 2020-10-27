@@ -1,6 +1,6 @@
 package minegame159.meteorclient.mixin;
 
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.modules.ModuleManager;
 import minegame159.meteorclient.modules.movement.NoSlow;
@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class EntityMixin {
     @Redirect(method = "setVelocityClient", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setVelocity(DDD)V"))
     private void setVelocityClientEntiySetVelocityProxy(Entity entity, double x, double y, double z) {
-        if ((Object) this != MinecraftClient.getInstance().player) {
+        if ((Object) this != Meteor.INSTANCE.getMinecraft().player) {
             entity.setVelocity(x, y, z);
             return;
         }
@@ -39,7 +39,7 @@ public abstract class EntityMixin {
 
     @Redirect(method = "addVelocity", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;add(DDD)Lnet/minecraft/util/math/Vec3d;"))
     private Vec3d addVelocityVec3dAddProxy(Vec3d vec3d, double x, double y, double z) {
-        if ((Object) this != MinecraftClient.getInstance().player) return vec3d.add(x, y, z);
+        if ((Object) this != Meteor.INSTANCE.getMinecraft().player) return vec3d.add(x, y, z);
 
         Velocity velocity = ModuleManager.INSTANCE.get(Velocity.class);
         return vec3d.add(x * velocity.getHorizontal(), y * velocity.getVertical(), z * velocity.getHorizontal());
@@ -47,9 +47,9 @@ public abstract class EntityMixin {
 
     @Inject(method = "move", at = @At("HEAD"))
     private void onMove(MovementType type, Vec3d movement, CallbackInfo info) {
-        if ((Object) this != MinecraftClient.getInstance().player) return;
+        if ((Object) this != Meteor.INSTANCE.getMinecraft().player) return;
 
-        MeteorClient.EVENT_BUS.post(EventStore.playerMoveEvent(type, movement));
+        Meteor.INSTANCE.getEventBus().post(EventStore.playerMoveEvent(type, movement));
     }
 
     @Inject(method = "getTeamColorValue", at = @At("HEAD"), cancellable = true)

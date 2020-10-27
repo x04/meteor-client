@@ -1,8 +1,8 @@
 package minegame159.meteorclient.commands.commands;
 
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.commands.Command;
 import minegame159.meteorclient.utils.Chat;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 
 public class VClip extends Command {
@@ -19,7 +19,7 @@ public class VClip extends Command {
 
         try {
             double blocks = Double.parseDouble(args[0]);
-            ClientPlayerEntity player = MinecraftClient.getInstance().player;
+            ClientPlayerEntity player = Meteor.INSTANCE.getMinecraft().player;
 
             player.updatePosition(player.getX(), player.getY() + blocks, player.getZ());
         } catch (NumberFormatException ignored) {

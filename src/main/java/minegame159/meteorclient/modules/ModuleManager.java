@@ -4,7 +4,7 @@ import me.zero.alpine.event.EventPriority;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listenable;
 import me.zero.alpine.listener.Listener;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.events.GameDisconnectedEvent;
 import minegame159.meteorclient.events.GameJoinedEvent;
@@ -32,7 +32,7 @@ import java.util.*;
 
 public class ModuleManager extends Savable<ModuleManager> implements Listenable {
     public static final Category[] CATEGORIES = { Category.Combat, Category.Player, Category.Movement, Category.Render, Category.Misc };
-    public static ModuleManager INSTANCE;
+    public static ModuleManager INSTANCE = new ModuleManager();
 
     private final Map<Class<? extends Module>, Module> modules = new HashMap<>();
     private final Map<Category, List<Module>> groups = new HashMap<>();
@@ -43,8 +43,10 @@ public class ModuleManager extends Savable<ModuleManager> implements Listenable 
     public boolean onKeyOnlyBinding = false;
 
     public ModuleManager() {
-        super(new File(MeteorClient.FOLDER, "modules.nbt"));
+        super(new File(Meteor.INSTANCE.getFolder(), "modules.nbt"));
+    }
 
+    public void init() {
         initCombat();
         initPlayer();
         initMovement();
@@ -55,7 +57,7 @@ public class ModuleManager extends Savable<ModuleManager> implements Listenable 
             modules.sort(Comparator.comparing(o -> o.title));
         }
 
-        MeteorClient.EVENT_BUS.subscribe(this);
+        Meteor.INSTANCE.getEventBus().subscribe(this);
     }
 
     public <T extends Module> T get(Class<T> klass) {
@@ -127,7 +129,7 @@ public class ModuleManager extends Savable<ModuleManager> implements Listenable 
         synchronized (active) {
             if (!active.contains(module)) {
                 active.add(module);
-                MeteorClient.EVENT_BUS.post(EventStore.activeModulesChangedEvent());
+                Meteor.INSTANCE.getEventBus().post(EventStore.activeModulesChangedEvent());
             }
         }
     }
@@ -135,7 +137,7 @@ public class ModuleManager extends Savable<ModuleManager> implements Listenable 
     void removeActive(ToggleModule module) {
         synchronized (active) {
             if (active.remove(module)) {
-                MeteorClient.EVENT_BUS.post(EventStore.activeModulesChangedEvent());
+                Meteor.INSTANCE.getEventBus().post(EventStore.activeModulesChangedEvent());
             }
         }
     }
@@ -154,7 +156,7 @@ public class ModuleManager extends Savable<ModuleManager> implements Listenable 
         }
 
         // Find module bound to that key
-        if (!onKeyOnlyBinding && MinecraftClient.getInstance().currentScreen == null) {
+        if (!onKeyOnlyBinding && Meteor.INSTANCE.getMinecraft().currentScreen == null) {
             for (Module module : modules.values()) {
                 if (module.getKey() == event.key && (event.action == KeyAction.Press || module.toggleOnKeyRelease)) {
                     module.doAction();

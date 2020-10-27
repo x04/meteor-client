@@ -1,10 +1,8 @@
 package minegame159.meteorclient.modules.combat;
 
-//Updated by squidoodly 24/04/2020
-//Updated by squidoodly 19/06/2020
-
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.TickEvent;
 import minegame159.meteorclient.friends.FriendManager;
 import minegame159.meteorclient.modules.Category;
@@ -68,7 +66,7 @@ public class AutoTotem extends ToggleModule {
     private int totemCount;
     private String totemCountString = "0";
 
-    private final MinecraftClient mc = MinecraftClient.getInstance();
+    private final MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
 
     private boolean locked = false;
 

@@ -2,7 +2,7 @@ package minegame159.meteorclient.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.zero.alpine.listener.Listenable;
-import minegame159.meteorclient.MeteorClient;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.gui.renderer.GuiDebugRenderer;
 import minegame159.meteorclient.gui.renderer.GuiRenderer;
 import minegame159.meteorclient.gui.widgets.Cell;
@@ -33,7 +33,7 @@ public abstract class WidgetScreen extends Screen implements Listenable {
     public WidgetScreen(String title) {
         super(new LiteralText(title));
 
-        this.parent = MinecraftClient.getInstance().currentScreen;
+        this.parent = Meteor.INSTANCE.getMinecraft().currentScreen;
         this.root = new WFullScreenRoot();
 
         this.prePostKeyEvents = GuiKeyEvents.postKeyEvents;
@@ -49,7 +49,7 @@ public abstract class WidgetScreen extends Screen implements Listenable {
 
     @Override
     protected void init() {
-        MeteorClient.EVENT_BUS.subscribe(this);
+        Meteor.INSTANCE.getEventBus().subscribe(this);
 
         if (firstInit) {
             firstInit = false;
@@ -71,7 +71,7 @@ public abstract class WidgetScreen extends Screen implements Listenable {
     public void mouseMoved(double mouseX, double mouseY) {
         if (locked) return;
 
-        double s = MinecraftClient.getInstance().getWindow().getScaleFactor();
+        double s = Meteor.INSTANCE.getMinecraft().getWindow().getScaleFactor();
 
         mouseX *= s;
         mouseY *= s;
@@ -139,7 +139,7 @@ public abstract class WidgetScreen extends Screen implements Listenable {
         // Apply projection without scaling
         RenderSystem.matrixMode(5889);
         RenderSystem.loadIdentity();
-        RenderSystem.ortho(0.0D, MinecraftClient.getInstance().getWindow().getFramebufferWidth(), MinecraftClient.getInstance().getWindow().getFramebufferHeight(), 0.0D, 1000.0D, 3000.0D);
+        RenderSystem.ortho(0.0D, Meteor.INSTANCE.getMinecraft().getWindow().getFramebufferWidth(), Meteor.INSTANCE.getMinecraft().getWindow().getFramebufferHeight(), 0.0D, 1000.0D, 3000.0D);
         RenderSystem.matrixMode(5888);
         RenderSystem.loadIdentity();
         RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
@@ -156,7 +156,7 @@ public abstract class WidgetScreen extends Screen implements Listenable {
         // Apply back original scaled projection
         RenderSystem.matrixMode(5889);
         RenderSystem.loadIdentity();
-        RenderSystem.ortho(0.0D, MinecraftClient.getInstance().getWindow().getFramebufferWidth() / MinecraftClient.getInstance().getWindow().getScaleFactor(), MinecraftClient.getInstance().getWindow().getFramebufferHeight() / MinecraftClient.getInstance().getWindow().getScaleFactor(), 0.0D, 1000.0D, 3000.0D);
+        RenderSystem.ortho(0.0D, Meteor.INSTANCE.getMinecraft().getWindow().getFramebufferWidth() / Meteor.INSTANCE.getMinecraft().getWindow().getScaleFactor(), Meteor.INSTANCE.getMinecraft().getWindow().getFramebufferHeight() / Meteor.INSTANCE.getMinecraft().getWindow().getScaleFactor(), 0.0D, 1000.0D, 3000.0D);
         RenderSystem.matrixMode(5888);
         RenderSystem.loadIdentity();
         RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
@@ -172,9 +172,9 @@ public abstract class WidgetScreen extends Screen implements Listenable {
     public void onClose() {
         if (locked) return;
 
-        MeteorClient.EVENT_BUS.unsubscribe(this);
+        Meteor.INSTANCE.getEventBus().unsubscribe(this);
         GuiKeyEvents.postKeyEvents = prePostKeyEvents;
-        MinecraftClient.getInstance().openScreen(parent);
+        Meteor.INSTANCE.getMinecraft().openScreen(parent);
     }
 
     @Override
@@ -197,8 +197,8 @@ public abstract class WidgetScreen extends Screen implements Listenable {
 
         @Override
         protected void onCalculateSize(GuiRenderer renderer) {
-            width = MinecraftClient.getInstance().getWindow().getFramebufferWidth();
-            height = MinecraftClient.getInstance().getWindow().getFramebufferHeight();
+            width = Meteor.INSTANCE.getMinecraft().getWindow().getFramebufferWidth();
+            height = Meteor.INSTANCE.getMinecraft().getWindow().getFramebufferHeight();
         }
 
         @Override
@@ -208,7 +208,7 @@ public abstract class WidgetScreen extends Screen implements Listenable {
                 calculateWidgetPositions();
 
                 valid = true;
-                mouseMoved(MinecraftClient.getInstance().mouse.getX(), MinecraftClient.getInstance().mouse.getY());
+                mouseMoved(Meteor.INSTANCE.getMinecraft().mouse.getX(), Meteor.INSTANCE.getMinecraft().mouse.getY());
             }
         }
     }

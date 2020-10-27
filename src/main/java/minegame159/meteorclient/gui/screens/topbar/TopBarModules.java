@@ -1,12 +1,12 @@
 package minegame159.meteorclient.gui.screens.topbar;
 
 import minegame159.meteorclient.Config;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.gui.GuiConfig;
-import minegame159.meteorclient.modules.Category;
-import minegame159.meteorclient.modules.ModuleManager;
 import minegame159.meteorclient.gui.renderer.GuiRenderer;
 import minegame159.meteorclient.gui.widgets.*;
-import net.minecraft.client.MinecraftClient;
+import minegame159.meteorclient.modules.Category;
+import minegame159.meteorclient.modules.ModuleManager;
 
 public class TopBarModules extends TopBarScreen {
     public static boolean MOVED;
@@ -56,8 +56,8 @@ public class TopBarModules extends TopBarScreen {
                 cell.width = cell.getWidget().width;
                 cell.height = cell.getWidget().height;
 
-                double screenWidth = MinecraftClient.getInstance().getWindow().getFramebufferWidth();
-                double screenHeight = MinecraftClient.getInstance().getWindow().getFramebufferHeight();
+                double screenWidth = Meteor.INSTANCE.getMinecraft().getWindow().getFramebufferWidth();
+                double screenHeight = Meteor.INSTANCE.getMinecraft().getWindow().getFramebufferHeight();
 
                 GuiConfig.WindowConfig config = GuiConfig.INSTANCE.getWindowConfig(((WWindow) cell.getWidget()).type);
                 if (config.getX() != -1) {

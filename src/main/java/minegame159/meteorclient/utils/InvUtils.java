@@ -1,5 +1,6 @@
 package minegame159.meteorclient.utils;
 
+import minegame159.meteorclient.Meteor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -9,7 +10,7 @@ import java.util.function.Predicate;
 
 public class InvUtils {
     public static final int OFFHAND_SLOT = 45;
-    private static final MinecraftClient mc = MinecraftClient.getInstance();
+    private static final MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
 
     private static FindItemResult findItemResult = new FindItemResult();
 

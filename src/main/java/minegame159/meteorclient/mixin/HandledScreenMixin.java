@@ -1,6 +1,7 @@
 package minegame159.meteorclient.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.modules.ModuleManager;
 import minegame159.meteorclient.modules.misc.EChestPreview;
 import minegame159.meteorclient.modules.player.MountBypass;
@@ -52,7 +53,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Inject(method = "init", at = @At("TAIL"))
     private void onInit(CallbackInfo info) {
-        mc = MinecraftClient.getInstance();
+        mc = Meteor.INSTANCE.getMinecraft();
 
         // Dooop
         if (mc.player.getVehicle() instanceof AbstractDonkeyEntity) {
