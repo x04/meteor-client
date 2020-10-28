@@ -215,7 +215,9 @@ public class EventStore {
         return damageEvent;
     }
 
-    public static RightClickEvent rightClickEvent(){return rightClickEvent;}
+    public static RightClickEvent rightClickEvent() {
+        return rightClickEvent;
+    }
 
     public static ContainerSlotUpdateEvent containerSlotUpdateEvent(ScreenHandlerSlotUpdateS2CPacket packet) {
         containerSlotUpdateEvent.packet = packet;

@@ -4,10 +4,10 @@ import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.CharTypedEvent;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.events.KeyEvent;
-import minegame159.meteorclient.mixininterface.IKeyBinding;
-import minegame159.meteorclient.modules.ModuleManager;
 import minegame159.meteorclient.gui.GuiKeyEvents;
 import minegame159.meteorclient.gui.WidgetScreen;
+import minegame159.meteorclient.mixininterface.IKeyBinding;
+import minegame159.meteorclient.modules.ModuleManager;
 import minegame159.meteorclient.utils.Input;
 import minegame159.meteorclient.utils.KeyAction;
 import minegame159.meteorclient.utils.KeyBinds;
@@ -25,7 +25,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Keyboard.class)
 public abstract class KeyboardMixin {
-    @Shadow @Final private MinecraftClient client;
+    @Shadow
+    @Final
+    private MinecraftClient client;
 
     @Inject(method = "onKey", at = @At("HEAD"), cancellable = true)
     public void onKey(long window, int key, int scancode, int i, int j, CallbackInfo info) {
@@ -34,7 +36,7 @@ public abstract class KeyboardMixin {
                 ((WidgetScreen) client.currentScreen).keyRepeated(key, j);
             }
 
-            if (GuiKeyEvents.postKeyEvents()){
+            if (GuiKeyEvents.postKeyEvents()) {
                 Input.setKeyState(key, i != GLFW.GLFW_RELEASE);
 
                 KeyBinding shulkerPeek = KeyBinds.SHULKER_PEEK;
@@ -56,7 +58,9 @@ public abstract class KeyboardMixin {
                     KeyEvent event = EventStore.keyEvent(key, KeyAction.get(i));
                     Meteor.INSTANCE.getEventBus().post(event);
 
-                    if (event.isCancelled()) info.cancel();
+                    if (event.isCancelled()) {
+                        info.cancel();
+                    }
                 }
             }
         }
@@ -68,7 +72,9 @@ public abstract class KeyboardMixin {
             CharTypedEvent event = EventStore.charTypedEvent((char) i);
             Meteor.INSTANCE.getEventBus().post(event);
 
-            if (event.isCancelled()) info.cancel();
+            if (event.isCancelled()) {
+                info.cancel();
+            }
         }
     }
 }

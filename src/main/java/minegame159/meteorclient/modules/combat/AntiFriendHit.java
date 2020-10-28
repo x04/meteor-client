@@ -12,12 +12,13 @@ import minegame159.meteorclient.modules.ToggleModule;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class AntiFriendHit extends ToggleModule {
+    @EventHandler private final Listener<AttackEntityEvent> onAttackEntity = new Listener<>(event -> {
+        if (event.entity instanceof PlayerEntity && ModuleManager.INSTANCE.get(AntiFriendHit.class).isActive() && !FriendManager.INSTANCE.attack((PlayerEntity) event.entity)) {
+            event.cancel();
+        }
+    });
+
     public AntiFriendHit() {
         super(Category.Combat, "anti-friend-hit", "Cancels attacks that hit friends");
     }
-
-    @EventHandler
-    private final Listener<AttackEntityEvent> onAttackEntity = new Listener<>(event -> {
-        if (event.entity instanceof PlayerEntity && ModuleManager.INSTANCE.get(AntiFriendHit.class).isActive() && !FriendManager.INSTANCE.attack((PlayerEntity) event.entity)) event.cancel();
-    });
 }

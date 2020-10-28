@@ -17,7 +17,9 @@ public abstract class FluidBlockMixin extends Block implements FluidDrainable {
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, ShapeContext context) {
-        if (ModuleManager.INSTANCE != null && ModuleManager.INSTANCE.get(Jesus.class).shouldBeSolid()) return VoxelShapes.fullCube();
+        if (ModuleManager.INSTANCE != null && ModuleManager.INSTANCE.get(Jesus.class).shouldBeSolid()) {
+            return VoxelShapes.fullCube();
+        }
         return super.getCollisionShape(state, view, pos, context);
     }
 }

@@ -64,7 +64,9 @@ public class ShulkerBoxBlockMixin {
 
                     List<Pair<Text, Integer>> items = new ArrayList<>(5);
                     for (int i = 0; i < ModuleManager.INSTANCE.get(ShulkerTooltip.class).lines(); i++) {
-                        if (itemCounts.size() == 0) break;
+                        if (itemCounts.size() == 0) {
+                            break;
+                        }
 
                         Text bestItem = null;
                         int mostItem = 0;
@@ -103,7 +105,7 @@ public class ShulkerBoxBlockMixin {
                 }
 
                 if (totalItemStacks - displaysItemStacks > 0) {
-                    tooltip.add((new TranslatableText("container.shulkerBox.more", new Object[]{totalItemStacks - displaysItemStacks})).formatted(Formatting.ITALIC));
+                    tooltip.add((new TranslatableText("container.shulkerBox.more", totalItemStacks - displaysItemStacks)).formatted(Formatting.ITALIC));
                 }
 
                 tooltip.add(new LiteralText(""));

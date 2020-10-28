@@ -22,15 +22,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayerEntity.class)
 public abstract class ClientPlayerEntityMixin {
-    @Shadow @Final public ClientPlayNetworkHandler networkHandler;
-
-    @Shadow public abstract void sendChatMessage(String string);
-
+    @Shadow
+    @Final
+    public ClientPlayNetworkHandler networkHandler;
     private boolean ignoreChatMessage;
+
+    @Shadow
+    public abstract void sendChatMessage(String string);
 
     @Inject(at = @At("HEAD"), method = "sendChatMessage", cancellable = true)
     private void onSendChatMessage(String msg, CallbackInfo info) {
-        if (ignoreChatMessage) return;
+        if (ignoreChatMessage) {
+            return;
+        }
 
         if (!msg.startsWith(Config.INSTANCE.getPrefix()) && !msg.startsWith("/")) {
             SendMessageEvent event = EventStore.sendMessageEvent(msg);
@@ -52,13 +56,17 @@ public abstract class ClientPlayerEntityMixin {
 
     @Redirect(method = "updateNausea", at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;currentScreen:Lnet/minecraft/client/gui/screen/Screen;"))
     private Screen updateNauseaGetCurrentScreenProxy(MinecraftClient client) {
-        if (ModuleManager.INSTANCE.isActive(Portals.class)) return null;
+        if (ModuleManager.INSTANCE.isActive(Portals.class)) {
+            return null;
+        }
         return client.currentScreen;
     }
 
     @Redirect(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;isUsingItem()Z"))
     private boolean proxy_tickMovement_isUsingItem(ClientPlayerEntity player) {
-        if (ModuleManager.INSTANCE.get(NoSlow.class).items()) return false;
+        if (ModuleManager.INSTANCE.get(NoSlow.class).items()) {
+            return false;
+        }
         return player.isUsingItem();
     }
 }

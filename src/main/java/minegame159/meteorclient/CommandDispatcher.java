@@ -32,7 +32,9 @@ public class CommandDispatcher {
 
         if (args.length <= 0) {
             module.doAction();
-            if (module instanceof ToggleModule) ((ToggleModule) module).sendToggledMsg();
+            if (module instanceof ToggleModule) {
+                ((ToggleModule) module).sendToggledMsg();
+            }
         } else {
             // Set or get module setting
             Setting<?> setting = module.settings.get(args[0]);
@@ -50,7 +52,9 @@ public class CommandDispatcher {
                 if (!setting.parse(String.join(" ", args))) {
                     Chat.error("Usage of (highlight)%s (default)is (highlight)%s(default).", setting.name, setting.getUsage());
                 }
-                if (Config.INSTANCE.chatCommandsInfo) Chat.info("Value of (highlight)%s (default)for module (highlight)%s (default)changed to (highlight)%s(default).", setting.title, module.title, setting.get().toString());
+                if (Config.INSTANCE.chatCommandsInfo) {
+                    Chat.info("Value of (highlight)%s (default)for module (highlight)%s (default)changed to (highlight)%s(default).", setting.title, module.title, setting.get().toString());
+                }
             }
         }
     }

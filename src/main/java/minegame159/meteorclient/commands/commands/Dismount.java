@@ -11,7 +11,7 @@ public class Dismount extends Command {
     @Override
     public void run(String[] args) {
         //if (MC.player.hasVehicle()) {
-            MC.getNetworkHandler().sendPacket(new PlayerInputC2SPacket(0, 0, false, true));
+        MC.getNetworkHandler().sendPacket(new PlayerInputC2SPacket(0, 0, false, true));
         //}
     }
 }

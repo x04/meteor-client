@@ -12,7 +12,7 @@ public class InvUtils {
     public static final int OFFHAND_SLOT = 45;
     private static final MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
 
-    private static FindItemResult findItemResult = new FindItemResult();
+    private static final FindItemResult findItemResult = new FindItemResult();
 
     public static void clickSlot(int slot, int button, SlotActionType action) {
         mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, slot, button, action, mc.player);
@@ -26,7 +26,9 @@ public class InvUtils {
             ItemStack itemStack = mc.player.inventory.getStack(i);
 
             if (itemStack.getItem() == item) {
-                if (!findItemResult.found()) findItemResult.slot = i;
+                if (!findItemResult.found()) {
+                    findItemResult.slot = i;
+                }
                 findItemResult.count += itemStack.getCount();
             }
         }
@@ -37,7 +39,9 @@ public class InvUtils {
     public static int findItem(Item item, Predicate<ItemStack> isGood) {
         for (int i = 0; i < mc.player.inventory.size(); i++) {
             ItemStack itemStack = mc.player.inventory.getStack(i);
-            if (itemStack.getItem() == item && isGood.test(itemStack)) return i;
+            if (itemStack.getItem() == item && isGood.test(itemStack)) {
+                return i;
+            }
         }
 
         return -1;
@@ -46,14 +50,18 @@ public class InvUtils {
     public static int findItemInHotbar(Item item, Predicate<ItemStack> isGood) {
         for (int i = 0; i < 9; i++) {
             ItemStack itemStack = mc.player.inventory.getStack(i);
-            if (itemStack.getItem() == item && isGood.test(itemStack)) return i;
+            if (itemStack.getItem() == item && isGood.test(itemStack)) {
+                return i;
+            }
         }
 
         return -1;
     }
 
     public static int invIndexToSlotId(int invIndex) {
-        if (invIndex < 9) return 44 - (8 - invIndex);
+        if (invIndex < 9) {
+            return 44 - (8 - invIndex);
+        }
         return invIndex;
     }
 

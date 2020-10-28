@@ -15,19 +15,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientConnection.class)
 public class ClientConnectionMixin {
+    @Inject(method = "handlePacket", at = @At("HEAD"), cancellable = true)
+    private static <T extends PacketListener> void onHandlePacket(Packet<T> packet, PacketListener listener, CallbackInfo info) {
+        ReceivePacketEvent event = EventStore.receivePacketEvent(packet);
+        Meteor.INSTANCE.getEventBus().post(event);
+
+        if (event.isCancelled()) {
+            info.cancel();
+        }
+    }
+
     @Inject(method = "disconnect", at = @At("HEAD"))
     private void onDisconnect(Text disconnectReason, CallbackInfo info) {
         if (Utils.canUpdate() && !Meteor.INSTANCE.isInGame()) {
             Meteor.INSTANCE.setInGame(false);
             Meteor.INSTANCE.getEventBus().post(EventStore.gameDisconnectedEvent(disconnectReason));
         }
-    }
-
-    @Inject(method = "handlePacket", at = @At("HEAD"), cancellable = true)
-    private static <T extends PacketListener> void onHandlePacket(Packet<T> packet, PacketListener listener, CallbackInfo info) {
-        ReceivePacketEvent event = EventStore.receivePacketEvent(packet);
-        Meteor.INSTANCE.getEventBus().post(event);
-
-        if (event.isCancelled()) info.cancel();
     }
 }

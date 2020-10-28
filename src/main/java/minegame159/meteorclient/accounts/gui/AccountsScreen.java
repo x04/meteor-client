@@ -13,10 +13,31 @@ import minegame159.meteorclient.gui.widgets.WTable;
 import minegame159.meteorclient.utils.MeteorExecutor;
 
 public class AccountsScreen extends WindowScreen {
+    @EventHandler private final Listener<AccountListChangedEvent> onAccountListChanged = new Listener<>(event -> {
+        clear();
+        initWidgets();
+    });
+
     public AccountsScreen() {
         super("Accounts", true);
 
         initWidgets();
+    }
+
+    static void addAccount(WButton add, WidgetScreen screen, Account<?> account) {
+        add.setText("...");
+        screen.locked = true;
+
+        MeteorExecutor.INSTANCE.execute(() -> {
+            if (account.fetchInfo() && account.fetchHead()) {
+                AccountManager.INSTANCE.add(account);
+                screen.locked = false;
+                screen.onClose();
+            }
+
+            add.setText("Add");
+            screen.locked = false;
+        });
     }
 
     void initWidgets() {
@@ -41,27 +62,5 @@ public class AccountsScreen extends WindowScreen {
     private void addButton(WTable t, String text, Runnable action) {
         WButton button = t.add(new WButton(text)).fillX().expandX().getWidget();
         button.action = action;
-    }
-
-    @EventHandler
-    private final Listener<AccountListChangedEvent> onAccountListChanged = new Listener<>(event -> {
-        clear();
-        initWidgets();
-    });
-
-    static void addAccount(WButton add, WidgetScreen screen, Account<?> account) {
-        add.setText("...");
-        screen.locked = true;
-
-        MeteorExecutor.INSTANCE.execute(() -> {
-            if (account.fetchInfo() && account.fetchHead()) {
-                AccountManager.INSTANCE.add(account);
-                screen.locked = false;
-                screen.onClose();
-            }
-
-            add.setText("Add");
-            screen.locked = false;
-        });
     }
 }

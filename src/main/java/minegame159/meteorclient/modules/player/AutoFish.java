@@ -18,78 +18,28 @@ public class AutoFish extends ToggleModule {
     private final SettingGroup sgSplashRangeDetection = settings.createGroup("Splash Sound Range Detection");
 
     // General
-    private final Setting<Boolean> autoCast = sgGeneral.add(new BoolSetting.Builder()
-            .name("auto-cast")
-            .description("Automatically casts when not fishing.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> autoCast = sgGeneral.add(new BoolSetting.Builder().name("auto-cast").description("Automatically casts when not fishing.").defaultValue(true).build());
 
-    private final Setting<Integer> ticksAutoCast = sgGeneral.add(new IntSetting.Builder()
-            .name("ticks-auto-cast")
-            .description("Ticks to wait before auto casting.")
-            .defaultValue(10)
-            .min(0)
-            .sliderMax(60)
-            .build()
-    );
+    private final Setting<Integer> ticksAutoCast = sgGeneral.add(new IntSetting.Builder().name("ticks-auto-cast").description("Ticks to wait before auto casting.").defaultValue(10).min(0).sliderMax(60).build());
 
-    private final Setting<Integer> ticksCatch = sgGeneral.add(new IntSetting.Builder()
-            .name("ticks-catch")
-            .description("Ticks to wait before catching the fish")
-            .defaultValue(6)
-            .min(0)
-            .sliderMax(60)
-            .build()
-    );
+    private final Setting<Integer> ticksCatch = sgGeneral.add(new IntSetting.Builder().name("ticks-catch").description("Ticks to wait before catching the fish").defaultValue(6).min(0).sliderMax(60).build());
 
-    private final Setting<Integer> ticksThrow = sgGeneral.add(new IntSetting.Builder()
-            .name("ticks-throw")
-            .description("Ticks to wait before throwing the bobber.")
-            .defaultValue(14)
-            .min(0)
-            .sliderMax(60)
-            .build()
-    );
+    private final Setting<Integer> ticksThrow = sgGeneral.add(new IntSetting.Builder().name("ticks-throw").description("Ticks to wait before throwing the bobber.").defaultValue(14).min(0).sliderMax(60).build());
 
     // Splash range detection
-    private final Setting<Boolean> splashDetectionRangeEnabled = sgSplashRangeDetection.add(new BoolSetting.Builder()
-            .name("splash-detection-range-enabled")
-            .description("Allows you to use multiple accounts next to each other.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> splashDetectionRangeEnabled = sgSplashRangeDetection.add(new BoolSetting.Builder().name("splash-detection-range-enabled").description("Allows you to use multiple accounts next to each other.").defaultValue(false).build());
 
-    private final Setting<Double> splashDetectionRange = sgSplashRangeDetection.add(new DoubleSetting.Builder()
-            .name("splash-detection-range")
-            .description("Detection range of splash sound. Low values will not work when TPS is low.")
-            .defaultValue(10)
-            .min(0)
-            .build()
-    );
+    private final Setting<Double> splashDetectionRange = sgSplashRangeDetection.add(new DoubleSetting.Builder().name("splash-detection-range").description("Detection range of splash sound. Low values will not work when TPS is low.").defaultValue(10).min(0).build());
 
     private boolean ticksEnabled;
+    @EventHandler private final Listener<KeyEvent> onKey = new Listener<>(event -> {
+        if (mc.options.keyUse.isPressed()) {
+            ticksEnabled = false;
+        }
+    });
     private int ticksToRightClick;
     private int ticksData;
-
-    private int autoCastTimer;
-    private boolean autoCastEnabled;
-
-    private int autoCastCheckTimer;
-
-    public AutoFish() {
-        super(Category.Player, "auto-fish", "Automatically fishes.");
-    }
-
-    @Override
-    public void onActivate() {
-        ticksEnabled = false;
-        autoCastEnabled = false;
-        autoCastCheckTimer = 0;
-    }
-
-    @EventHandler
-    private Listener<PlaySoundPacketEvent> onPlaySoundPacket = new Listener<>(event -> {
+    @EventHandler private final Listener<PlaySoundPacketEvent> onPlaySoundPacket = new Listener<>(event -> {
         PlaySoundS2CPacket p = event.packet;
         FishingBobberEntity b = mc.player.fishHook;
 
@@ -101,9 +51,10 @@ public class AutoFish extends ToggleModule {
             }
         }
     });
-
-    @EventHandler
-    private Listener<TickEvent> onTick = new Listener<>(event -> {
+    private int autoCastTimer;
+    private boolean autoCastEnabled;
+    private int autoCastCheckTimer;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         // Auto cast
         if (autoCastCheckTimer <= 0) {
             autoCastCheckTimer = 30;
@@ -132,8 +83,7 @@ public class AutoFish extends ToggleModule {
                 Utils.rightClick();
                 ticksToRightClick = ticksThrow.get();
                 ticksData = 1;
-            }
-            else if (ticksData == 1) {
+            } else if (ticksData == 1) {
                 Utils.rightClick();
                 ticksEnabled = false;
             }
@@ -142,8 +92,14 @@ public class AutoFish extends ToggleModule {
         ticksToRightClick--;
     });
 
-    @EventHandler
-    private Listener<KeyEvent> onKey = new Listener<>(event -> {
-        if (mc.options.keyUse.isPressed()) ticksEnabled = false;
-    });
+    public AutoFish() {
+        super(Category.Player, "auto-fish", "Automatically fishes.");
+    }
+
+    @Override
+    public void onActivate() {
+        ticksEnabled = false;
+        autoCastEnabled = false;
+        autoCastCheckTimer = 0;
+    }
 }

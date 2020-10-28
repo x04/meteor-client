@@ -42,8 +42,11 @@ public class SoundEventListSetting extends Setting<List<SoundEvent>> {
         for (String value : values) {
             String val = value.trim();
             Identifier id;
-            if (val.contains(":")) id = new Identifier(val);
-            else id = new Identifier("minecraft", val);
+            if (val.contains(":")) {
+                id = new Identifier(val);
+            } else {
+                id = new Identifier("minecraft", val);
+            }
             sounds.add(Registry.SOUND_EVENT.get(id));
         }
 

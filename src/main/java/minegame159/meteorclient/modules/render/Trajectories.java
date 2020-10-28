@@ -25,34 +25,26 @@ import java.util.List;
 
 public class Trajectories extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    
-    private final Setting<Color> color = sgGeneral.add(new ColorSetting.Builder()
-            .name("color")
-            .description("Color.")
-            .defaultValue(new Color(255, 150, 0))
-            .build()
-    );
+
+    private final Setting<Color> color = sgGeneral.add(new ColorSetting.Builder().name("color").description("Color.").defaultValue(new Color(255, 150, 0)).build());
 
     private final Pool<Vec3d> vec3ds = new Pool<>(() -> new Vec3d(0, 0, 0));
     private final List<Vec3d> path = new ArrayList<>();
-
+    private final Color hitQuadColor = new Color();
     private boolean hitQuad, hitQuadHorizontal;
     private double hitQuadX1, hitQuadY1, hitQuadZ1, hitQuadX2, hitQuadY2, hitQuadZ2;
-    private final Color hitQuadColor = new Color();
-
-    public Trajectories() {
-        super(Category.Render, "trajectories", "Displays trajectory of held items.");
-    }
-
-    @EventHandler
-    private final Listener<RenderEvent> onRender = new Listener<>(event -> {
-        if (!Utils.isThrowable(mc.player.getMainHandStack().getItem())) return;
+    @EventHandler private final Listener<RenderEvent> onRender = new Listener<>(event -> {
+        if (!Utils.isThrowable(mc.player.getMainHandStack().getItem())) {
+            return;
+        }
 
         calculatePath(event.tickDelta);
 
         Vec3d lastPoint = null;
         for (Vec3d point : path) {
-            if (lastPoint != null) ShapeBuilder.line(lastPoint.x, lastPoint.y, lastPoint.z, point.x, point.y, point.z, color.get());
+            if (lastPoint != null) {
+                ShapeBuilder.line(lastPoint.x, lastPoint.y, lastPoint.z, point.x, point.y, point.z, color.get());
+            }
             lastPoint = point;
         }
 
@@ -60,14 +52,22 @@ public class Trajectories extends ToggleModule {
             hitQuadColor.set(color.get());
             hitQuadColor.a = 35;
 
-            if (hitQuadHorizontal) ShapeBuilder.quadWithLines(hitQuadX1, hitQuadY1, hitQuadZ1, 0.5, 0.5, hitQuadColor, color.get());
-            else ShapeBuilder.quadWithLinesVertical(hitQuadX1, hitQuadY1, hitQuadZ1, hitQuadX2, hitQuadY2, hitQuadZ2, hitQuadColor, color.get());
+            if (hitQuadHorizontal) {
+                ShapeBuilder.quadWithLines(hitQuadX1, hitQuadY1, hitQuadZ1, 0.5, 0.5, hitQuadColor, color.get());
+            } else {
+                ShapeBuilder.quadWithLinesVertical(hitQuadX1, hitQuadY1, hitQuadZ1, hitQuadX2, hitQuadY2, hitQuadZ2, hitQuadColor, color.get());
+            }
         }
     });
 
+    public Trajectories() {
+        super(Category.Render, "trajectories", "Displays trajectory of held items.");
+    }
+
     private void calculatePath(float tickDelta) {
         // Clear path and target
-        for (Vec3d point : path) vec3ds.free(point);
+        for (Vec3d point : path)
+            vec3ds.free(point);
         path.clear();
 
         Item item = mc.player.getMainHandStack().getItem();
@@ -96,11 +96,13 @@ public class Trajectories extends ToggleModule {
         velocityZ /= velocity;
 
         // Apply bow charge
-        if(item instanceof RangedWeaponItem) {
+        if (item instanceof RangedWeaponItem) {
             float bowPower = (72000 - mc.player.getItemUseTimeLeft()) / 20.0f;
             bowPower = (bowPower * bowPower + bowPower * 2.0f) / 3.0f;
 
-            if(bowPower > 1 || bowPower <= 0.1F) bowPower = 1;
+            if (bowPower > 1 || bowPower <= 0.1F) {
+                bowPower = 1;
+            }
 
             bowPower *= 3F;
             velocityX *= bowPower;
@@ -127,7 +129,9 @@ public class Trajectories extends ToggleModule {
             y += velocityY * 0.1;
             z += velocityZ * 0.1;
 
-            if (y < 0) break;
+            if (y < 0) {
+                break;
+            }
 
             // Apply air friction
             velocityX *= 0.999;
@@ -140,12 +144,16 @@ public class Trajectories extends ToggleModule {
             // Check if chunk is loaded
             int chunkX = (int) (x / 16);
             int chunkZ = (int) (z / 16);
-            if (!mc.world.getChunkManager().isChunkLoaded(chunkX, chunkZ)) break;
+            if (!mc.world.getChunkManager().isChunkLoaded(chunkX, chunkZ)) {
+                break;
+            }
 
             // Check for collision
             RaycastContext context = new RaycastContext(eyesPos, pos, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, mc.player);
             lastHitResult = mc.world.raycast(context);
-            if (lastHitResult.getType() != HitResult.Type.MISS) break;
+            if (lastHitResult.getType() != HitResult.Type.MISS) {
+                break;
+            }
         }
 
         if (lastHitResult != null && lastHitResult.getType() == HitResult.Type.BLOCK) {
@@ -178,14 +186,24 @@ public class Trajectories extends ToggleModule {
                 hitQuadZ2 += 0.25;
                 hitQuadY2 += 0.25;
             }
-        } else hitQuad = false;
+        } else {
+            hitQuad = false;
+        }
     }
 
     private double getProjectileGravity(Item item) {
-        if(item instanceof BowItem || item instanceof CrossbowItem) return 0.05;
-        if(item instanceof PotionItem) return 0.4;
-        if(item instanceof FishingRodItem) return 0.15;
-        if(item instanceof TridentItem) return 0.015;
+        if (item instanceof BowItem || item instanceof CrossbowItem) {
+            return 0.05;
+        }
+        if (item instanceof PotionItem) {
+            return 0.4;
+        }
+        if (item instanceof FishingRodItem) {
+            return 0.15;
+        }
+        if (item instanceof TridentItem) {
+            return 0.015;
+        }
 
         return 0.03;
     }

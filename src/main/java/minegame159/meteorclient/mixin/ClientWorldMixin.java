@@ -28,6 +28,8 @@ public class ClientWorldMixin {
     @Inject(method = "setBlockStateWithoutNeighborUpdates", at = @At("TAIL"))
     private void onSetBlockStateWithoutNeighborUpdates(BlockPos blockPos, BlockState blockState, CallbackInfo info) {
         Search search = ModuleManager.INSTANCE.get(Search.class);
-        if (search.isActive()) search.onBlockUpdate(blockPos, blockState);
+        if (search.isActive()) {
+            search.onBlockUpdate(blockPos, blockState);
+        }
     }
 }

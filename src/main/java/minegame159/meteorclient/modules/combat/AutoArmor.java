@@ -22,9 +22,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.item.Items;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
@@ -32,158 +32,40 @@ import java.util.Iterator;
 import java.util.List;
 
 public class AutoArmor extends ToggleModule {
-    public enum Prot{
-        Protection(Enchantments.PROTECTION),
-        Blast_Protection(Enchantments.BLAST_PROTECTION),
-        Fire_Protection(Enchantments.FIRE_PROTECTION),
-        Projectile_Protection(Enchantments.PROJECTILE_PROTECTION);
-
-        private final Enchantment enchantment;
-
-        Prot(Enchantment enchantment) {
-            this.enchantment = enchantment;
-        }
-    }
-
-    public AutoArmor(){super(Category.Combat, "auto-armor", "Manages your armor for you.");}
-
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
-    private final Setting<Prot> mode = sgGeneral.add(new EnumSetting.Builder<Prot>()
-            .name("prioritize")
-            .description("Which protection to prioritize.")
-            .defaultValue(Prot.Protection)
-            .build()
-    );
-
-    private final Setting<Boolean> pauseInInventory = sgGeneral.add(new BoolSetting.Builder()
-            .name("pause-in-inventory")
-            .description("Stops moving armour when you are in an inventory")
-            .defaultValue(false)
-            .build()
-    );
-
-    private final Setting<Boolean> bProtLegs = sgGeneral.add(new BoolSetting.Builder()
-            .name("blast-protection-leggings")
-            .description("Prioritizes blast protection on leggings")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Boolean> preferMending = sgGeneral.add(new BoolSetting.Builder()
-            .name("prefer-mending")
-            .description("Prefers to equip mending than non mending.")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Integer> weight = sgGeneral.add(new IntSetting.Builder()
-            .name("weight")
-            .description("How preferred mending is.")
-            .defaultValue(2)
-            .min(1)
-            .max(10)
-            .sliderMax(4)
-            .build()
-    );
-
-    private final Setting<List<Enchantment>> avoidEnch = sgGeneral.add(new EnchListSetting.Builder()
-            .name("avoided-enchantments")
-            .description("Enchantments that will only be equipped as a last resort.")
-            .defaultValue(setDefaultValue())
-            .build()
-    );
-
-    private final Setting<Boolean> banBinding = sgGeneral.add(new BoolSetting.Builder()
-            .name("ban-binding")
-            .description("Stops you from putting on any item with Curse of Binding")
-            .defaultValue(false)
-            .build()
-    );
-
-    private final Setting<Boolean> antiBreak = sgGeneral.add(new BoolSetting.Builder()
-            .name("anti-break")
-            .description("Tries to stop your armor getting broken.")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Integer> breakDurability = sgGeneral.add(new IntSetting.Builder()
-            .name("break-durability")
-            .description("The durability damaged armor is swapped.")
-            .defaultValue(10)
-            .max(50)
-            .min(2)
-            .sliderMax(20)
-            .build()
-    );
-
-    private final Setting<Boolean> pause = sgGeneral.add(new BoolSetting.Builder()
-            .name("pause-between-pieces")
-            .description("Pauses between each individual piece being moved.(helps prevent desync)")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
-            .name("delay")
-            .description("The delay between pieces being moved.(helps prevent desync)")
-            .defaultValue(1)
-            .min(0)
-            .max(20)
-            .sliderMax(5)
-            .build()
-    );
-
-    private final Setting<Boolean> boomSwitch = sgGeneral.add(new BoolSetting.Builder()
-            .name("switch-for-explosion")
-            .description("Switches to Blast Protection automatically if you're going to get hit by an explosion")
-            .defaultValue(false)
-            .build()
-    );
-
-    private final Setting<Integer> boomDamage = sgGeneral.add(new IntSetting.Builder()
-            .name("max-explosion-damage")
-            .description("The maximum damage you will take before switching to Blast Protection.")
-            .defaultValue(5)
-            .min(1)
-            .max(18)
-            .sliderMax(10)
-            .build()
-    );
-
-    private final Setting<Integer> switchCooldown = sgGeneral.add(new IntSetting.Builder().name("switch-cooldown")
-            .description("A cooldown before switching from an automatically switched protection to your chosen protection.")
-            .defaultValue(20)
-            .min(0)
-            .max(60)
-            .sliderMax(40)
-            .build()
-    );
-
-    private final Setting<Boolean> ignoreElytra = sgGeneral.add(new BoolSetting.Builder()
-            .name("ignore-elytra")
-            .description("Doesn't replace elytra when you have it equipped.")
-            .defaultValue(false)
-            .build()
-    );
-
+    private final Setting<Prot> mode = sgGeneral.add(new EnumSetting.Builder<Prot>().name("prioritize").description("Which protection to prioritize.").defaultValue(Prot.Protection).build());
+    private final Setting<Boolean> pauseInInventory = sgGeneral.add(new BoolSetting.Builder().name("pause-in-inventory").description("Stops moving armour when you are in an inventory").defaultValue(false).build());
+    private final Setting<Boolean> bProtLegs = sgGeneral.add(new BoolSetting.Builder().name("blast-protection-leggings").description("Prioritizes blast protection on leggings").defaultValue(true).build());
+    private final Setting<Boolean> preferMending = sgGeneral.add(new BoolSetting.Builder().name("prefer-mending").description("Prefers to equip mending than non mending.").defaultValue(true).build());
+    private final Setting<Integer> weight = sgGeneral.add(new IntSetting.Builder().name("weight").description("How preferred mending is.").defaultValue(2).min(1).max(10).sliderMax(4).build());
+    private final Setting<List<Enchantment>> avoidEnch = sgGeneral.add(new EnchListSetting.Builder().name("avoided-enchantments").description("Enchantments that will only be equipped as a last resort.").defaultValue(setDefaultValue()).build());
+    private final Setting<Boolean> banBinding = sgGeneral.add(new BoolSetting.Builder().name("ban-binding").description("Stops you from putting on any item with Curse of Binding").defaultValue(false).build());
+    private final Setting<Boolean> antiBreak = sgGeneral.add(new BoolSetting.Builder().name("anti-break").description("Tries to stop your armor getting broken.").defaultValue(true).build());
+    private final Setting<Integer> breakDurability = sgGeneral.add(new IntSetting.Builder().name("break-durability").description("The durability damaged armor is swapped.").defaultValue(10).max(50).min(2).sliderMax(20).build());
+    private final Setting<Boolean> pause = sgGeneral.add(new BoolSetting.Builder().name("pause-between-pieces").description("Pauses between each individual piece being moved.(helps prevent desync)").defaultValue(true).build());
+    private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder().name("delay").description("The delay between pieces being moved.(helps prevent desync)").defaultValue(1).min(0).max(20).sliderMax(5).build());
+    private final Setting<Boolean> boomSwitch = sgGeneral.add(new BoolSetting.Builder().name("switch-for-explosion").description("Switches to Blast Protection automatically if you're going to get hit by an explosion").defaultValue(false).build());
+    private final Setting<Integer> boomDamage = sgGeneral.add(new IntSetting.Builder().name("max-explosion-damage").description("The maximum damage you will take before switching to Blast Protection.").defaultValue(5).min(1).max(18).sliderMax(10).build());
+    private final Setting<Integer> switchCooldown = sgGeneral.add(new IntSetting.Builder().name("switch-cooldown").description("A cooldown before switching from an automatically switched protection to your chosen protection.").defaultValue(20).min(0).max(60).sliderMax(40).build());
+    private final Setting<Boolean> ignoreElytra = sgGeneral.add(new BoolSetting.Builder().name("ignore-elytra").description("Doesn't replace elytra when you have it equipped.").defaultValue(false).build());
     private int delayLeft = delay.get();
     private boolean didSkip = false;
     private int currentBest, currentProt, currentBlast, currentFire, currentProj, currentArmour, currentUnbreaking, currentMending = 0;
     private float currentToughness = 0;
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (mc.player.abilities.creativeMode) return;
-        if (pauseInInventory.get() && mc.currentScreen instanceof InventoryScreen) return;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (mc.player.abilities.creativeMode) {
+            return;
+        }
+        if (pauseInInventory.get() && mc.currentScreen instanceof InventoryScreen) {
+            return;
+        }
         if (boomSwitch.get() && mode.get() != Prot.Blast_Protection && explosionNear()) {
             mode.set(Prot.Blast_Protection);
             delayLeft = 0;
             didSkip = true;
         }
         if (delayLeft > 0) {
-            delayLeft --;
+            delayLeft--;
             return;
         } else {
             delayLeft = delay.get();
@@ -205,8 +87,12 @@ public class AutoArmor extends ToggleModule {
             currentToughness = 0;
             currentUnbreaking = 0;
             currentMending = 0;
-            if ((ignoreElytra.get() || ModuleManager.INSTANCE.get(ChestSwap.class).isActive()) && itemStack.getItem() == Items.ELYTRA) continue;
-            if (EnchantmentHelper.hasBindingCurse(itemStack)) continue;
+            if ((ignoreElytra.get() || ModuleManager.INSTANCE.get(ChestSwap.class).isActive()) && itemStack.getItem() == Items.ELYTRA) {
+                continue;
+            }
+            if (EnchantmentHelper.hasBindingCurse(itemStack)) {
+                continue;
+            }
             if (itemStack.getItem() instanceof ArmorItem) {
                 if (a == 1 && bProtLegs.get()) {
                     mode.set(Prot.Blast_Protection);
@@ -217,8 +103,7 @@ public class AutoArmor extends ToggleModule {
             int bestScore = 0;
             for (int i = 0; i < 36; i++) {
                 ItemStack stack = mc.player.inventory.getStack(i);
-                if (stack.getItem() instanceof ArmorItem
-                        && (((ArmorItem) stack.getItem()).getSlotType().getEntitySlotId() == a)) {
+                if (stack.getItem() instanceof ArmorItem && (((ArmorItem) stack.getItem()).getSlotType().getEntitySlotId() == a)) {
                     int temp = getItemScore(stack);
                     if (bestScore < temp) {
                         bestScore = temp;
@@ -230,19 +115,31 @@ public class AutoArmor extends ToggleModule {
                 InvUtils.clickSlot(InvUtils.invIndexToSlotId(bestSlot), 0, SlotActionType.PICKUP);
                 InvUtils.clickSlot(8 - a, 0, SlotActionType.PICKUP);
                 InvUtils.clickSlot(InvUtils.invIndexToSlotId(bestSlot), 0, SlotActionType.PICKUP);
-                if (pause.get()) break;
+                if (pause.get()) {
+                    break;
+                }
             }
             mode.set(preMode);
         }
     });
 
-    private int getItemScore(ItemStack itemStack){
+    public AutoArmor() {
+        super(Category.Combat, "auto-armor", "Manages your armor for you.");
+    }
+
+    private int getItemScore(ItemStack itemStack) {
         int score = 0;
-        if (antiBreak.get() && (itemStack.getMaxDamage() - itemStack.getDamage()) <= breakDurability.get()) return 0;
-        if (banBinding.get() && EnchantmentHelper.hasBindingCurse(itemStack)) return -10;
+        if (antiBreak.get() && (itemStack.getMaxDamage() - itemStack.getDamage()) <= breakDurability.get()) {
+            return 0;
+        }
+        if (banBinding.get() && EnchantmentHelper.hasBindingCurse(itemStack)) {
+            return -10;
+        }
         Iterator<Enchantment> bad = avoidEnch.get().iterator();
         for (Enchantment ench = bad.next(); bad.hasNext(); ench = bad.next()) {
-            if (EnchantmentHelper.getLevel(ench, itemStack) > 0) return 1;
+            if (EnchantmentHelper.getLevel(ench, itemStack) > 0) {
+                return 1;
+            }
         }
         score += 4 * (EnchantmentHelper.getLevel(mode.get().enchantment, itemStack) - currentBest);
         score += 2 * (EnchantmentHelper.getLevel(Enchantments.PROTECTION, itemStack) - currentProt);
@@ -252,7 +149,9 @@ public class AutoArmor extends ToggleModule {
         score += 2 * (((ArmorItem) itemStack.getItem()).getProtection() - currentArmour);
         score += 2 * (((ArmorItem) itemStack.getItem()).method_26353() - currentToughness);
         score += EnchantmentHelper.getLevel(Enchantments.UNBREAKING, itemStack) - currentUnbreaking;
-        if (preferMending.get() && (EnchantmentHelper.getLevel(Enchantments.MENDING, itemStack) - currentMending) > 0) score += weight.get();
+        if (preferMending.get() && (EnchantmentHelper.getLevel(Enchantments.MENDING, itemStack) - currentMending) > 0) {
+            score += weight.get();
+        }
         return score;
     }
 
@@ -290,5 +189,15 @@ public class AutoArmor extends ToggleModule {
         enchs.add(Enchantments.BINDING_CURSE);
         enchs.add(Enchantments.FROST_WALKER);
         return enchs;
+    }
+
+    public enum Prot {
+        Protection(Enchantments.PROTECTION), Blast_Protection(Enchantments.BLAST_PROTECTION), Fire_Protection(Enchantments.FIRE_PROTECTION), Projectile_Protection(Enchantments.PROJECTILE_PROTECTION);
+
+        private final Enchantment enchantment;
+
+        Prot(Enchantment enchantment) {
+            this.enchantment = enchantment;
+        }
     }
 }

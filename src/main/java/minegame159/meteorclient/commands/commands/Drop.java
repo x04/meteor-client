@@ -55,11 +55,14 @@ public class Drop extends Command {
                 break;
             default:
                 Item item = Registry.ITEM.get(new Identifier("minecraft", args[0].toLowerCase()));
-                if (item == Items.AIR) sendErrorMessage();
-                else {
+                if (item == Items.AIR) {
+                    sendErrorMessage();
+                } else {
                     for (int i = 0; i < mc.player.inventory.main.size(); i++) {
                         ItemStack itemStack = mc.player.inventory.main.get(i);
-                        if (itemStack.getItem() == item) InvUtils.clickSlot(InvUtils.invIndexToSlotId(i), 1, SlotActionType.THROW);
+                        if (itemStack.getItem() == item) {
+                            InvUtils.clickSlot(InvUtils.invIndexToSlotId(i), 1, SlotActionType.THROW);
+                        }
                     }
                 }
                 break;

@@ -32,57 +32,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Search extends ToggleModule {
+    private static final BlockPos.Mutable BLOCK_POS = new BlockPos.Mutable();
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
     private final SettingGroup sgTracers = settings.createGroup("Tracers");
-
     private final Long2ObjectArrayMap<MyChunk> chunks = new Long2ObjectArrayMap<>();
+    private final Setting<Color> color = sgGeneral.add(new ColorSetting.Builder().name("color").description("Color.").defaultValue(new Color(0, 255, 200)).build());
 
-    // General
-    private final Setting<List<Block>> blocks = sgGeneral.add(new BlockListSetting.Builder()
-            .name("blocks")
-            .description("Blocks to search for.")
-            .defaultValue(new ArrayList<>(0))
-            .onChanged(blocks1 -> {
-                if (Utils.canUpdate() && isActive()) {
-                    synchronized (chunks) {
-                        for (MyChunk chunk : chunks.values()) chunk.dispose();
-                        chunks.clear();
-                    }
-
-                    searchViewDistance();
-                }
-            })
-            .build()
-    );
-
-    private final Setting<Color> color = sgGeneral.add(new ColorSetting.Builder()
-            .name("color")
-            .description("Color.")
-            .defaultValue(new Color(0, 255, 200))
-            .build()
-    );
-
-    private final Setting<Boolean> fullBlock = sgGeneral.add(new BoolSetting.Builder()
-            .name("full-block")
-            .description("Outlines are rendered as full blocks.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> fullBlock = sgGeneral.add(new BoolSetting.Builder().name("full-block").description("Outlines are rendered as full blocks.").defaultValue(false).build());
 
     // Tracers
-    private final Setting<Boolean> tracersEnabled = sgTracers.add(new BoolSetting.Builder()
-            .name("tracers-enabled")
-            .description("Draw lines to the blocks.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> tracersEnabled = sgTracers.add(new BoolSetting.Builder().name("tracers-enabled").description("Draw lines to the blocks.").defaultValue(false).build());
 
-    private final Setting<Color> tracersColor = sgTracers.add(new ColorSetting.Builder()
-            .name("tracers-color")
-            .description("Tracers color.")
-            .defaultValue(new Color(225, 225, 225))
-            .build()
-    );
+    private final Setting<Color> tracersColor = sgTracers.add(new ColorSetting.Builder().name("tracers-color").description("Tracers color.").defaultValue(new Color(225, 225, 225)).build());
 
     private final Pool<MyBlock> blockPool = new Pool<>(MyBlock::new);
 
@@ -90,9 +51,62 @@ public class Search extends ToggleModule {
     private final LongList toUpdate = new LongArrayList();
 
     private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
-    private Vec3d vec1 = new Vec3d(0, 0, 0);
+    // General
+    private final Setting<List<Block>> blocks = sgGeneral.add(new BlockListSetting.Builder().name("blocks").description("Blocks to search for.").defaultValue(new ArrayList<>(0)).onChanged(blocks1 -> {
+        if (Utils.canUpdate() && isActive()) {
+            synchronized (chunks) {
+                for (MyChunk chunk : chunks.values())
+                    chunk.dispose();
+                chunks.clear();
+            }
 
+            searchViewDistance();
+        }
+    }).build());
+    @EventHandler private final Listener<ChunkDataEvent> onChunkData = new Listener<>(event -> searchChunk(event.chunk, event));
+    private Vec3d vec1 = new Vec3d(0, 0, 0);
+    @EventHandler private final Listener<RenderEvent> onRender = new Listener<>(event -> {
+        vec1 = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(mc.cameraEntity.pitch)).rotateY(-(float) Math.toRadians(mc.cameraEntity.yaw)).add(mc.cameraEntity.getPos());
+
+        synchronized (chunks) {
+            toRemove.clear();
+
+            for (long key : chunks.keySet()) {
+                MyChunk chunk = chunks.get(key);
+                if (chunk.shouldBeDeleted()) {
+                    toRemove.add(key);
+                } else {
+                    chunk.render(event);
+                }
+            }
+
+            for (long key : toRemove) {
+                chunks.remove(key);
+            }
+        }
+    });
     private DimensionType lastDimension;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (lastDimension != mc.world.getDimension()) {
+            synchronized (chunks) {
+                for (MyChunk chunk : chunks.values())
+                    chunk.dispose();
+                chunks.clear();
+            }
+        }
+
+        synchronized (chunks) {
+            for (long key : toUpdate) {
+                MyChunk chunk = chunks.get(key);
+                if (chunk != null) {
+                    chunk.update();
+                }
+            }
+            toUpdate.clear();
+        }
+
+        lastDimension = mc.world.getDimension();
+    });
 
     public Search() {
         super(Category.Render, "search", "Searches for specified blocks.");
@@ -107,7 +121,8 @@ public class Search extends ToggleModule {
 
     @Override
     public void onDeactivate() {
-        for (MyChunk chunk : chunks.values()) chunk.dispose();
+        for (MyChunk chunk : chunks.values())
+            chunk.dispose();
         chunks.clear();
     }
 
@@ -115,13 +130,12 @@ public class Search extends ToggleModule {
         int viewDist = mc.options.viewDistance;
         for (int x = mc.player.chunkX - viewDist; x <= mc.player.chunkX + viewDist; x++) {
             for (int z = mc.player.chunkZ - viewDist; z <= mc.player.chunkZ + viewDist; z++) {
-                if (mc.world.getChunkManager().isChunkLoaded(x, z)) searchChunk(mc.world.getChunk(x, z), null);
+                if (mc.world.getChunkManager().isChunkLoaded(x, z)) {
+                    searchChunk(mc.world.getChunk(x, z), null);
+                }
             }
         }
     }
-
-    @EventHandler
-    private final Listener<ChunkDataEvent> onChunkData = new Listener<>(event -> searchChunk(event.chunk, event));
 
     private void searchChunk(Chunk chunk, ChunkDataEvent event) {
         MeteorExecutor.INSTANCE.execute(() -> {
@@ -133,16 +147,22 @@ public class Search extends ToggleModule {
                     for (int y = 0; y < height; y++) {
                         blockPos.set(x, y, z);
                         BlockState bs = chunk.getBlockState(blockPos);
-                        if (blocks.get().contains(bs.getBlock())) myChunk.add(blockPos, false);
+                        if (blocks.get().contains(bs.getBlock())) {
+                            myChunk.add(blockPos, false);
+                        }
                     }
                 }
             }
 
             synchronized (chunks) {
-                if (myChunk.blocks.size() > 0) chunks.put(chunk.getPos().toLong(), myChunk);
+                if (myChunk.blocks.size() > 0) {
+                    chunks.put(chunk.getPos().toLong(), myChunk);
+                }
             }
 
-            if (event != null) EventStore.returnChunkDataEvent(event);
+            if (event != null) {
+                EventStore.returnChunkDataEvent(event);
+            }
         });
     }
 
@@ -157,57 +177,19 @@ public class Search extends ToggleModule {
                     chunks.computeIfAbsent(key, aLong -> new MyChunk(chunkX, chunkZ)).add(blockPos, true);
                 } else {
                     MyChunk chunk = chunks.get(key);
-                    if (chunk != null) chunk.remove(blockPos);
+                    if (chunk != null) {
+                        chunk.remove(blockPos);
+                    }
                 }
             }
         });
     }
 
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (lastDimension != mc.world.getDimension()) {
-            synchronized (chunks) {
-                for (MyChunk chunk : chunks.values()) chunk.dispose();
-                chunks.clear();
-            }
-        }
-
-        synchronized (chunks) {
-            for (long key : toUpdate) {
-                MyChunk chunk = chunks.get(key);
-                if (chunk != null) chunk.update();
-            }
-            toUpdate.clear();
-        }
-
-        lastDimension = mc.world.getDimension();
-    });
-
-    @EventHandler
-    private final Listener<RenderEvent> onRender = new Listener<>(event -> {
-        vec1 = new Vec3d(0, 0, 1)
-                .rotateX(-(float) Math.toRadians(mc.cameraEntity.pitch))
-                .rotateY(-(float) Math.toRadians(mc.cameraEntity.yaw))
-                .add(mc.cameraEntity.getPos());
-
-        synchronized (chunks) {
-            toRemove.clear();
-            
-            for (long key : chunks.keySet()) {
-                MyChunk chunk = chunks.get(key);
-                if (chunk.shouldBeDeleted()) toRemove.add(key);
-                else chunk.render(event);
-            }
-            
-            for (long key : toRemove) {
-                chunks.remove(key);
-            }
-        }
-    });
-
     private void addToUpdate(int x, int z) {
         long key = ChunkPos.toLong(x, z);
-        if (chunks.containsKey(key) && !toUpdate.contains(key)) toUpdate.add(key);
+        if (chunks.containsKey(key) && !toUpdate.contains(key)) {
+            toUpdate.add(key);
+        }
     }
 
     private class MyChunk {
@@ -222,7 +204,9 @@ public class Search extends ToggleModule {
         public void add(BlockPos blockPos, boolean checkForDuplicates) {
             if (checkForDuplicates) {
                 for (MyBlock block : blocks) {
-                    if (block.equals(blockPos)) return;
+                    if (block.equals(blockPos)) {
+                        return;
+                    }
                 }
             }
 
@@ -252,10 +236,16 @@ public class Search extends ToggleModule {
             double aX = Math.abs(blockPos.getX() + (blockPos.getX() < 0 ? 1 : 0)) % 16;
             double aZ = Math.abs(blockPos.getZ() + (blockPos.getZ() < 0 ? 1 : 0)) % 16;
 
-            if (aX == 15) addToUpdate(x + (blockPos.getX() < 0 ? -1 : 1), z);
-            else if (aX == 0) addToUpdate(x - (blockPos.getX() < 0 ? -1 : 1), z);
-            if (aZ == 15) addToUpdate(x, z + (blockPos.getZ() < 0 ? -1 : 1));
-            else if (aZ == 0) addToUpdate(x, z - (blockPos.getZ() < 0 ? -1 : 1));
+            if (aX == 15) {
+                addToUpdate(x + (blockPos.getX() < 0 ? -1 : 1), z);
+            } else if (aX == 0) {
+                addToUpdate(x - (blockPos.getX() < 0 ? -1 : 1), z);
+            }
+            if (aZ == 15) {
+                addToUpdate(x, z + (blockPos.getZ() < 0 ? -1 : 1));
+            } else if (aZ == 0) {
+                addToUpdate(x, z - (blockPos.getZ() < 0 ? -1 : 1));
+            }
         }
 
         public boolean shouldBeDeleted() {
@@ -264,20 +254,21 @@ public class Search extends ToggleModule {
         }
 
         public void update() {
-            for (MyBlock block : blocks) block.updateNeighbours();
+            for (MyBlock block : blocks)
+                block.updateNeighbours();
         }
 
         public void render(RenderEvent event) {
-            for (MyBlock block : blocks) block.render(event);
+            for (MyBlock block : blocks)
+                block.render(event);
         }
 
         public void dispose() {
-            for (MyBlock block : blocks) blockPool.free(block);
+            for (MyBlock block : blocks)
+                blockPool.free(block);
             blocks.clear();
         }
     }
-
-    private static final BlockPos.Mutable BLOCK_POS = new BlockPos.Mutable();
 
     private class MyBlock {
         private static final int FO = 1 << 1;
@@ -317,25 +308,61 @@ public class Search extends ToggleModule {
         public void updateNeighbours() {
             neighbours = 0;
 
-            if (isBlock(0, 0, 1)) neighbours |= FO;
-            if (isBlock(1, 0, 1)) neighbours |= FO_RI;
-            if (isBlock(1, 0, 0)) neighbours |= RI;
-            if (isBlock(1, 0, -1)) neighbours |= BA_RI;
-            if (isBlock(0, 0, -1)) neighbours |= BA;
-            if (isBlock(-1, 0, -1)) neighbours |= BA_LE;
-            if (isBlock(-1, 0, 0)) neighbours |= LE;
-            if (isBlock(-1, 0, 1)) neighbours |= FO_LE;
+            if (isBlock(0, 0, 1)) {
+                neighbours |= FO;
+            }
+            if (isBlock(1, 0, 1)) {
+                neighbours |= FO_RI;
+            }
+            if (isBlock(1, 0, 0)) {
+                neighbours |= RI;
+            }
+            if (isBlock(1, 0, -1)) {
+                neighbours |= BA_RI;
+            }
+            if (isBlock(0, 0, -1)) {
+                neighbours |= BA;
+            }
+            if (isBlock(-1, 0, -1)) {
+                neighbours |= BA_LE;
+            }
+            if (isBlock(-1, 0, 0)) {
+                neighbours |= LE;
+            }
+            if (isBlock(-1, 0, 1)) {
+                neighbours |= FO_LE;
+            }
 
-            if (isBlock(0, 1, 0)) neighbours |= TO;
-            if (isBlock(0, 1, 1)) neighbours |= TO_FO;
-            if (isBlock(0, 1, -1)) neighbours |= TO_BA;
-            if (isBlock(1, 1, 0)) neighbours |= TO_RI;
-            if (isBlock(-1, 1, 0)) neighbours |= TO_LE;
-            if (isBlock(0, -1, 0)) neighbours |= BO;
-            if (isBlock(0, -1, 1)) neighbours |= BO_FO;
-            if (isBlock(0, -1, -1)) neighbours |= BO_BA;
-            if (isBlock(1, -1, 0)) neighbours |= BO_RI;
-            if (isBlock(-1, -1, 0)) neighbours |= BO_LE;
+            if (isBlock(0, 1, 0)) {
+                neighbours |= TO;
+            }
+            if (isBlock(0, 1, 1)) {
+                neighbours |= TO_FO;
+            }
+            if (isBlock(0, 1, -1)) {
+                neighbours |= TO_BA;
+            }
+            if (isBlock(1, 1, 0)) {
+                neighbours |= TO_RI;
+            }
+            if (isBlock(-1, 1, 0)) {
+                neighbours |= TO_LE;
+            }
+            if (isBlock(0, -1, 0)) {
+                neighbours |= BO;
+            }
+            if (isBlock(0, -1, 1)) {
+                neighbours |= BO_FO;
+            }
+            if (isBlock(0, -1, -1)) {
+                neighbours |= BO_BA;
+            }
+            if (isBlock(1, -1, 0)) {
+                neighbours |= BO_RI;
+            }
+            if (isBlock(-1, -1, 0)) {
+                neighbours |= BO_LE;
+            }
         }
 
         private boolean isBlock(double x, double y, double z) {

@@ -50,9 +50,13 @@ public class TheAlteningAccount extends Account<TheAlteningAccount> {
         String encodedTexturesJson = response.getTextures();
         if (encodedTexturesJson != null) {
             ProfileSkinResponse skin = GSON.fromJson(new String(Base64.getDecoder().decode(encodedTexturesJson), StandardCharsets.UTF_8), ProfileSkinResponse.class);
-            if (skin.textures.SKIN != null) skinUrl = skin.textures.SKIN.url;
+            if (skin.textures.SKIN != null) {
+                skinUrl = skin.textures.SKIN.url;
+            }
         }
-        if (skinUrl == null) skinUrl = "https://meteorclient.com/steve.png";
+        if (skinUrl == null) {
+            skinUrl = "https://meteorclient.com/steve.png";
+        }
         return cache.makeHead(skinUrl);
     }
 

@@ -12,20 +12,18 @@ public abstract class WWidget {
 
     public double x, y;
     public double width, height;
-    
-    private double frozenWidth = -1;
-
     public String tooltip;
-
+    public boolean mouseOver;
     protected WWidget parent;
     protected List<Cell<?>> cells = new ArrayList<>();
-
-    public boolean mouseOver;
     protected double mouseOverTimer;
+    private double frozenWidth = -1;
 
     public void invalidate() {
         WWidget root = getRoot();
-        if (root != null) root.invalidate();
+        if (root != null) {
+            root.invalidate();
+        }
     }
 
     public <T extends WWidget> Cell<T> add(T widget) {
@@ -40,7 +38,9 @@ public abstract class WWidget {
     public <T extends WWidget> void remove(T widget) {
         Cell<T> temp = new Cell<>();
         temp.widget = widget;
-        if (cells.remove(temp)) invalidate();
+        if (cells.remove(temp)) {
+            invalidate();
+        }
     }
 
     public void clear() {
@@ -52,8 +52,11 @@ public abstract class WWidget {
 
     public void move(double deltaX, double deltaY, boolean callMouseMoved) {
         move(this, deltaX, deltaY, callMouseMoved);
-        if (callMouseMoved) mouseMoved(Meteor.INSTANCE.getMinecraft().mouse.getX(), Meteor.INSTANCE.getMinecraft().mouse.getY());
+        if (callMouseMoved) {
+            mouseMoved(Meteor.INSTANCE.getMinecraft().mouse.getX(), Meteor.INSTANCE.getMinecraft().mouse.getY());
+        }
     }
+
     protected void move(WWidget widget, double deltaX, double deltaY, boolean callMouseMoved) {
         widget.x += deltaX;
         widget.y += deltaY;
@@ -66,14 +69,16 @@ public abstract class WWidget {
         }
     }
 
-    protected void onMoved(double deltaX, double deltaY, boolean callMouseMoved) {}
+    protected void onMoved(double deltaX, double deltaY, boolean callMouseMoved) {
+    }
 
     public void freezeWidth() {
         frozenWidth = width;
     }
 
     protected void calculateSize(GuiRenderer renderer) {
-        for (Cell cell : cells) cell.widget.calculateSize(renderer);
+        for (Cell cell : cells)
+            cell.widget.calculateSize(renderer);
         onCalculateSize(renderer);
 
         if (frozenWidth != -1) {
@@ -84,6 +89,7 @@ public abstract class WWidget {
         width = Math.round(width);
         height = Math.round(height);
     }
+
     protected void onCalculateSize(GuiRenderer renderer) {
         width = 0;
         height = 0;
@@ -99,8 +105,10 @@ public abstract class WWidget {
         y = Math.round(y);
 
         onCalculateWidgetPositions();
-        for (Cell cell : cells) cell.widget.calculateWidgetPositions();
+        for (Cell cell : cells)
+            cell.widget.calculateWidgetPositions();
     }
+
     protected void onCalculateWidgetPositions() {
         for (Cell<?> cell : cells) {
             cell.x = x + cell.padLeft;
@@ -112,19 +120,30 @@ public abstract class WWidget {
     }
 
     public void render(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
-        if (!visible) return;
-        if (mouseOver) mouseOverTimer += delta / 20.0;
+        if (!visible) {
+            return;
+        }
+        if (mouseOver) {
+            mouseOverTimer += delta / 20.0;
+        }
         onRender(renderer, mouseX, mouseY, delta);
         for (Cell<?> cell : cells) {
-            if (cell.widget.y > Meteor.INSTANCE.getMinecraft().getWindow().getFramebufferHeight()) break;
+            if (cell.widget.y > Meteor.INSTANCE.getMinecraft().getWindow().getFramebufferHeight()) {
+                break;
+            }
             onRenderWidget(cell.getWidget(), renderer, mouseX, mouseY, delta);
         }
-        if (mouseOver && mouseOverTimer >= 1 && tooltip != null) renderer.tooltip = tooltip;
+        if (mouseOver && mouseOverTimer >= 1 && tooltip != null) {
+            renderer.tooltip = tooltip;
+        }
     }
+
     protected void onRenderWidget(WWidget widget, GuiRenderer renderer, double mouseX, double mouseY, double delta) {
         widget.render(renderer, mouseX, mouseY, delta);
     }
-    protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {}
+
+    protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
+    }
 
     public WWidget getRoot() {
         return parent != null ? parent.getRoot() : (this instanceof WRoot ? this : null);
@@ -146,76 +165,114 @@ public abstract class WWidget {
 
     public void mouseMoved(double mouseX, double mouseY) {
         for (Cell<?> cell : cells) {
-            if (propagateEvents(cell.getWidget())) cell.getWidget().mouseMoved(mouseX, mouseY);
+            if (propagateEvents(cell.getWidget())) {
+                cell.getWidget().mouseMoved(mouseX, mouseY);
+            }
         }
         boolean preMouseOver = mouseOver;
         mouseOver = isOver(mouseX, mouseY);
-        if (!preMouseOver && mouseOver) mouseOverTimer = 0;
+        if (!preMouseOver && mouseOver) {
+            mouseOverTimer = 0;
+        }
         onMouseMoved(mouseX, mouseY);
     }
-    protected void onMouseMoved(double mouseX, double mouseY) {}
+
+    protected void onMouseMoved(double mouseX, double mouseY) {
+    }
 
     public boolean mouseClicked(boolean used, int button) {
         try {
             for (Cell<?> cell : cells) {
                 if (propagateEvents(cell.getWidget())) {
-                    if (cell.getWidget().mouseClicked(used, button)) used = true;
+                    if (cell.getWidget().mouseClicked(used, button)) {
+                        used = true;
+                    }
                 }
             }
-        } catch (ConcurrentModificationException ignored) {}
+        } catch (ConcurrentModificationException ignored) {
+        }
         return onMouseClicked(used, button);
     }
-    protected boolean onMouseClicked(boolean used, int button) { return used; }
+
+    protected boolean onMouseClicked(boolean used, int button) {
+        return used;
+    }
 
     public boolean mouseReleased(boolean used, int button) {
         try {
             for (Cell<?> cell : cells) {
                 if (propagateEvents(cell.getWidget())) {
-                    if (cell.getWidget().mouseReleased(used, button)) used = true;
+                    if (cell.getWidget().mouseReleased(used, button)) {
+                        used = true;
+                    }
                 }
             }
-        } catch (ConcurrentModificationException ignored) {}
+        } catch (ConcurrentModificationException ignored) {
+        }
         return onMouseReleased(used, button);
     }
-    protected boolean onMouseReleased(boolean used, int button) { return used; }
+
+    protected boolean onMouseReleased(boolean used, int button) {
+        return used;
+    }
 
     public boolean mouseScrolled(double amount) {
         for (Cell<?> cell : cells) {
             if (propagateEvents(cell.getWidget())) {
-                if (cell.getWidget().mouseScrolled(amount)) return true;
+                if (cell.getWidget().mouseScrolled(amount)) {
+                    return true;
+                }
             }
         }
         return onMouseScrolled(amount);
     }
-    protected boolean onMouseScrolled(double amount) { return false; }
+
+    protected boolean onMouseScrolled(double amount) {
+        return false;
+    }
 
     public boolean keyPressed(int key, int mods) {
         for (Cell<?> cell : cells) {
             if (propagateEvents(cell.getWidget())) {
-                if (cell.getWidget().keyPressed(key, mods)) return true;
+                if (cell.getWidget().keyPressed(key, mods)) {
+                    return true;
+                }
             }
         }
         return onKeyPressed(key, mods);
     }
-    protected boolean onKeyPressed(int key, int mods) { return false; }
+
+    protected boolean onKeyPressed(int key, int mods) {
+        return false;
+    }
 
     public boolean keyRepeated(int key, int mods) {
         for (Cell<?> cell : cells) {
             if (propagateEvents(cell.getWidget())) {
-                if (cell.getWidget().keyRepeated(key, mods)) return true;
+                if (cell.getWidget().keyRepeated(key, mods)) {
+                    return true;
+                }
             }
         }
         return onKeyRepeated(key, mods);
     }
-    protected boolean onKeyRepeated(int key, int mods) { return false; }
+
+    protected boolean onKeyRepeated(int key, int mods) {
+        return false;
+    }
 
     public boolean charTyped(char c, int key) {
         for (Cell<?> cell : cells) {
             if (propagateEvents(cell.getWidget())) {
-                if (cell.getWidget().charTyped(c, key)) return true;
+                if (cell.getWidget().charTyped(c, key)) {
+                    return true;
+                }
             }
         }
         return onCharTyped(c, key);
     }
-    protected boolean onCharTyped(char c, int key) { return false; }
+
+    protected boolean onCharTyped(char c, int key) {
+        return false;
+    }
 }

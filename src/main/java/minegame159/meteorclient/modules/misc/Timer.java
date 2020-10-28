@@ -9,15 +9,7 @@ import minegame159.meteorclient.settings.SettingGroup;
 public class Timer extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Double> speed = sgGeneral.add(new DoubleSetting.Builder()
-            .name("speed")
-            .description("Speed multiplier.")
-            .defaultValue(1)
-            .min(0.1)
-            .sliderMin(0.1)
-            .sliderMax(10)
-            .build()
-    );
+    private final Setting<Double> speed = sgGeneral.add(new DoubleSetting.Builder().name("speed").description("Speed multiplier.").defaultValue(1).min(0.1).sliderMin(0.1).sliderMax(10).build());
 
     public Timer() {
         super(Category.Misc, "timer", "Changes speed of everything. WARNING: Lowering it will slow down your game dramatically.");

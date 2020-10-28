@@ -10,14 +10,10 @@ import java.util.function.Consumer;
 
 public class WSlider extends WWidget {
     private static final double HANDLE_SIZE = 15;
-
-    public Consumer<WSlider> action;
-
-    public double value;
-
     private final double min, max;
     private final double uWidth;
-
+    public Consumer<WSlider> action;
+    public double value;
     private boolean handleMouseOver;
     private boolean dragging;
     private double lastMouseX;
@@ -37,12 +33,16 @@ public class WSlider extends WWidget {
 
     @Override
     protected boolean onMouseClicked(boolean used, int button) {
-        if (used) return false;
+        if (used) {
+            return false;
+        }
 
         if (mouseOver) {
-            double valueWidth = lastMouseX - (x + HANDLE_SIZE/2);
+            double valueWidth = lastMouseX - (x + HANDLE_SIZE / 2);
             value = (valueWidth / (width - HANDLE_SIZE)) * (max - min) + min;
-            if (action != null) action.accept(this);
+            if (action != null) {
+                action.accept(this);
+            }
 
             dragging = true;
             return true;
@@ -62,10 +62,10 @@ public class WSlider extends WWidget {
         double valuePercentage = (value - min) / (max - min);
         double valueWidth = valuePercentage * (width - HANDLE_SIZE);
 
-        double x = this.x + HANDLE_SIZE/2 + valueWidth - height / 2;
-        handleMouseOver =  mouseX >= x && mouseX <= x + height && mouseY >= y && mouseY <= y + height;
+        double x = this.x + HANDLE_SIZE / 2 + valueWidth - height / 2;
+        handleMouseOver = mouseX >= x && mouseX <= x + height && mouseY >= y && mouseY <= y + height;
 
-        boolean mouseOverX = mouseX >= this.x + HANDLE_SIZE/2 && mouseX <= this.x + HANDLE_SIZE/2 + width - HANDLE_SIZE;
+        boolean mouseOverX = mouseX >= this.x + HANDLE_SIZE / 2 && mouseX <= this.x + HANDLE_SIZE / 2 + width - HANDLE_SIZE;
         mouseOver = mouseOverX && mouseY >= this.y && mouseY <= this.y + height;
 
         if (dragging) {
@@ -74,14 +74,20 @@ public class WSlider extends WWidget {
                 valueWidth = Utils.clamp(valueWidth, 0, width - HANDLE_SIZE);
 
                 value = (valueWidth / (width - HANDLE_SIZE)) * (max - min) + min;
-                if (action != null) action.accept(this);
+                if (action != null) {
+                    action.accept(this);
+                }
             } else {
-                if (value > min && mouseX < this.x + HANDLE_SIZE/2) {
+                if (value > min && mouseX < this.x + HANDLE_SIZE / 2) {
                     value = min;
-                    if (action != null) action.accept(this);
-                } else if (value < max && mouseX > this.x + HANDLE_SIZE/2 + width - HANDLE_SIZE) {
+                    if (action != null) {
+                        action.accept(this);
+                    }
+                } else if (value < max && mouseX > this.x + HANDLE_SIZE / 2 + width - HANDLE_SIZE) {
                     value = max;
-                    if (action != null) action.accept(this);
+                    if (action != null) {
+                        action.accept(this);
+                    }
                 }
             }
         }
@@ -95,13 +101,17 @@ public class WSlider extends WWidget {
         double valuePercentage = (value - min) / (max - min);
         double valueWidth = valuePercentage * (width - HANDLE_SIZE);
 
-        renderer.quad(Region.FULL, x + HANDLE_SIZE/2, y + 6, valueWidth, 3, GuiConfig.INSTANCE.sliderLeft);
-        renderer.quad(Region.FULL, x + HANDLE_SIZE/2 + valueWidth, y + 6, width - valueWidth - HANDLE_SIZE, 3, GuiConfig.INSTANCE.sliderRight);
+        renderer.quad(Region.FULL, x + HANDLE_SIZE / 2, y + 6, valueWidth, 3, GuiConfig.INSTANCE.sliderLeft);
+        renderer.quad(Region.FULL, x + HANDLE_SIZE / 2 + valueWidth, y + 6, width - valueWidth - HANDLE_SIZE, 3, GuiConfig.INSTANCE.sliderRight);
 
         Color handleColor;
-        if (dragging) handleColor = GuiConfig.INSTANCE.sliderHandlePressed;
-        else if (handleMouseOver) handleColor = GuiConfig.INSTANCE.sliderHandleHovered;
-        else handleColor = GuiConfig.INSTANCE.sliderHandle;
+        if (dragging) {
+            handleColor = GuiConfig.INSTANCE.sliderHandlePressed;
+        } else if (handleMouseOver) {
+            handleColor = GuiConfig.INSTANCE.sliderHandleHovered;
+        } else {
+            handleColor = GuiConfig.INSTANCE.sliderHandle;
+        }
 
         renderer.quad(Region.CIRCLE, x + valueWidth, y, HANDLE_SIZE, HANDLE_SIZE, handleColor);
     }

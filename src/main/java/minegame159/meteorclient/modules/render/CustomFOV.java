@@ -12,16 +12,18 @@ import minegame159.meteorclient.settings.SettingGroup;
 public class CustomFOV extends ToggleModule {
     private final SettingGroup sgGeneral = settings.createGroup("General");
 
-    private final Setting<Integer> fov = sgGeneral.add(new IntSetting.Builder()
-            .name("fov")
-            .description("Custom FOV.")
-            .defaultValue(100)
-            .sliderMin(1)
-            .sliderMax(179)
-            .build()
-    );
-
+    private final Setting<Integer> fov = sgGeneral.add(new IntSetting.Builder().name("fov").description("Custom FOV.").defaultValue(100).sliderMin(1).sliderMax(179).build());
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (fov.get() != mc.options.fov) {
+            getFOV();
+        }
+    });
     private float _fov;
+
+
+    public CustomFOV() {
+        super(Category.Render, "custom-fov", "Changes your fov.");
+    }
 
     @Override
     public void onActivate() {
@@ -29,25 +31,13 @@ public class CustomFOV extends ToggleModule {
         mc.options.fov = fov.get();
     }
 
-
     public void getFOV() {
         mc.options.fov = fov.get();
     }
 
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (fov.get() != mc.options.fov) {
-            getFOV();
-        }
-    });
-
     @Override
     public void onDeactivate() {
-     mc.options.fov = _fov;
-    }
-
-    public CustomFOV() {
-        super(Category.Render, "custom-fov", "Changes your fov.");
+        mc.options.fov = _fov;
     }
 
 }

@@ -5,9 +5,8 @@ import minegame159.meteorclient.gui.renderer.GuiRenderer;
 import minegame159.meteorclient.utils.Color;
 
 public class WTitle extends WWidget {
-    public Color color;
-
     private final String text;
+    public Color color;
 
     public WTitle(String text) {
         this.text = text;

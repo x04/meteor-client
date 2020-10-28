@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class EnchListSetting extends Setting<List<Enchantment>>{
-    public EnchListSetting(String name, String description, List<Enchantment> defaultValue, Consumer<List<Enchantment>> onChanged, Consumer<Setting<List<Enchantment>>> onModuleActivated){
+public class EnchListSetting extends Setting<List<Enchantment>> {
+    public EnchListSetting(String name, String description, List<Enchantment> defaultValue, Consumer<List<Enchantment>> onChanged, Consumer<Setting<List<Enchantment>>> onModuleActivated) {
         super(name, description, defaultValue, onChanged, onModuleActivated);
 
         value = new ArrayList<>(defaultValue);
@@ -45,11 +45,17 @@ public class EnchListSetting extends Setting<List<Enchantment>>{
             for (String value : values) {
                 String val = value.trim();
                 Identifier id;
-                if (val.contains(":")) id = new Identifier(val);
-                else id = new Identifier("minecraft", val);
-                if (Registry.ENCHANTMENT.containsId(id)) enchs.add(Registry.ENCHANTMENT.get(id));
+                if (val.contains(":")) {
+                    id = new Identifier(val);
+                } else {
+                    id = new Identifier("minecraft", val);
+                }
+                if (Registry.ENCHANTMENT.containsId(id)) {
+                    enchs.add(Registry.ENCHANTMENT.get(id));
+                }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         return enchs;
     }
@@ -60,17 +66,21 @@ public class EnchListSetting extends Setting<List<Enchantment>>{
     }
 
     @Override
-    protected boolean isValueValid(List<Enchantment> value) { return true; }
+    protected boolean isValueValid(List<Enchantment> value) {
+        return true;
+    }
 
     @Override
-    protected String generateUsage() { return "(highlight)enchantment id (default)(sharpness, minecraft:protection, etc)";}
+    protected String generateUsage() {
+        return "(highlight)enchantment id (default)(sharpness, minecraft:protection, etc)";
+    }
 
     @Override
     public CompoundTag toTag() {
         CompoundTag tag = saveGeneral();
 
         ListTag valueTag = new ListTag();
-        for(Enchantment ench : get()) {
+        for (Enchantment ench : get()) {
             try {
                 valueTag.add(StringTag.of(Registry.ENCHANTMENT.getId(ench).toString()));
             } catch (NullPointerException ignored) {

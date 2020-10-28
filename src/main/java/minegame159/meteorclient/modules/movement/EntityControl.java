@@ -12,7 +12,27 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 
 public class EntityControl extends ToggleModule {
-    public EntityControl(){super(Category.Movement, "entity-control", "Lets you control horses, donkeys and mules without a saddle.");}
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        mc.world.getEntities().forEach(entity -> {
+            if (entity instanceof HorseBaseEntity) {
+                ((IHorseBaseEntity) entity).setSaddled(true);
+            }
+        });
+
+        Entity entity = mc.player.getVehicle();
+        if (entity == null) {
+            return;
+        }
+
+        if (entity instanceof HorseBaseEntity) {
+            ((HorseBaseEntity) entity).setAiDisabled(true);
+            ((HorseBaseEntity) entity).setTame(true);
+        }
+    });
+
+    public EntityControl() {
+        super(Category.Movement, "entity-control", "Lets you control horses, donkeys and mules without a saddle.");
+    }
 
     @Override
     public void onDeactivate() {
@@ -22,21 +42,4 @@ public class EntityControl extends ToggleModule {
             }
         });
     }
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        mc.world.getEntities().forEach(entity -> {
-            if (entity instanceof HorseBaseEntity) {
-                ((IHorseBaseEntity) entity).setSaddled(true);
-            }
-        });
-
-        Entity entity = mc.player.getVehicle();
-        if (entity == null) return;
-
-        if (entity instanceof HorseBaseEntity) {
-            ((HorseBaseEntity) entity).setAiDisabled(true);
-            ((HorseBaseEntity) entity).setTame(true);
-        }
-    });
 }

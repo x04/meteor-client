@@ -16,6 +16,8 @@ public class AbstractClientPlayerEntityMixin {
     @Inject(method = "getCapeTexture", at = @At("HEAD"), cancellable = true)
     private void onGetCapeTexture(CallbackInfoReturnable<Identifier> info) {
         Identifier id = Capes.INSTANCE.getCape((PlayerEntity) (Object) this);
-        if (id != null) info.setReturnValue(id);
+        if (id != null) {
+            info.setReturnValue(id);
+        }
     }
 }

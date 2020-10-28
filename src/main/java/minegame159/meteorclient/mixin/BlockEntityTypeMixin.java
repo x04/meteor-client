@@ -11,7 +11,9 @@ import java.util.Set;
 
 @Mixin(BlockEntityType.class)
 public class BlockEntityTypeMixin implements IBlockEntityType {
-    @Shadow @Final private Set<Block> blocks;
+    @Shadow
+    @Final
+    private Set<Block> blocks;
 
     @Override
     public Set<Block> getBlocks() {

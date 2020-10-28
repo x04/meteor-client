@@ -9,7 +9,9 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(MinecraftServer.class)
 public class MinecraftServerMixin implements IMinecraftServer {
-    @Shadow @Final protected LevelStorage.Session session;
+    @Shadow
+    @Final
+    protected LevelStorage.Session session;
 
     @Override
     public LevelStorage.Session getSession() {

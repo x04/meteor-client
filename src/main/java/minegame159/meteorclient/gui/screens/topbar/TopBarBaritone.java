@@ -24,67 +24,27 @@ public class TopBarBaritone extends TopBarWindowScreen {
             Class<? extends baritone.api.Settings> klass = BaritoneAPI.getSettings().getClass();
             for (Field field : klass.getDeclaredFields()) {
                 Object obj = field.get(BaritoneAPI.getSettings());
-                if (!(obj instanceof baritone.api.Settings.Setting)) continue;
+                if (!(obj instanceof baritone.api.Settings.Setting)) {
+                    continue;
+                }
 
                 baritone.api.Settings.Setting setting = (baritone.api.Settings.Setting<?>) obj;
                 Object value = setting.value;
 
                 if (value instanceof Boolean) {
-                    sgBool.add(new BoolSetting.Builder()
-                            .name(setting.getName())
-                            .description(setting.getName())
-                            .defaultValue((boolean) setting.defaultValue)
-                            .onChanged(aBoolean -> setting.value = aBoolean)
-                            .onModuleActivated(booleanSetting -> booleanSetting.set((Boolean) setting.value))
-                            .build()
-                    );
+                    sgBool.add(new BoolSetting.Builder().name(setting.getName()).description(setting.getName()).defaultValue((boolean) setting.defaultValue).onChanged(aBoolean -> setting.value = aBoolean).onModuleActivated(booleanSetting -> booleanSetting.set((Boolean) setting.value)).build());
                 } else if (value instanceof Double) {
-                    sgDouble.add(new DoubleSetting.Builder()
-                            .name(setting.getName())
-                            .description(setting.getName())
-                            .defaultValue((double) setting.defaultValue)
-                            .onChanged(aDouble -> setting.value = aDouble)
-                            .onModuleActivated(doubleSetting -> doubleSetting.set((Double) setting.value))
-                            .build()
-                    );
+                    sgDouble.add(new DoubleSetting.Builder().name(setting.getName()).description(setting.getName()).defaultValue((double) setting.defaultValue).onChanged(aDouble -> setting.value = aDouble).onModuleActivated(doubleSetting -> doubleSetting.set((Double) setting.value)).build());
                 } else if (value instanceof Float) {
-                    sgDouble.add(new DoubleSetting.Builder()
-                            .name(setting.getName())
-                            .description(setting.getName())
-                            .defaultValue(((Float) setting.defaultValue).doubleValue())
-                            .onChanged(aDouble -> setting.value = aDouble.floatValue())
-                            .onModuleActivated(doubleSetting -> doubleSetting.set(((Float) setting.value).doubleValue()))
-                            .build()
-                    );
+                    sgDouble.add(new DoubleSetting.Builder().name(setting.getName()).description(setting.getName()).defaultValue(((Float) setting.defaultValue).doubleValue()).onChanged(aDouble -> setting.value = aDouble.floatValue()).onModuleActivated(doubleSetting -> doubleSetting.set(((Float) setting.value).doubleValue())).build());
                 } else if (value instanceof Integer) {
-                    sgInt.add(new IntSetting.Builder()
-                            .name(setting.getName())
-                            .description(setting.getName())
-                            .defaultValue((int) setting.defaultValue)
-                            .onChanged(integer -> setting.value = integer)
-                            .onModuleActivated(integerSetting -> integerSetting.set((Integer) setting.value))
-                            .build()
-                    );
+                    sgInt.add(new IntSetting.Builder().name(setting.getName()).description(setting.getName()).defaultValue((int) setting.defaultValue).onChanged(integer -> setting.value = integer).onModuleActivated(integerSetting -> integerSetting.set((Integer) setting.value)).build());
                 } else if (value instanceof Long) {
-                    sgInt.add(new IntSetting.Builder()
-                            .name(setting.getName())
-                            .description(setting.getName())
-                            .defaultValue(((Long) setting.defaultValue).intValue())
-                            .onChanged(integer -> setting.value = integer.longValue())
-                            .onModuleActivated(integerSetting -> integerSetting.set(((Long) setting.value).intValue()))
-                            .build()
-                    );
+                    sgInt.add(new IntSetting.Builder().name(setting.getName()).description(setting.getName()).defaultValue(((Long) setting.defaultValue).intValue()).onChanged(integer -> setting.value = integer.longValue()).onModuleActivated(integerSetting -> integerSetting.set(((Long) setting.value).intValue())).build());
                 } else if (value instanceof Color) {
                     Color c = (Color) setting.value;
 
-                    sgColor.add(new ColorSetting.Builder()
-                            .name(setting.getName())
-                            .description(setting.getName())
-                            .defaultValue(new minegame159.meteorclient.utils.Color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()))
-                            .onChanged(color -> setting.value = new Color(color.r, color.g, color.b, color.a))
-                            .onModuleActivated(colorSetting -> colorSetting.set(new minegame159.meteorclient.utils.Color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha())))
-                            .build()
-                    );
+                    sgColor.add(new ColorSetting.Builder().name(setting.getName()).description(setting.getName()).defaultValue(new minegame159.meteorclient.utils.Color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha())).onChanged(color -> setting.value = new Color(color.r, color.g, color.b, color.a)).onModuleActivated(colorSetting -> colorSetting.set(new minegame159.meteorclient.utils.Color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()))).build());
                 }
             }
         } catch (IllegalAccessException e) {

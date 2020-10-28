@@ -20,15 +20,12 @@ import org.lwjgl.glfw.GLFW;
 public abstract class WidgetScreen extends Screen implements Listenable {
     private static final GuiRenderer GUI_RENDERER = new GuiRenderer();
     private static final GuiDebugRenderer GUI_DEBUG_RENDERER = new GuiDebugRenderer();
-
-    public Screen parent;
     public final WWidget root;
-
     private final int prePostKeyEvents;
+    public Screen parent;
+    public boolean locked;
     private boolean firstInit = true;
     private boolean renderDebug = false;
-
-    public boolean locked;
 
     public WidgetScreen(String title) {
         super(new LiteralText(title));
@@ -60,7 +57,9 @@ public abstract class WidgetScreen extends Screen implements Listenable {
     }
 
     private void loopWidget(WWidget widget) {
-        if (widget instanceof WTextBox && ((WTextBox) widget).isFocused()) GuiKeyEvents.setPostKeyEvents(true);
+        if (widget instanceof WTextBox && ((WTextBox) widget).isFocused()) {
+            GuiKeyEvents.setPostKeyEvents(true);
+        }
 
         for (Cell<?> cell : widget.getCells()) {
             loopWidget(cell.getWidget());
@@ -69,7 +68,9 @@ public abstract class WidgetScreen extends Screen implements Listenable {
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        if (locked) return;
+        if (locked) {
+            return;
+        }
 
         double s = Meteor.INSTANCE.getMinecraft().getWindow().getScaleFactor();
 
@@ -81,35 +82,45 @@ public abstract class WidgetScreen extends Screen implements Listenable {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (locked) return false;
+        if (locked) {
+            return false;
+        }
 
         return root.mouseClicked(false, button);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (locked) return false;
+        if (locked) {
+            return false;
+        }
 
         return root.mouseReleased(false, button);
     }
 
     @Override
     public boolean mouseScrolled(double d, double e, double amount) {
-        if (locked) return false;
+        if (locked) {
+            return false;
+        }
 
         return root.mouseScrolled(amount);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (locked) return false;
+        if (locked) {
+            return false;
+        }
 
         return super.keyPressed(keyCode, scanCode, modifiers) || root.keyPressed(keyCode, modifiers);
     }
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (locked) return false;
+        if (locked) {
+            return false;
+        }
 
         if (modifiers == GLFW.GLFW_MOD_CONTROL && keyCode == GLFW.GLFW_KEY_9) {
             renderDebug = !renderDebug;
@@ -120,21 +131,27 @@ public abstract class WidgetScreen extends Screen implements Listenable {
     }
 
     public void keyRepeated(int key, int mods) {
-        if (locked) return;
+        if (locked) {
+            return;
+        }
 
         root.keyRepeated(key, mods);
     }
 
     @Override
     public boolean charTyped(char chr, int keyCode) {
-        if (locked) return false;
+        if (locked) {
+            return false;
+        }
 
         return root.charTyped(chr, keyCode);
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        if (!Utils.canUpdate()) renderBackground(matrices);
+        if (!Utils.canUpdate()) {
+            renderBackground(matrices);
+        }
 
         // Apply projection without scaling
         RenderSystem.matrixMode(5889);
@@ -151,7 +168,9 @@ public abstract class WidgetScreen extends Screen implements Listenable {
         root.render(GUI_RENDERER, mouseX, mouseY, delta);
         GUI_RENDERER.end(true);
 
-        if (renderDebug) GUI_DEBUG_RENDERER.render(root);
+        if (renderDebug) {
+            GUI_DEBUG_RENDERER.render(root);
+        }
 
         // Apply back original scaled projection
         RenderSystem.matrixMode(5889);
@@ -170,7 +189,9 @@ public abstract class WidgetScreen extends Screen implements Listenable {
 
     @Override
     public void onClose() {
-        if (locked) return;
+        if (locked) {
+            return;
+        }
 
         Meteor.INSTANCE.getEventBus().unsubscribe(this);
         GuiKeyEvents.postKeyEvents = prePostKeyEvents;

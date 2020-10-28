@@ -12,6 +12,11 @@ import minegame159.meteorclient.waypoints.gui.EditWaypointScreen;
 import minegame159.meteorclient.waypoints.gui.WWaypoint;
 
 public class TopBarWaypoints extends TopBarWindowScreen {
+    @EventHandler private final Listener<WaypointListChangedEvent> onWaypointListChanged = new Listener<>(event -> {
+        clear();
+        initWidgets();
+    });
+
     public TopBarWaypoints() {
         super(TopBarType.Waypoints);
     }
@@ -30,10 +35,4 @@ public class TopBarWaypoints extends TopBarWindowScreen {
             add.action = () -> Meteor.INSTANCE.getMinecraft().openScreen(new EditWaypointScreen(null));
         }
     }
-
-    @EventHandler
-    private final Listener<WaypointListChangedEvent> onWaypointListChanged = new Listener<>(event -> {
-        clear();
-        initWidgets();
-    });
 }

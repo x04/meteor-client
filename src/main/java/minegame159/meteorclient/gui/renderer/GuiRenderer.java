@@ -9,7 +9,6 @@ import minegame159.meteorclient.rendering.MeshBuilder;
 import minegame159.meteorclient.rendering.MyFont;
 import minegame159.meteorclient.utils.Color;
 import minegame159.meteorclient.utils.Pool;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.util.Window;
@@ -43,6 +42,7 @@ public class GuiRenderer {
             beginScissor(0, 0, window.getFramebufferWidth(), window.getFramebufferHeight(), false);
         }
     }
+
     public void begin() {
         begin(false);
     }
@@ -70,10 +70,13 @@ public class GuiRenderer {
         texts.clear();
         Meteor.INSTANCE.getGuiFont().end();
 
-        if (root) endScissor();
+        if (root) {
+            endScissor();
+        }
 
         tooltip = null;
     }
+
     public void end() {
         end(false);
     }
@@ -82,11 +85,17 @@ public class GuiRenderer {
         if (!scissorStack.isEmpty()) {
             Scissor parent = scissorStack.top();
 
-            if (x < parent.x) x = parent.x;
-            else if (x + width > parent.x + parent.width) width -= (x + width) - (parent.x + parent.width);
+            if (x < parent.x) {
+                x = parent.x;
+            } else if (x + width > parent.x + parent.width) {
+                width -= (x + width) - (parent.x + parent.width);
+            }
 
-            if (y < parent.y) y = parent.y;
-            else if (y + height > parent.y + parent.height) height -= (y + height) - (parent.y + parent.height);
+            if (y < parent.y) {
+                y = parent.y;
+            } else if (y + height > parent.y + parent.height) {
+                height -= (y + height) - (parent.y + parent.height);
+            }
         }
 
         Scissor scissor = scissorPool.get().set(x, y, width, height, changeGlState);
@@ -100,6 +109,7 @@ public class GuiRenderer {
             scissor.apply();
         }
     }
+
     public void beginScissor(double x, double y, double width, double height) {
         beginScissor(x, y, width, height, true);
     }
@@ -131,6 +141,7 @@ public class GuiRenderer {
         mb.pos(x + width, y + height, 0).color(color3).texture(region.x + region.width, region.y + region.height).endVertex();
         mb.pos(x, y + height, 0).color(color4).texture(region.x, region.y + region.height).endVertex();
     }
+
     public void quad(Region region, double x, double y, double width, double height, Color color) {
         quad(region, x, y, width, height, color, color, color, color);
     }
@@ -153,10 +164,11 @@ public class GuiRenderer {
         quad(Region.FULL, widget.x, widget.y + 2, 2, widget.height - 4, outline);
         quad(Region.FULL, widget.x + widget.width - 2, widget.y + 2, 2, widget.height - 4, outline);
     }
+
     public void background(WWidget widget, boolean pressed) {
         background(widget, widget.mouseOver, pressed);
     }
-    
+
     public void triangle(double x, double y, double size, double rotation, Color color) {
         double rad = Math.toRadians(rotation);
         double cos = Math.cos(rad);
@@ -182,12 +194,15 @@ public class GuiRenderer {
     public void text(String text, double x, double y, boolean shadow, Color color) {
         texts.add(textPool.get().set(text, x, y, shadow, color, false));
     }
+
     public double textWidth(String text, int length) {
         return Meteor.INSTANCE.getGuiFont().getWidth(text, length);
     }
+
     public double textWidth(String text) {
         return Meteor.INSTANCE.getGuiFont().getWidth(text);
     }
+
     public double textHeight() {
         return Meteor.INSTANCE.getGuiFont().getHeight();
     }
@@ -195,9 +210,11 @@ public class GuiRenderer {
     public void title(String text, double x, double y, Color color) {
         texts.add(textPool.get().set(text, x, y, false, color, true));
     }
+
     public double titleWidth(String text) {
         return Meteor.INSTANCE.getGuiTitleFont().getWidth(text);
     }
+
     public double titleHeight() {
         return Meteor.INSTANCE.getGuiTitleFont().getHeight();
     }
@@ -241,8 +258,12 @@ public class GuiRenderer {
             this.height = (int) Math.round(height);
             this.changeGlState = changeGlState;
 
-            if (this.width < 0) this.width = 0;
-            if (this.height < 0) this.height = 0;
+            if (this.width < 0) {
+                this.width = 0;
+            }
+            if (this.height < 0) {
+                this.height = 0;
+            }
 
             postTasks.clear();
 

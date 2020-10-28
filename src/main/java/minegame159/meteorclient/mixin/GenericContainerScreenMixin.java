@@ -37,7 +37,9 @@ public abstract class GenericContainerScreenMixin extends HandledScreen<GenericC
                 }
             }
 
-            if (empty) Meteor.INSTANCE.getMinecraft().player.closeHandledScreen();
+            if (empty) {
+                Meteor.INSTANCE.getMinecraft().player.closeHandledScreen();
+            }
         }));
 
         // Dump

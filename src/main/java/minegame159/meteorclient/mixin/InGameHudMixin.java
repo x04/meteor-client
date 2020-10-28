@@ -26,9 +26,12 @@ public abstract class InGameHudMixin {
 
     @Shadow private int scaledHeight;
 
-    @Shadow @Final private MinecraftClient client;
+    @Shadow
+    @Final
+    private MinecraftClient client;
 
-    @Shadow public abstract void clear();
+    @Shadow
+    public abstract void clear();
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;getArmorStack(I)Lnet/minecraft/item/ItemStack;"))
     private void onRender(MatrixStack matrixStack, float tickDelta, CallbackInfo info) {
@@ -53,27 +56,39 @@ public abstract class InGameHudMixin {
 
     @Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)
     private void onRenderStatusEffectOverlay(CallbackInfo info) {
-        if (ModuleManager.INSTANCE.isActive(HUD.class) && ModuleManager.INSTANCE.get(HUD.class).potionTimers.get()) info.cancel();
-        if (ModuleManager.INSTANCE.get(NoRender.class).noPotionIcons()) info.cancel();
+        if (ModuleManager.INSTANCE.isActive(HUD.class) && ModuleManager.INSTANCE.get(HUD.class).potionTimers.get()) {
+            info.cancel();
+        }
+        if (ModuleManager.INSTANCE.get(NoRender.class).noPotionIcons()) {
+            info.cancel();
+        }
     }
 
     @Inject(method = "renderPortalOverlay", at = @At("HEAD"), cancellable = true)
     private void onRenderPortalOverlay(float f, CallbackInfo info) {
-        if (ModuleManager.INSTANCE.get(NoRender.class).noPortalOverlay()) info.cancel();
+        if (ModuleManager.INSTANCE.get(NoRender.class).noPortalOverlay()) {
+            info.cancel();
+        }
     }
 
     @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
     private void onRenderPumpkinOverlay(CallbackInfo info) {
-        if (ModuleManager.INSTANCE.get(NoRender.class).noPumpkinOverlay()) info.cancel();
+        if (ModuleManager.INSTANCE.get(NoRender.class).noPumpkinOverlay()) {
+            info.cancel();
+        }
     }
 
     @Inject(method = "renderVignetteOverlay", at = @At("HEAD"), cancellable = true)
     private void onRenderVignetteOverlay(Entity entity, CallbackInfo info) {
-        if (ModuleManager.INSTANCE.get(NoRender.class).noVignette()) info.cancel();
+        if (ModuleManager.INSTANCE.get(NoRender.class).noVignette()) {
+            info.cancel();
+        }
     }
 
     @Inject(method = "renderScoreboardSidebar", at = @At("HEAD"), cancellable = true)
     private void onRenderScoreboardSidebar(MatrixStack matrixStack, ScoreboardObjective scoreboardObjective, CallbackInfo info) {
-        if (ModuleManager.INSTANCE.get(NoRender.class).noScoreboard()) info.cancel();
+        if (ModuleManager.INSTANCE.get(NoRender.class).noScoreboard()) {
+            info.cancel();
+        }
     }
 }

@@ -15,49 +15,22 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
 
 public class BlockSelection extends ToggleModule {
-    public enum Mode {
-        Lines,
-        Sides,
-        Both
-    }
-
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
-    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>()
-            .name("mode")
-            .description("Rendering mode")
-            .defaultValue(Mode.Lines)
-            .build()
-    );
-
-    private final Setting<Boolean> advanced = sgGeneral.add(new BoolSetting.Builder()
-            .name("advanced")
-            .description("Shows more advanced outline.")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Color> color = sgGeneral.add(new ColorSetting.Builder()
-            .name("color")
-            .description("Color.")
-            .defaultValue(new Color(255, 255, 255))
-            .build()
-    );
-
+    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("mode").description("Rendering mode").defaultValue(Mode.Lines).build());
+    private final Setting<Boolean> advanced = sgGeneral.add(new BoolSetting.Builder().name("advanced").description("Shows more advanced outline.").defaultValue(true).build());
+    private final Setting<Color> color = sgGeneral.add(new ColorSetting.Builder().name("color").description("Color.").defaultValue(new Color(255, 255, 255)).build());
     private final Color sideColor = new Color();
-
-    public BlockSelection() {
-        super(Category.Render, "block-selection", "Modifies your block selection outline.");
-    }
-
-    @EventHandler
-    private final Listener<RenderEvent> onRender = new Listener<>(event -> {
-        if (mc.crosshairTarget == null || !(mc.crosshairTarget instanceof BlockHitResult)) return;
+    @EventHandler private final Listener<RenderEvent> onRender = new Listener<>(event -> {
+        if (mc.crosshairTarget == null || !(mc.crosshairTarget instanceof BlockHitResult)) {
+            return;
+        }
 
         BlockPos pos = ((BlockHitResult) mc.crosshairTarget).getBlockPos();
         BlockState state = mc.world.getBlockState(pos);
         VoxelShape shape = state.getOutlineShape(mc.world, pos);
-        if (shape.isEmpty()) return;
+        if (shape.isEmpty()) {
+            return;
+        }
         Box box = shape.getBoundingBox();
 
         if (advanced.get()) {
@@ -81,8 +54,16 @@ public class BlockSelection extends ToggleModule {
         }
     });
 
+    public BlockSelection() {
+        super(Category.Render, "block-selection", "Modifies your block selection outline.");
+    }
+
     private void setSideColor() {
         sideColor.set(color.get());
         sideColor.a = 30;
+    }
+
+    public enum Mode {
+        Lines, Sides, Both
     }
 }

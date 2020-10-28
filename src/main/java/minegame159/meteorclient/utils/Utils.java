@@ -48,14 +48,13 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class Utils {
-    public static boolean blockRenderingBlockEntitiesInXray;
-    public static boolean firstTimeTitleScreen = true;
-
     private static final Random random = new Random();
     private static final Vec3d eyesPos = new Vec3d(0, 0, 0);
     private static final Vec3d vec1 = new Vec3d(0, 0, 0);
     private static final Vec3d vec2 = new Vec3d(0, 0, 0);
     private static final DecimalFormat df;
+    public static boolean blockRenderingBlockEntitiesInXray;
+    public static boolean firstTimeTitleScreen = true;
 
     static {
         df = new DecimalFormat("0");
@@ -67,9 +66,12 @@ public class Utils {
 
     public static Dimension getDimension() {
         switch (Meteor.INSTANCE.getMinecraft().world.getRegistryKey().getValue().getPath()) {
-            case "the_nether": return Dimension.Nether;
-            case "the_end":    return Dimension.End;
-            default:           return Dimension.Overworld;
+            case "the_nether":
+                return Dimension.Nether;
+            case "the_end":
+                return Dimension.End;
+            default:
+                return Dimension.Overworld;
         }
     }
 
@@ -109,25 +111,63 @@ public class Utils {
     }
 
     public static String getEnchantShortName(Enchantment enchantment) {
-        if (enchantment == Enchantments.FIRE_PROTECTION) return "F Prot";
-        if (enchantment == Enchantments.FEATHER_FALLING) return "Fea Fa";
-        if (enchantment == Enchantments.BLAST_PROTECTION) return "B Prot";
-        if (enchantment == Enchantments.PROJECTILE_PROTECTION) return "P Prot";
-        if (enchantment == Enchantments.AQUA_AFFINITY) return "Aqua A";
-        if (enchantment == Enchantments.THORNS) return "Thorns";
-        if (enchantment == Enchantments.DEPTH_STRIDER) return "Depth S";
-        if (enchantment == Enchantments.FROST_WALKER) return "Frost W";
-        if (enchantment == Enchantments.BINDING_CURSE) return "Curse B";
-        if (enchantment == Enchantments.SMITE) return "Smite";
-        if (enchantment == Enchantments.BANE_OF_ARTHROPODS) return "Bane A";
-        if (enchantment == Enchantments.FIRE_ASPECT) return "Fire A";
-        if (enchantment == Enchantments.SILK_TOUCH) return "Silk T";
-        if (enchantment == Enchantments.POWER) return "Power";
-        if (enchantment == Enchantments.PUNCH) return "Punch";
-        if (enchantment == Enchantments.FLAME) return "Flame";
-        if (enchantment == Enchantments.LUCK_OF_THE_SEA) return "Luck S";
-        if (enchantment == Enchantments.QUICK_CHARGE) return "Quick C";
-        if (enchantment == Enchantments.VANISHING_CURSE) return "Curse V";
+        if (enchantment == Enchantments.FIRE_PROTECTION) {
+            return "F Prot";
+        }
+        if (enchantment == Enchantments.FEATHER_FALLING) {
+            return "Fea Fa";
+        }
+        if (enchantment == Enchantments.BLAST_PROTECTION) {
+            return "B Prot";
+        }
+        if (enchantment == Enchantments.PROJECTILE_PROTECTION) {
+            return "P Prot";
+        }
+        if (enchantment == Enchantments.AQUA_AFFINITY) {
+            return "Aqua A";
+        }
+        if (enchantment == Enchantments.THORNS) {
+            return "Thorns";
+        }
+        if (enchantment == Enchantments.DEPTH_STRIDER) {
+            return "Depth S";
+        }
+        if (enchantment == Enchantments.FROST_WALKER) {
+            return "Frost W";
+        }
+        if (enchantment == Enchantments.BINDING_CURSE) {
+            return "Curse B";
+        }
+        if (enchantment == Enchantments.SMITE) {
+            return "Smite";
+        }
+        if (enchantment == Enchantments.BANE_OF_ARTHROPODS) {
+            return "Bane A";
+        }
+        if (enchantment == Enchantments.FIRE_ASPECT) {
+            return "Fire A";
+        }
+        if (enchantment == Enchantments.SILK_TOUCH) {
+            return "Silk T";
+        }
+        if (enchantment == Enchantments.POWER) {
+            return "Power";
+        }
+        if (enchantment == Enchantments.PUNCH) {
+            return "Punch";
+        }
+        if (enchantment == Enchantments.FLAME) {
+            return "Flame";
+        }
+        if (enchantment == Enchantments.LUCK_OF_THE_SEA) {
+            return "Luck S";
+        }
+        if (enchantment == Enchantments.QUICK_CHARGE) {
+            return "Quick C";
+        }
+        if (enchantment == Enchantments.VANISHING_CURSE) {
+            return "Curse V";
+        }
 
         return enchantment.getName(0).getString().substring(0, 4);
     }
@@ -137,7 +177,9 @@ public class Utils {
         String[] words = filter.split(" ");
 
         for (String word : words) {
-            if (StringUtils.containsIgnoreCase(text, word)) wordsFound++;
+            if (StringUtils.containsIgnoreCase(text, word)) {
+                wordsFound++;
+            }
         }
 
         return wordsFound;
@@ -182,39 +224,71 @@ public class Utils {
 
     public static String getKeyName(int key) {
         switch (key) {
-            case GLFW.GLFW_KEY_UNKNOWN: return "Unknown";
-            case GLFW.GLFW_KEY_ESCAPE: return "Esc";
-            case GLFW.GLFW_KEY_PRINT_SCREEN: return "Print Screen";
-            case GLFW.GLFW_KEY_PAUSE: return "Pause";
-            case GLFW.GLFW_KEY_INSERT: return "Insert";
-            case GLFW.GLFW_KEY_DELETE: return "Delete";
-            case GLFW.GLFW_KEY_HOME: return "Home";
-            case GLFW.GLFW_KEY_PAGE_UP: return "Page Up";
-            case GLFW.GLFW_KEY_PAGE_DOWN: return "Page Down";
-            case GLFW.GLFW_KEY_END: return "End";
-            case GLFW.GLFW_KEY_TAB: return "Tab";
-            case GLFW.GLFW_KEY_LEFT_CONTROL: return "Left Control";
-            case GLFW.GLFW_KEY_RIGHT_CONTROL: return "Right Control";
-            case GLFW.GLFW_KEY_LEFT_ALT: return "Left Alt";
-            case GLFW.GLFW_KEY_RIGHT_ALT: return "Right Alt";
-            case GLFW.GLFW_KEY_LEFT_SHIFT: return "Left Shift";
-            case GLFW.GLFW_KEY_RIGHT_SHIFT: return "Right Shift";
-            case GLFW.GLFW_KEY_UP: return "Arrow Up";
-            case GLFW.GLFW_KEY_DOWN: return "Arrow Down";
-            case GLFW.GLFW_KEY_LEFT: return "Arrow Left";
-            case GLFW.GLFW_KEY_RIGHT: return "Arrow Right";
-            case GLFW.GLFW_KEY_APOSTROPHE: return "Apostrophe";
-            case GLFW.GLFW_KEY_BACKSPACE: return "Backspace";
-            case GLFW.GLFW_KEY_CAPS_LOCK: return "Caps Lock";
-            case GLFW.GLFW_KEY_MENU: return "Menu";
-            case GLFW.GLFW_KEY_LEFT_SUPER: return "Left Super";
-            case GLFW.GLFW_KEY_RIGHT_SUPER: return "Right Super";
-            case GLFW.GLFW_KEY_ENTER: return "Enter";
-            case GLFW.GLFW_KEY_NUM_LOCK: return "Num Lock";
-            case GLFW.GLFW_KEY_SPACE: return "Space";
+            case GLFW.GLFW_KEY_UNKNOWN:
+                return "Unknown";
+            case GLFW.GLFW_KEY_ESCAPE:
+                return "Esc";
+            case GLFW.GLFW_KEY_PRINT_SCREEN:
+                return "Print Screen";
+            case GLFW.GLFW_KEY_PAUSE:
+                return "Pause";
+            case GLFW.GLFW_KEY_INSERT:
+                return "Insert";
+            case GLFW.GLFW_KEY_DELETE:
+                return "Delete";
+            case GLFW.GLFW_KEY_HOME:
+                return "Home";
+            case GLFW.GLFW_KEY_PAGE_UP:
+                return "Page Up";
+            case GLFW.GLFW_KEY_PAGE_DOWN:
+                return "Page Down";
+            case GLFW.GLFW_KEY_END:
+                return "End";
+            case GLFW.GLFW_KEY_TAB:
+                return "Tab";
+            case GLFW.GLFW_KEY_LEFT_CONTROL:
+                return "Left Control";
+            case GLFW.GLFW_KEY_RIGHT_CONTROL:
+                return "Right Control";
+            case GLFW.GLFW_KEY_LEFT_ALT:
+                return "Left Alt";
+            case GLFW.GLFW_KEY_RIGHT_ALT:
+                return "Right Alt";
+            case GLFW.GLFW_KEY_LEFT_SHIFT:
+                return "Left Shift";
+            case GLFW.GLFW_KEY_RIGHT_SHIFT:
+                return "Right Shift";
+            case GLFW.GLFW_KEY_UP:
+                return "Arrow Up";
+            case GLFW.GLFW_KEY_DOWN:
+                return "Arrow Down";
+            case GLFW.GLFW_KEY_LEFT:
+                return "Arrow Left";
+            case GLFW.GLFW_KEY_RIGHT:
+                return "Arrow Right";
+            case GLFW.GLFW_KEY_APOSTROPHE:
+                return "Apostrophe";
+            case GLFW.GLFW_KEY_BACKSPACE:
+                return "Backspace";
+            case GLFW.GLFW_KEY_CAPS_LOCK:
+                return "Caps Lock";
+            case GLFW.GLFW_KEY_MENU:
+                return "Menu";
+            case GLFW.GLFW_KEY_LEFT_SUPER:
+                return "Left Super";
+            case GLFW.GLFW_KEY_RIGHT_SUPER:
+                return "Right Super";
+            case GLFW.GLFW_KEY_ENTER:
+                return "Enter";
+            case GLFW.GLFW_KEY_NUM_LOCK:
+                return "Num Lock";
+            case GLFW.GLFW_KEY_SPACE:
+                return "Space";
             default:
                 String keyName = GLFW.glfwGetKeyName(key, 0);
-                if (keyName == null) return "Unknown";
+                if (keyName == null) {
+                    return "Unknown";
+                }
                 return keyName;
         }
     }
@@ -226,7 +300,8 @@ public class Utils {
 
             byte[] buffer = new byte[256];
             int read;
-            while ((read = in.read(buffer)) > 0) out.write(buffer, 0, read);
+            while ((read = in.read(buffer)) > 0)
+                out.write(buffer, 0, read);
 
             in.close();
             return out.toByteArray();
@@ -244,7 +319,9 @@ public class Utils {
         ((IVec3d) eyesPos).set(mc.player.getX(), mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()), mc.player.getZ());
 
         // Check if current block is replaceable
-        if (!mc.world.getBlockState(blockPos).getMaterial().isReplaceable()) return false;
+        if (!mc.world.getBlockState(blockPos).getMaterial().isReplaceable()) {
+            return false;
+        }
 
         for (Direction side : Direction.values()) {
             BlockPos neighbor = blockPos.offset(side);
@@ -254,34 +331,46 @@ public class Utils {
             if (checkFaceVisibility) {
                 ((IVec3d) vec1).set(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
                 ((IVec3d) vec2).set(neighbor.getX() + 0.5, neighbor.getY() + 0.5, neighbor.getZ() + 0.5);
-                if (eyesPos.squaredDistanceTo(vec1) >= eyesPos.squaredDistanceTo(vec2)) continue;
+                if (eyesPos.squaredDistanceTo(vec1) >= eyesPos.squaredDistanceTo(vec2)) {
+                    continue;
+                }
             }
 
             // Check if neighbor can be right clicked
-            if (mc.world.getBlockState(neighbor).getOutlineShape(mc.world, blockPos) == VoxelShapes.empty()) continue;
+            if (mc.world.getBlockState(neighbor).getOutlineShape(mc.world, blockPos) == VoxelShapes.empty()) {
+                continue;
+            }
 
             // Calculate hit pos
-            ((IVec3d) vec1).set(neighbor.getX() + 0.5 + side2.getVector().getX() * 0.5, neighbor.getY() + 0.5 + side2.getVector().getY()     * 0.5, neighbor.getZ() + 0.5 + side2.getVector().getZ() * 0.5);
+            ((IVec3d) vec1).set(neighbor.getX() + 0.5 + side2.getVector().getX() * 0.5, neighbor.getY() + 0.5 + side2.getVector().getY() * 0.5, neighbor.getZ() + 0.5 + side2.getVector().getZ() * 0.5);
 
             // Check if hitVec is within range (4.25 blocks)
-            if(eyesPos.squaredDistanceTo(vec1) > 18.0625) continue;
+            if (eyesPos.squaredDistanceTo(vec1) > 18.0625) {
+                continue;
+            }
 
             // Check if intersects entities
-            if (checkForEntities && !mc.world.canPlace(blockState, blockPos, ShapeContext.absent())) continue;
+            if (checkForEntities && !mc.world.canPlace(blockState, blockPos, ShapeContext.absent())) {
+                continue;
+            }
 
             // Place block
             PlayerMoveC2SPacket.LookOnly packet = new PlayerMoveC2SPacket.LookOnly(getNeededYaw(vec1), getNeededPitch(vec1), mc.player.isOnGround());
             mc.player.networkHandler.sendPacket(packet);
             mc.interactionManager.interactBlock(mc.player, mc.world, Hand.MAIN_HAND, new BlockHitResult(vec1, side2, neighbor, false));
             mc.interactionManager.interactItem(mc.player, mc.world, Hand.MAIN_HAND);
-            if (swingHand) mc.player.swingHand(Hand.MAIN_HAND);
-            else mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(Hand.MAIN_HAND));
+            if (swingHand) {
+                mc.player.swingHand(Hand.MAIN_HAND);
+            } else {
+                mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(Hand.MAIN_HAND));
+            }
 
             return true;
         }
 
         return false;
     }
+
     public static boolean place(BlockState blockState, BlockPos blockPos) {
         return place(blockState, blockPos, true, true, true);
     }
@@ -307,6 +396,7 @@ public class Utils {
         Camera camera = Meteor.INSTANCE.getMinecraft().gameRenderer.getCamera();
         return Math.sqrt(camera.getPos().squaredDistanceTo(x, y, z));
     }
+
     public static double distanceToCamera(Entity entity) {
         return distanceToCamera(entity.getX(), entity.getY(), entity.getZ());
     }
@@ -319,13 +409,16 @@ public class Utils {
     public static int random(int min, int max) {
         return random.nextInt(max - min) + min;
     }
+
     public static double random(double min, double max) {
         return min + (max - min) * random.nextDouble();
     }
 
     public static void sendMessage(String msg, Object... args) {
         MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
-        if (mc.player == null) return;
+        if (mc.player == null) {
+            return;
+        }
 
         msg = String.format(msg, args);
         msg = msg.replaceAll("#yellow", Formatting.YELLOW.toString());
@@ -341,6 +434,7 @@ public class Utils {
     public static void leftClick() {
         ((IMinecraftClient) Meteor.INSTANCE.getMinecraft()).leftClick();
     }
+
     public static void rightClick() {
         ((IMinecraftClient) Meteor.INSTANCE.getMinecraft()).rightClick();
     }
@@ -367,21 +461,27 @@ public class Utils {
     }
 
     public static String floatToString(float number) {
-        if (number % 1 == 0) return Integer.toString((int) number);
+        if (number % 1 == 0) {
+            return Integer.toString((int) number);
+        }
         return Float.toString(number);
     }
 
     public static String doubleToString(double number) {
-        if (number % 1 == 0) return Integer.toString((int) number);
+        if (number % 1 == 0) {
+            return Integer.toString((int) number);
+        }
         return df.format(number);
     }
 
     public static int clamp(int value, int min, int max) {
         return Math.max(min, Math.min(value, max));
     }
+
     public static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(value, max));
     }
+
     public static double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(value, max));
     }

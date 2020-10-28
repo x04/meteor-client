@@ -21,13 +21,17 @@ public abstract class AbstractFurnaceScreenMixin<T extends AbstractFurnaceScreen
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void onTick(CallbackInfo info) {
-        if (ModuleManager.INSTANCE.isActive(AutoSmelter.class)) ModuleManager.INSTANCE.get(AutoSmelter.class).tick(handler);
+        if (ModuleManager.INSTANCE.isActive(AutoSmelter.class)) {
+            ModuleManager.INSTANCE.get(AutoSmelter.class).tick(handler);
+        }
     }
 
     @Override
     public void onClose() {
         super.onClose();
 
-        if (ModuleManager.INSTANCE.isActive(AutoSmelter.class)) ModuleManager.INSTANCE.get(AutoSmelter.class).onFurnaceClose();
+        if (ModuleManager.INSTANCE.isActive(AutoSmelter.class)) {
+            ModuleManager.INSTANCE.get(AutoSmelter.class).onFurnaceClose();
+        }
     }
 }

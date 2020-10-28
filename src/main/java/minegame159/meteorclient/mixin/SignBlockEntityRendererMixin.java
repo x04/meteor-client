@@ -16,7 +16,9 @@ import java.util.function.Function;
 public class SignBlockEntityRendererMixin {
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/entity/SignBlockEntity;getTextBeingEditedOnRow(ILjava/util/function/Function;)Lnet/minecraft/text/OrderedText;"))
     private OrderedText onRenderSignBlockEntityGetTextBeingEditedOnRowProxy(SignBlockEntity sign, int row, Function<Text, OrderedText> function) {
-        if (ModuleManager.INSTANCE.get(NoRender.class).noSignText()) return null;
+        if (ModuleManager.INSTANCE.get(NoRender.class).noSignText()) {
+            return null;
+        }
         return sign.getTextBeingEditedOnRow(row, function);
     }
 }

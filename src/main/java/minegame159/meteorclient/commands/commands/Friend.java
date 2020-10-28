@@ -1,7 +1,7 @@
 package minegame159.meteorclient.commands.commands;
 
-import minegame159.meteorclient.friends.FriendManager;
 import minegame159.meteorclient.commands.Command;
+import minegame159.meteorclient.friends.FriendManager;
 import minegame159.meteorclient.utils.Chat;
 
 public class Friend extends Command {
@@ -25,7 +25,9 @@ public class Friend extends Command {
 
                 String name = "";
                 for (int i = 1; i < args.length; i++) {
-                    if (i > 1) name += " ";
+                    if (i > 1) {
+                        name += " ";
+                    }
                     name += args[i];
                 }
 
@@ -43,7 +45,9 @@ public class Friend extends Command {
 
                 String name = "";
                 for (int i = 1; i < args.length; i++) {
-                    if (i > 1) name += " ";
+                    if (i > 1) {
+                        name += " ";
+                    }
                     name += args[i];
                 }
 
@@ -62,7 +66,8 @@ public class Friend extends Command {
 
                 break;
             }
-            default: sendErrorWrongSubcommand();
+            default:
+                sendErrorWrongSubcommand();
         }
     }
 

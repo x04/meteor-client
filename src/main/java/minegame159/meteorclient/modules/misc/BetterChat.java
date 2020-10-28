@@ -26,57 +26,23 @@ public class BetterChat extends ToggleModule {
     // Ignore
     private final SettingGroup sgIgnore = settings.createGroup("Ignore");
 
-    private final Setting<Boolean> ignoreEnabled = sgIgnore.add(new BoolSetting.Builder()
-            .name("ignore-enabled")
-            .description("Ignores player defined by .ignore command.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> ignoreEnabled = sgIgnore.add(new BoolSetting.Builder().name("ignore-enabled").description("Ignores player defined by .ignore command.").defaultValue(true).build());
 
     // Anti Spam
     private final SettingGroup sgAntiSpam = settings.createGroup("Anti Spam");
 
-    private final Setting<Boolean> antiSpamEnabled = sgAntiSpam.add(new BoolSetting.Builder()
-            .name("anti-spam-enabled")
-            .description("Enables anti spam.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> antiSpamEnabled = sgAntiSpam.add(new BoolSetting.Builder().name("anti-spam-enabled").description("Enables anti spam.").defaultValue(true).build());
 
-    private final Setting<Integer> antiSpamDepth = sgAntiSpam.add(new IntSetting.Builder()
-            .name("anti-spam-depth")
-            .description("How many messages to check for duplicates.")
-            .defaultValue(4)
-            .min(1)
-            .sliderMin(1)
-            .build()
-    );
+    private final Setting<Integer> antiSpamDepth = sgAntiSpam.add(new IntSetting.Builder().name("anti-spam-depth").description("How many messages to check for duplicates.").defaultValue(4).min(1).sliderMin(1).build());
 
-    private final Setting<Boolean> antiSpamMoveToBottom = sgAntiSpam.add(new BoolSetting.Builder()
-            .name("anti-spam-move-to-bottom")
-            .description("Move duplicate messages to bottom.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> antiSpamMoveToBottom = sgAntiSpam.add(new BoolSetting.Builder().name("anti-spam-move-to-bottom").description("Move duplicate messages to bottom.").defaultValue(true).build());
 
     // Longer Chat
     private final SettingGroup sgLongerChat = settings.createGroup("Longer Chat");
 
-    private final Setting<Boolean> longerChatEnabled = sgLongerChat.add(new BoolSetting.Builder()
-            .name("longer-chat-enabled")
-            .description("Makes chat longer.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> longerChatEnabled = sgLongerChat.add(new BoolSetting.Builder().name("longer-chat-enabled").description("Makes chat longer.").defaultValue(true).build());
 
-    private final Setting<Integer> longerChatLines = sgLongerChat.add(new IntSetting.Builder()
-            .name("longer-chat-lines")
-            .description("Chat lines.")
-            .defaultValue(1000)
-            .min(100)
-            .sliderMax(1000)
-            .build()
-    );
+    private final Setting<Integer> longerChatLines = sgLongerChat.add(new IntSetting.Builder().name("longer-chat-lines").description("Chat lines.").defaultValue(1000).min(100).sliderMax(1000).build());
 
     // Friend Color
     /*private final SettingGroup sgFriendColor = settings.createGroup("Friend Color");
@@ -95,12 +61,15 @@ public class BetterChat extends ToggleModule {
     }
 
     public boolean onMsg(String message, int messageId, int timestamp, List<ChatHudLine<Text>> messages, List<ChatHudLine<OrderedText>> visibleMessages) {
-        if (!isActive() || skipMessage) return false;
+        if (!isActive() || skipMessage) {
+            return false;
+        }
 
-        if (ignoreEnabled.get() && ignoreOnMsg(message)) return true;
-        if (antiSpamEnabled.get() && antiSpamOnMsg(message, messageId, timestamp, messages, visibleMessages)) return true;
+        if (ignoreEnabled.get() && ignoreOnMsg(message)) {
+            return true;
+        }
+        return antiSpamEnabled.get() && antiSpamOnMsg(message, messageId, timestamp, messages, visibleMessages);
         //return friendColorEnabled.get() && friendColorOnMsg(message);
-        return false;
     }
 
     // IGNORE
@@ -137,7 +106,9 @@ public class BetterChat extends ToggleModule {
 
     private boolean antiSpamCheckMsg(List<ChatHudLine<OrderedText>> visibleMessages, String newMsg, int newTimestamp, int newId, int msgI) {
         ChatHudLine<OrderedText> msg = visibleMessages.size() > msgI ? visibleMessages.get(msgI) : null;
-        if (msg == null) return false;
+        if (msg == null) {
+            return false;
+        }
         String msgString = msg.getText().toString();
 
         if (ChatUtil.stripTextFormat(msgString).equals(newMsg)) {

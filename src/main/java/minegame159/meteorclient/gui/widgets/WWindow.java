@@ -7,12 +7,10 @@ import minegame159.meteorclient.utils.Utils;
 import org.lwjgl.glfw.GLFW;
 
 public class WWindow extends WTable {
-    public Runnable action;
-    public GuiConfig.WindowType type;
-
     private final WHeader header;
     private final WTable table;
-
+    public Runnable action;
+    public GuiConfig.WindowType type;
     private boolean wasMoved;
     private double mX, mY;
 
@@ -80,12 +78,18 @@ public class WWindow extends WTable {
 
     @Override
     public void render(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
-        if (!visible) return;
+        if (!visible) {
+            return;
+        }
 
         boolean scissor = (animationProgress != 0 && animationProgress != 1) || (expanded && animationProgress != 1);
-        if (scissor) renderer.beginScissor(x, y, width, (height - header.height) * animationProgress + header.height);
+        if (scissor) {
+            renderer.beginScissor(x, y, width, (height - header.height) * animationProgress + header.height);
+        }
         super.render(renderer, mouseX, mouseY, delta);
-        if (scissor) renderer.endScissor();
+        if (scissor) {
+            renderer.endScissor();
+        }
     }
 
     @Override
@@ -122,7 +126,9 @@ public class WWindow extends WTable {
             triangle = add(new WTriangle()).pad(4).fillX().centerY().right().getWidget();
             triangle.action = () -> {
                 expanded = !expanded;
-                if (type != null) GuiConfig.INSTANCE.getWindowConfig(type).setExpanded(expanded);
+                if (type != null) {
+                    GuiConfig.INSTANCE.getWindowConfig(type).setExpanded(expanded);
+                }
             };
         }
 
@@ -138,12 +144,16 @@ public class WWindow extends WTable {
 
         @Override
         protected boolean onMouseClicked(boolean used, int button) {
-            if (used) return false;
+            if (used) {
+                return false;
+            }
 
             if (mouseOver) {
                 if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
                     expanded = !expanded;
-                    if (type != null) GuiConfig.INSTANCE.getWindowConfig(type).setExpanded(expanded);
+                    if (type != null) {
+                        GuiConfig.INSTANCE.getWindowConfig(type).setExpanded(expanded);
+                    }
                     return true;
                 } else if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
                     dragging = true;
@@ -169,7 +179,9 @@ public class WWindow extends WTable {
                 mX = WWindow.this.x;
                 mY = WWindow.this.y;
 
-                if (action != null) action.run();
+                if (action != null) {
+                    action.run();
+                }
             }
 
             lastMouseX = mouseX;
@@ -180,8 +192,11 @@ public class WWindow extends WTable {
         protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
             renderer.quad(Region.FULL, x, y, width, height, GuiConfig.INSTANCE.accent);
 
-            if (expanded) animationProgress += delta / 4;
-            else animationProgress -= delta / 4;
+            if (expanded) {
+                animationProgress += delta / 4;
+            } else {
+                animationProgress -= delta / 4;
+            }
             animationProgress = Utils.clamp(animationProgress, 0, 1);
 
             triangle.rotation = (1 - animationProgress) * -90;

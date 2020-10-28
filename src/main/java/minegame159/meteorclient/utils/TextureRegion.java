@@ -3,10 +3,11 @@ package minegame159.meteorclient.utils;
 import java.util.Objects;
 
 public class TextureRegion {
+    private final Color color;
+    private final Color colorHovered;
+    private final Color colorPressed;
     public double x, y;
     public double width, height;
-
-    private Color color, colorHovered, colorPressed;
 
     public TextureRegion(double textureWidth, double textuerHeight, int x, int y, int width, int height, Color color, Color colorHovered, Color colorPressed) {
         this.x = x / textureWidth;
@@ -20,13 +21,14 @@ public class TextureRegion {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         TextureRegion that = (TextureRegion) o;
-        return x == that.x &&
-                y == that.y &&
-                width == that.width &&
-                height == that.height;
+        return x == that.x && y == that.y && width == that.width && height == that.height;
     }
 
     @Override
@@ -35,8 +37,12 @@ public class TextureRegion {
     }
 
     public Color getColor(boolean mouseOver, boolean pressed) {
-        if (pressed) return colorPressed;
-        if (mouseOver) return colorHovered;
+        if (pressed) {
+            return colorPressed;
+        }
+        if (mouseOver) {
+            return colorHovered;
+        }
         return color;
     }
 }

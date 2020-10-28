@@ -8,7 +8,9 @@ public class ProfileResponse {
 
     public String getTextures() {
         for (Map<String, String> map : properties) {
-            if (map.get("name").equals("textures")) return map.get("value");
+            if (map.get("name").equals("textures")) {
+                return map.get("value");
+            }
         }
 
         return null;

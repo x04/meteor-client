@@ -17,21 +17,25 @@ public class ProfileUtils {
     private static final File FOLDER = new File(Meteor.INSTANCE.getFolder(), "profiles");
 
     public static List<String> getProfiles() {
-      String[] childs = FOLDER.list();
-      List<String> profiles = new ArrayList<>(0);
+        String[] childs = FOLDER.list();
+        List<String> profiles = new ArrayList<>(0);
 
-      if (childs != null) {
-          for (String child : childs) {
-              File file = new File(child);
-              if (!child.contains(".")) profiles.add(file.getName());
-          }
-      }
+        if (childs != null) {
+            for (String child : childs) {
+                File file = new File(child);
+                if (!child.contains(".")) {
+                    profiles.add(file.getName());
+                }
+            }
+        }
 
-      return profiles;
+        return profiles;
     }
 
     public static boolean save(String profile) {
-        if (profile.isEmpty() || profile.contains(".")) return false;
+        if (profile.isEmpty() || profile.contains(".")) {
+            return false;
+        }
         File folder = new File(FOLDER, profile);
 
         Config.INSTANCE.save(new File(folder, Config.INSTANCE.getFile().getName()));

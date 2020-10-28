@@ -18,46 +18,16 @@ import net.minecraft.util.math.MathHelper;
 public class Anchor extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Integer> maxHeight = sgGeneral.add(new IntSetting.Builder()
-            .name("max-height")
-            .description("Max height.")
-            .defaultValue(10)
-            .min(0)
-            .max(255)
-            .sliderMax(20)
-            .build()
-    );
+    private final Setting<Integer> maxHeight = sgGeneral.add(new IntSetting.Builder().name("max-height").description("Max height.").defaultValue(10).min(0).max(255).sliderMax(20).build());
 
-    private final Setting<Integer> minPitch = sgGeneral.add(new IntSetting.Builder()
-            .name("min-pitch")
-            .description("Minimum pitch at which anchor will work. (90 - -90)")
-            .defaultValue(-90)
-            .min(-90)
-            .max(90)
-            .sliderMin(-90)
-            .sliderMax(90)
-            .build()
-    );
+    private final Setting<Integer> minPitch = sgGeneral.add(new IntSetting.Builder().name("min-pitch").description("Minimum pitch at which anchor will work. (90 - -90)").defaultValue(-90).min(-90).max(90).sliderMin(-90).sliderMax(90).build());
 
     private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
-    private boolean wasInHole;
-    private int holeX, holeZ;
-
     public boolean controlMovement;
     public double deltaX, deltaZ;
-
-    public Anchor() {
-        super(Category.Movement, "anchor", "Helps you get into holes.");
-    }
-
-    @Override
-    public void onActivate() {
-        wasInHole = false;
-        holeX = holeZ = 0;
-    }
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
+    private boolean wasInHole;
+    private int holeX, holeZ;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         controlMovement = false;
 
         int x = MathHelper.floor(mc.player.getX());
@@ -71,10 +41,15 @@ public class Anchor extends ToggleModule {
             return;
         }
 
-        if (wasInHole && holeX == x && holeZ == z) return;
-        else if (wasInHole) wasInHole = false;
+        if (wasInHole && holeX == x && holeZ == z) {
+            return;
+        } else if (wasInHole) {
+            wasInHole = false;
+        }
 
-        if (mc.player.pitch < minPitch.get()) return;
+        if (mc.player.pitch < minPitch.get()) {
+            return;
+        }
 
         boolean foundHole = false;
         double holeX = 0;
@@ -82,7 +57,9 @@ public class Anchor extends ToggleModule {
 
         for (int i = 0; i < maxHeight.get(); i++) {
             y--;
-            if (y <= 0 || !isAir(x, y, z)) break;
+            if (y <= 0 || !isAir(x, y, z)) {
+                break;
+            }
 
             if (isHole(x, y, z)) {
                 foundHole = true;
@@ -101,12 +78,18 @@ public class Anchor extends ToggleModule {
         }
     });
 
+    public Anchor() {
+        super(Category.Movement, "anchor", "Helps you get into holes.");
+    }
+
+    @Override
+    public void onActivate() {
+        wasInHole = false;
+        holeX = holeZ = 0;
+    }
+
     private boolean isHole(int x, int y, int z) {
-        return isHoleBlock(x, y - 1, z) &&
-                isHoleBlock(x + 1, y, z) &&
-                isHoleBlock(x - 1, y, z) &&
-                isHoleBlock(x, y, z + 1) &&
-                isHoleBlock(x, y, z - 1);
+        return isHoleBlock(x, y - 1, z) && isHoleBlock(x + 1, y, z) && isHoleBlock(x - 1, y, z) && isHoleBlock(x, y, z + 1) && isHoleBlock(x, y, z - 1);
     }
 
     private boolean isHoleBlock(int x, int y, int z) {

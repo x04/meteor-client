@@ -19,7 +19,9 @@ public class WHorizontalSeparator extends WWidget {
 
     @Override
     protected void onCalculateSize(GuiRenderer renderer) {
-        if (text != null) textWidth = renderer.textWidth(text);
+        if (text != null) {
+            textWidth = renderer.textWidth(text);
+        }
 
         width = 0;
         height = text != null ? renderer.textHeight() : 1;

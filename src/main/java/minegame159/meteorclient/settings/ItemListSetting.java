@@ -34,11 +34,17 @@ public class ItemListSetting extends Setting<List<Item>> {
             for (String value : values) {
                 String val = value.trim();
                 Identifier id;
-                if (val.contains(":")) id = new Identifier(val);
-                else id = new Identifier("minecraft", val);
-                if (Registry.ITEM.containsId(id)) items.add(Registry.ITEM.get(id));
+                if (val.contains(":")) {
+                    id = new Identifier(val);
+                } else {
+                    id = new Identifier("minecraft", val);
+                }
+                if (Registry.ITEM.containsId(id)) {
+                    items.add(Registry.ITEM.get(id));
+                }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         return items;
     }

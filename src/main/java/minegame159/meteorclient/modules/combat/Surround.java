@@ -19,52 +19,63 @@ import net.minecraft.util.math.MathHelper;
 
 public class Surround extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    
-    private final Setting<Boolean> onlyOnGround = sgGeneral.add(new BoolSetting.Builder()
-            .name("only-on-ground")
-            .description("Works only when you standing on ground.")
-            .defaultValue(true)
-            .build()
-    );
 
-    private final Setting<Boolean> onlyWhenSneaking = sgGeneral.add(new BoolSetting.Builder()
-            .name("only-when-sneaking")
-            .description("Places blocks only when sneaking.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> onlyOnGround = sgGeneral.add(new BoolSetting.Builder().name("only-on-ground").description("Works only when you standing on ground.").defaultValue(true).build());
 
-    private final Setting<Boolean> turnOff = sgGeneral.add(new BoolSetting.Builder()
-            .name("turn-off")
-            .description("Turns off when placed.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> onlyWhenSneaking = sgGeneral.add(new BoolSetting.Builder().name("only-when-sneaking").description("Places blocks only when sneaking.").defaultValue(false).build());
 
-    private final Setting<Boolean> center = sgGeneral.add(new BoolSetting.Builder()
-            .name("center")
-            .description("Moves you to the center of the block.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> turnOff = sgGeneral.add(new BoolSetting.Builder().name("turn-off").description("Turns off when placed.").defaultValue(false).build());
 
-    private final Setting<Boolean> instant = sgGeneral.add(new BoolSetting.Builder()
-            .name("instant")
-            .description("Places all blocks in one tick.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> center = sgGeneral.add(new BoolSetting.Builder().name("center").description("Moves you to the center of the block.").defaultValue(true).build());
 
-    private final Setting<Boolean> disableOnJump = sgGeneral.add(new BoolSetting.Builder()
-            .name("disable-on-jump")
-            .description("Automatically disables when you jump.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> instant = sgGeneral.add(new BoolSetting.Builder().name("instant").description("Places all blocks in one tick.").defaultValue(true).build());
 
-    private int prevSlot;
+    private final Setting<Boolean> disableOnJump = sgGeneral.add(new BoolSetting.Builder().name("disable-on-jump").description("Automatically disables when you jump.").defaultValue(true).build());
     private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
+    private int prevSlot;
     private boolean return_;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (disableOnJump.get() && mc.options.keyJump.isPressed()) {
+            toggle();
+            return;
+        }
+
+        if (onlyOnGround.get() && !mc.player.isOnGround()) {
+            return;
+        }
+        if (onlyWhenSneaking.get() && !mc.options.keySneak.isPressed()) {
+            return;
+        }
+
+        // Place
+        return_ = false;
+
+        boolean p1 = tryPlace(0, -1, 0);
+        if (return_) {
+            return;
+        }
+        boolean p2 = tryPlace(1, 0, 0);
+        if (return_) {
+            return;
+        }
+        boolean p3 = tryPlace(-1, 0, 0);
+        if (return_) {
+            return;
+        }
+        boolean p4 = tryPlace(0, 0, 1);
+        if (return_) {
+            return;
+        }
+        boolean p5 = tryPlace(0, 0, -1);
+        if (return_) {
+            return;
+        }
+
+        // Auto turn off
+        if (turnOff.get() && p1 && p2 && p3 && p4 && p5) {
+            toggle();
+        }
+    });
 
     public Surround() {
         super(Category.Combat, "surround", "Surrounds you with obsidian (or other blocks) to take less damage.");
@@ -80,38 +91,14 @@ public class Surround extends ToggleModule {
         }
     }
 
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (disableOnJump.get() && mc.options.keyJump.isPressed()) {
-            toggle();
-            return;
-        }
-
-        if (onlyOnGround.get() && !mc.player.isOnGround()) return;
-        if (onlyWhenSneaking.get() && !mc.options.keySneak.isPressed()) return;
-
-        // Place
-        return_ = false;
-
-        boolean p1 = tryPlace(0, -1, 0);
-        if (return_) return;
-        boolean p2 = tryPlace(1, 0, 0);
-        if (return_) return;
-        boolean p3 = tryPlace(-1, 0, 0);
-        if (return_) return;
-        boolean p4 = tryPlace(0, 0, 1);
-        if (return_) return;
-        boolean p5 = tryPlace(0, 0, -1);
-        if (return_) return;
-
-        // Auto turn off
-        if (turnOff.get() && p1 && p2 && p3 && p4 && p5) toggle();
-    });
-
     private boolean tryPlace(int x, int y, int z) {
         boolean p = place(x, 0, z);
-        if (return_) return p;
-        if (p) return true;
+        if (return_) {
+            return p;
+        }
+        if (p) {
+            return true;
+        }
 
         for (int i = 0; i < 5; i++) {
             int x2 = x;
@@ -119,15 +106,27 @@ public class Surround extends ToggleModule {
             int z2 = z;
 
             switch (i) {
-                case 0: y2--; break;
-                case 1: x2++; break;
-                case 2: x2--; break;
-                case 3: z2++; break;
-                case 4: z2--; break;
+                case 0:
+                    y2--;
+                    break;
+                case 1:
+                    x2++;
+                    break;
+                case 2:
+                    x2--;
+                    break;
+                case 3:
+                    z2++;
+                    break;
+                case 4:
+                    z2--;
+                    break;
             }
 
             p = place(x2, y2, z2);
-            if (return_) return p;
+            if (return_) {
+                return p;
+            }
             if (p) {
                 place(x, y, z);
                 return true;
@@ -148,7 +147,9 @@ public class Surround extends ToggleModule {
 
             if (!instant.get()) {
                 boolean isObby = mc.world.getBlockState(blockPos).getBlock() == Blocks.OBSIDIAN;
-                if (!wasObby && isObby) return_ = true;
+                if (!wasObby && isObby) {
+                    return_ = true;
+                }
             }
         }
 
@@ -165,7 +166,9 @@ public class Surround extends ToggleModule {
         for (int i = 0; i < 9; i++) {
             Item item = mc.player.inventory.getStack(i).getItem();
 
-            if (!(item instanceof BlockItem)) continue;
+            if (!(item instanceof BlockItem)) {
+                continue;
+            }
 
             if (item == Items.OBSIDIAN || item == Items.CRYING_OBSIDIAN) {
                 mc.player.inventory.selectedSlot = i;

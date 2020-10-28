@@ -9,27 +9,9 @@ import minegame159.meteorclient.settings.SettingGroup;
 public class Velocity extends ToggleModule {
     private final SettingGroup sg = settings.getDefaultGroup();
 
-    private final Setting<Double> horizontal = sg.add(new DoubleSetting.Builder()
-            .name("horizontal-multiplier")
-            .description("How much velocity to apply horizontally.")
-            .defaultValue(0)
-            .min(0)
-            .max(1)
-            .sliderMin(0)
-            .sliderMax(1)
-            .build()
-    );
+    private final Setting<Double> horizontal = sg.add(new DoubleSetting.Builder().name("horizontal-multiplier").description("How much velocity to apply horizontally.").defaultValue(0).min(0).max(1).sliderMin(0).sliderMax(1).build());
 
-    private final Setting<Double> vertical = sg.add(new DoubleSetting.Builder()
-            .name("vertical-multiplier")
-            .description("How much velocity to apply vertically.")
-            .defaultValue(0)
-            .min(0)
-            .max(1)
-            .sliderMin(0)
-            .sliderMax(1)
-            .build()
-    );
+    private final Setting<Double> vertical = sg.add(new DoubleSetting.Builder().name("vertical-multiplier").description("How much velocity to apply vertically.").defaultValue(0).min(0).max(1).sliderMin(0).sliderMax(1).build());
 
     public Velocity() {
         super(Category.Movement, "velocity", "Prevents you from getting pushed by mobs, taking damage, etc.");

@@ -10,7 +10,6 @@ import minegame159.meteorclient.utils.Outlines;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.util.math.Vec3d;
@@ -39,7 +38,9 @@ public abstract class EntityMixin {
 
     @Redirect(method = "addVelocity", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;add(DDD)Lnet/minecraft/util/math/Vec3d;"))
     private Vec3d addVelocityVec3dAddProxy(Vec3d vec3d, double x, double y, double z) {
-        if ((Object) this != Meteor.INSTANCE.getMinecraft().player) return vec3d.add(x, y, z);
+        if ((Object) this != Meteor.INSTANCE.getMinecraft().player) {
+            return vec3d.add(x, y, z);
+        }
 
         Velocity velocity = ModuleManager.INSTANCE.get(Velocity.class);
         return vec3d.add(x * velocity.getHorizontal(), y * velocity.getVertical(), z * velocity.getHorizontal());
@@ -47,7 +48,9 @@ public abstract class EntityMixin {
 
     @Inject(method = "move", at = @At("HEAD"))
     private void onMove(MovementType type, Vec3d movement, CallbackInfo info) {
-        if ((Object) this != Meteor.INSTANCE.getMinecraft().player) return;
+        if ((Object) this != Meteor.INSTANCE.getMinecraft().player) {
+            return;
+        }
 
         Meteor.INSTANCE.getEventBus().post(EventStore.playerMoveEvent(type, movement));
     }
@@ -61,7 +64,9 @@ public abstract class EntityMixin {
 
     @Redirect(method = "getVelocityMultiplier", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;getBlock()Lnet/minecraft/block/Block;"))
     private Block getVelocityMultiplierGetBlockProxy(BlockState blockState) {
-        if (blockState.getBlock() == Blocks.SOUL_SAND && ModuleManager.INSTANCE.get(NoSlow.class).soulSand()) return Blocks.STONE;
+        if (blockState.getBlock() == Blocks.SOUL_SAND && ModuleManager.INSTANCE.get(NoSlow.class).soulSand()) {
+            return Blocks.STONE;
+        }
         return blockState.getBlock();
     }
 }

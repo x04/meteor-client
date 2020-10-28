@@ -10,10 +10,10 @@ import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.ChunkDataEvent;
-import minegame159.meteorclient.modules.Category;
-import minegame159.meteorclient.modules.ToggleModule;
 import minegame159.meteorclient.gui.screens.StashFinderChunkScreen;
 import minegame159.meteorclient.gui.widgets.*;
+import minegame159.meteorclient.modules.Category;
+import minegame159.meteorclient.modules.ToggleModule;
 import minegame159.meteorclient.settings.*;
 import minegame159.meteorclient.utils.Utils;
 import net.minecraft.block.entity.*;
@@ -31,74 +31,55 @@ public class StashFinder extends ToggleModule {
 
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<List<BlockEntityType<?>>> storageBlocks = sgGeneral.add(new StorageBlockListSetting.Builder()
-            .name("storage-blocks")
-            .description("Select storage blocks to search for.")
-            .defaultValue(Arrays.asList(StorageBlockListSetting.STORAGE_BLOCKS))
-            .build()
-    );
+    private final Setting<List<BlockEntityType<?>>> storageBlocks = sgGeneral.add(new StorageBlockListSetting.Builder().name("storage-blocks").description("Select storage blocks to search for.").defaultValue(Arrays.asList(StorageBlockListSetting.STORAGE_BLOCKS)).build());
 
-    private final Setting<Integer> minimumStorageCount = sgGeneral.add(new IntSetting.Builder()
-            .name("minimum-storage-cont")
-            .description("Minimum storage block count required to record that chunk.")
-            .defaultValue(4)
-            .min(1)
-            .build()
-    );
-private final Setting<Integer> minimumDistance = sgGeneral.add(new IntSetting.Builder()
-            .name("minimum-distance")
-            .description("Minimum distance in blocks from spawn required to record that chunk.")
-            .defaultValue(0)
-            .min(0)
-            .sliderMax(10000)
-            .build()
-    );
+    private final Setting<Integer> minimumStorageCount = sgGeneral.add(new IntSetting.Builder().name("minimum-storage-cont").description("Minimum storage block count required to record that chunk.").defaultValue(4).min(1).build());
+    private final Setting<Integer> minimumDistance = sgGeneral.add(new IntSetting.Builder().name("minimum-distance").description("Minimum distance in blocks from spawn required to record that chunk.").defaultValue(0).min(0).sliderMax(10000).build());
 
-    private final Setting<Boolean> sendNotifications = sgGeneral.add(new BoolSetting.Builder()
-            .name("send-notifications")
-            .description("Send minecraft notifications when new stashes are found.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> sendNotifications = sgGeneral.add(new BoolSetting.Builder().name("send-notifications").description("Send minecraft notifications when new stashes are found.").defaultValue(true).build());
 
     public List<Chunk> chunks = new ArrayList<>();
-
-    public StashFinder() {
-        super(Category.Misc, "stash-finder", "Searches loaded chunks for storage blocks. Saves to <your minecraft folder>/meteor-client");
-    }
-
-    @Override
-    public void onActivate() {
-        load();
-    }
-
-    @EventHandler
-    private final Listener<ChunkDataEvent> onChunkData = new Listener<>(event -> {
+    @EventHandler private final Listener<ChunkDataEvent> onChunkData = new Listener<>(event -> {
         // Check distance
         double chunkXAbs = Math.abs(event.chunk.getPos().x * 16);
         double chunkZAbs = Math.abs(event.chunk.getPos().z * 16);
-        if (Math.sqrt(chunkXAbs * chunkXAbs + chunkZAbs * chunkZAbs) < minimumDistance.get()) return;
+        if (Math.sqrt(chunkXAbs * chunkXAbs + chunkZAbs * chunkZAbs) < minimumDistance.get()) {
+            return;
+        }
 
         Chunk chunk = new Chunk(event.chunk.getPos());
 
         for (BlockEntity blockEntity : event.chunk.getBlockEntities().values()) {
-            if (!storageBlocks.get().contains(blockEntity.getType())) continue;
+            if (!storageBlocks.get().contains(blockEntity.getType())) {
+                continue;
+            }
 
-            if (blockEntity instanceof ChestBlockEntity) chunk.chests++;
-            else if (blockEntity instanceof BarrelBlockEntity) chunk.barrels++;
-            else if (blockEntity instanceof ShulkerBoxBlockEntity) chunk.shulkers++;
-            else if (blockEntity instanceof EnderChestBlockEntity) chunk.enderChests++;
-            else if (blockEntity instanceof AbstractFurnaceBlockEntity) chunk.furnaces++;
-            else if (blockEntity instanceof DispenserBlockEntity) chunk.dispensersDroppers++;
-            else if (blockEntity instanceof HopperBlockEntity) chunk.hoppers++;
+            if (blockEntity instanceof ChestBlockEntity) {
+                chunk.chests++;
+            } else if (blockEntity instanceof BarrelBlockEntity) {
+                chunk.barrels++;
+            } else if (blockEntity instanceof ShulkerBoxBlockEntity) {
+                chunk.shulkers++;
+            } else if (blockEntity instanceof EnderChestBlockEntity) {
+                chunk.enderChests++;
+            } else if (blockEntity instanceof AbstractFurnaceBlockEntity) {
+                chunk.furnaces++;
+            } else if (blockEntity instanceof DispenserBlockEntity) {
+                chunk.dispensersDroppers++;
+            } else if (blockEntity instanceof HopperBlockEntity) {
+                chunk.hoppers++;
+            }
         }
 
         if (chunk.getTotal() >= minimumStorageCount.get()) {
             Chunk prevChunk = null;
             int i = chunks.indexOf(chunk);
 
-            if (i < 0) chunks.add(chunk);
-            else prevChunk = chunks.set(i, chunk);
+            if (i < 0) {
+                chunks.add(chunk);
+            } else {
+                prevChunk = chunks.set(i, chunk);
+            }
 
             saveJson();
             saveCsv();
@@ -110,8 +91,11 @@ private final Setting<Integer> minimumDistance = sgGeneral.add(new IntSetting.Bu
 
                     @Override
                     public Visibility draw(MatrixStack matrices, ToastManager manager, long currentTime) {
-                        if (lastTime == -1) lastTime = currentTime;
-                        else timer += currentTime - lastTime;
+                        if (lastTime == -1) {
+                            lastTime = currentTime;
+                        } else {
+                            timer += currentTime - lastTime;
+                        }
 
                         manager.getGame().getTextureManager().bindTexture(new Identifier("textures/gui/toasts.png"));
                         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 255.0F);
@@ -126,6 +110,15 @@ private final Setting<Integer> minimumDistance = sgGeneral.add(new IntSetting.Bu
         }
     });
 
+    public StashFinder() {
+        super(Category.Misc, "stash-finder", "Searches loaded chunks for storage blocks. Saves to <your minecraft folder>/meteor-client");
+    }
+
+    @Override
+    public void onActivate() {
+        load();
+    }
+
     @Override
     public WWidget getWidget() {
         // Sort
@@ -138,7 +131,9 @@ private final Setting<Integer> minimumDistance = sgGeneral.add(new IntSetting.Bu
         list.row();
 
         WTable table = new WTable();
-        if (chunks.size() > 0) list.add(table);
+        if (chunks.size() > 0) {
+            list.add(table);
+        }
 
         clear.action = () -> {
             chunks.clear();
@@ -185,14 +180,18 @@ private final Setting<Integer> minimumDistance = sgGeneral.add(new IntSetting.Bu
         if (file.exists()) {
             try {
                 FileReader reader = new FileReader(file);
-                chunks = GSON.fromJson(reader, new TypeToken<List<Chunk>>() {}.getType());
+                chunks = GSON.fromJson(reader, new TypeToken<List<Chunk>>() {
+                }.getType());
                 reader.close();
 
-                for (Chunk chunk : chunks) chunk.calculatePos();
+                for (Chunk chunk : chunks)
+                    chunk.calculatePos();
 
                 loaded = true;
             } catch (Exception ignored) {
-                if (chunks == null) chunks = new ArrayList<>();
+                if (chunks == null) {
+                    chunks = new ArrayList<>();
+                }
             }
         }
 
@@ -220,7 +219,9 @@ private final Setting<Integer> minimumDistance = sgGeneral.add(new IntSetting.Bu
 
                 reader.close();
             } catch (Exception ignored) {
-                if (chunks == null) chunks = new ArrayList<>();
+                if (chunks == null) {
+                    chunks = new ArrayList<>();
+                }
             }
         }
     }
@@ -232,7 +233,8 @@ private final Setting<Integer> minimumDistance = sgGeneral.add(new IntSetting.Bu
             Writer writer = new FileWriter(file);
 
             writer.write("X,Z,Chests,Shulkers,EnderChests,Furnaces,DispensersDroppers,Hopper\n");
-            for (Chunk chunk : chunks) chunk.write(writer);
+            for (Chunk chunk : chunks)
+                chunk.write(writer);
 
             writer.close();
         } catch (IOException e) {
@@ -290,14 +292,20 @@ private final Setting<Integer> minimumDistance = sgGeneral.add(new IntSetting.Bu
         }
 
         public boolean countsEqual(Chunk c) {
-            if (c == null) return false;
+            if (c == null) {
+                return false;
+            }
             return chests != c.chests || barrels != c.barrels || shulkers != c.shulkers || enderChests != c.enderChests || furnaces != c.furnaces || dispensersDroppers != c.dispensersDroppers || hoppers != c.hoppers;
         }
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             Chunk chunk = (Chunk) o;
             return Objects.equals(chunkPos, chunk.chunkPos);
         }

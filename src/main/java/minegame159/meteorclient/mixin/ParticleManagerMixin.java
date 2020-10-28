@@ -29,11 +29,15 @@ public class ParticleManagerMixin {
 
     @Inject(method = "addBlockBreakParticles", at = @At("HEAD"), cancellable = true)
     private void onAddBlockBreakParticles(BlockPos blockPos, BlockState state, CallbackInfo info) {
-        if (ModuleManager.INSTANCE.get(Nuker.class).noParticles() || ModuleManager.INSTANCE.get(NoRender.class).noBlockBreakParticles()) info.cancel();
+        if (ModuleManager.INSTANCE.get(Nuker.class).noParticles() || ModuleManager.INSTANCE.get(NoRender.class).noBlockBreakParticles()) {
+            info.cancel();
+        }
     }
 
     @Inject(method = "addBlockBreakingParticles", at = @At("HEAD"), cancellable = true)
     private void onAddBlockBreakingParticles(BlockPos blockPos, Direction direction, CallbackInfo info) {
-        if (ModuleManager.INSTANCE.get(Nuker.class).noParticles() || ModuleManager.INSTANCE.get(NoRender.class).noBlockBreakParticles()) info.cancel();
+        if (ModuleManager.INSTANCE.get(Nuker.class).noParticles() || ModuleManager.INSTANCE.get(NoRender.class).noBlockBreakParticles()) {
+            info.cancel();
+        }
     }
 }

@@ -15,7 +15,9 @@ public class DoubleSetting extends Setting<Double> {
 
         widget = new WDoubleEdit(get(), sliderMin != null ? sliderMin : 0, sliderMax != null ? sliderMax : 10, noSlider);
         ((WDoubleEdit) widget).action = () -> {
-            if (!set(((WDoubleEdit) widget).get())) ((WDoubleEdit) widget).set(get());
+            if (!set(((WDoubleEdit) widget).get())) {
+                ((WDoubleEdit) widget).set(get());
+            }
         };
     }
 
@@ -42,13 +44,19 @@ public class DoubleSetting extends Setting<Double> {
     protected String generateUsage() {
         String usage = "(highlight)";
 
-        if (min == null) usage += "inf";
-        else usage += min;
+        if (min == null) {
+            usage += "inf";
+        } else {
+            usage += min;
+        }
 
         usage += " (default)- (highlight)";
 
-        if (max == null) usage += "inf";
-        else usage += max;
+        if (max == null) {
+            usage += "inf";
+        } else {
+            usage += max;
+        }
 
         return usage;
     }

@@ -8,9 +8,11 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(AbstractFurnaceScreenHandler.class)
 public abstract class AbstractFurnaceScreenHandlerMixin implements IAbstractFurnaceScreenHandler {
-    @Shadow protected abstract boolean isSmeltable(ItemStack itemStack);
+    @Shadow
+    protected abstract boolean isSmeltable(ItemStack itemStack);
 
-    @Shadow protected abstract boolean isFuel(ItemStack itemStack);
+    @Shadow
+    protected abstract boolean isFuel(ItemStack itemStack);
 
     @Override
     public boolean isSmeltableI(ItemStack itemStack) {

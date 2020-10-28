@@ -30,19 +30,30 @@ import java.util.UUID;
 public class EntityOwner extends ToggleModule {
     private static final Color BACKGROUND = new Color(0, 0, 0, 75);
     private static final Color TEXT = new Color(255, 255, 255);
-    private static final Type RESPONSE_TYPE = new TypeToken<List<UuidNameHistoryResponseItem>>() {}.getType();
+    private static final Type RESPONSE_TYPE = new TypeToken<List<UuidNameHistoryResponseItem>>() {
+    }.getType();
 
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Double> scale = sgGeneral.add(new DoubleSetting.Builder()
-            .name("scale")
-            .description("Scale.")
-            .defaultValue(1)
-            .min(0)
-            .build()
-    );
+    private final Setting<Double> scale = sgGeneral.add(new DoubleSetting.Builder().name("scale").description("Scale.").defaultValue(1).min(0).build());
 
     private final Map<UUID, String> uuidToName = new HashMap<>();
+    @EventHandler private final Listener<RenderEvent> onRender = new Listener<>(event -> {
+        for (Entity entity : mc.world.getEntities()) {
+            UUID ownerUuid = null;
+            if (entity instanceof TameableEntity) {
+                ownerUuid = ((TameableEntity) entity).getOwnerUuid();
+            } else if (entity instanceof HorseBaseEntity) {
+                ownerUuid = ((HorseBaseEntity) entity).getOwnerUuid();
+            }
+            if (ownerUuid == null) {
+                continue;
+            }
+
+            String name = getOwnerName(ownerUuid);
+            renderNametag(event, entity, name);
+        }
+    });
 
     public EntityOwner() {
         super(Category.Render, "entity-owner", "Displays name of the player that owns that entity.");
@@ -53,26 +64,15 @@ public class EntityOwner extends ToggleModule {
         uuidToName.clear();
     }
 
-    @EventHandler
-    private final Listener<RenderEvent> onRender = new Listener<>(event -> {
-        for (Entity entity : mc.world.getEntities()) {
-            UUID ownerUuid = null;
-            if (entity instanceof TameableEntity) ownerUuid = ((TameableEntity) entity).getOwnerUuid();
-            else if (entity instanceof HorseBaseEntity) ownerUuid = ((HorseBaseEntity) entity).getOwnerUuid();
-            if (ownerUuid == null) continue;
-
-            String name = getOwnerName(ownerUuid);
-            renderNametag(event, entity, name);
-        }
-    });
-
     private void renderNametag(RenderEvent event, Entity entity, String name) {
         Camera camera = mc.gameRenderer.getCamera();
 
         // Compute scale
         double scale = 0.025;
         double dist = Utils.distanceToCamera(entity);
-        if (dist > 10) scale *= dist / 10 * this.scale.get();
+        if (dist > 10) {
+            scale *= dist / 10 * this.scale.get();
+        }
 
         // Setup the rotation
         Matrices.push();
@@ -99,11 +99,15 @@ public class EntityOwner extends ToggleModule {
     private String getOwnerName(UUID uuid) {
         // Get name if owner is online
         PlayerEntity player = mc.world.getPlayerByUuid(uuid);
-        if (player != null) return player.getGameProfile().getName();
+        if (player != null) {
+            return player.getGameProfile().getName();
+        }
 
         // Check cache
         String name = uuidToName.get(uuid);
-        if (name != null) return name;
+        if (name != null) {
+            return name;
+        }
 
         // Make http request to mojang api
         MeteorExecutor.INSTANCE.execute(() -> {
@@ -111,8 +115,11 @@ public class EntityOwner extends ToggleModule {
                 List<UuidNameHistoryResponseItem> response = HttpUtils.get("https://api.mojang.com/user/profiles/" + uuid.toString().replace("-", "") + "/names", RESPONSE_TYPE);
 
                 if (isActive()) {
-                    if (response == null || response.size() <= 0) uuidToName.put(uuid, "Failed to get name");
-                    else uuidToName.put(uuid, response.get(response.size() - 1).name);
+                    if (response == null || response.size() <= 0) {
+                        uuidToName.put(uuid, "Failed to get name");
+                    } else {
+                        uuidToName.put(uuid, response.get(response.size() - 1).name);
+                    }
                 }
             }
         });

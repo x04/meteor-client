@@ -19,54 +19,29 @@ import net.minecraft.util.math.Vec3d;
 
 public class Speed extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    
-    private final Setting<Double> speed = sgGeneral.add(new DoubleSetting.Builder()
-            .name("speed")
-            .description("How fast you want to go in blocks per second.")
-            .defaultValue(5.6)
-            .min(0)
-            .sliderMax(50)
-            .build()
-    );
 
-    private final Setting<Boolean> onlyOnGround = sgGeneral.add(new BoolSetting.Builder()
-            .name("only-on-ground")
-            .description("Use speed only when on ground.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Double> speed = sgGeneral.add(new DoubleSetting.Builder().name("speed").description("How fast you want to go in blocks per second.").defaultValue(5.6).min(0).sliderMax(50).build());
 
-    private final Setting<Boolean> inWater = sgGeneral.add(new BoolSetting.Builder()
-            .name("in-water")
-            .description("Use speed when in water.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> onlyOnGround = sgGeneral.add(new BoolSetting.Builder().name("only-on-ground").description("Use speed only when on ground.").defaultValue(false).build());
 
-    private final Setting<Boolean> whenSneaking = sgGeneral.add(new BoolSetting.Builder()
-            .name("when-sneaking")
-            .description("Use speed when sneaking.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> inWater = sgGeneral.add(new BoolSetting.Builder().name("in-water").description("Use speed when in water.").defaultValue(false).build());
 
-    private final Setting<Boolean> applySpeedPotions = sgGeneral.add(new BoolSetting.Builder()
-            .name("apply-speed-potions")
-            .description("Apply speed potion effect.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> whenSneaking = sgGeneral.add(new BoolSetting.Builder().name("when-sneaking").description("Use speed when sneaking.").defaultValue(false).build());
 
-    public Speed() {
-        super(Category.Movement, "speed", "Speeeeeed.");
-    }
-
-    @EventHandler
-    private final Listener<PlayerMoveEvent> onPlayerMove = new Listener<>(event -> {
-        if (event.type != MovementType.SELF || mc.player.isFallFlying() || mc.player.isClimbing() || mc.player.getVehicle() != null) return;
-        if (!whenSneaking.get() && mc.player.isSneaking()) return;
-        if (onlyOnGround.get() && !mc.player.isOnGround()) return;
-        if (!inWater.get() && mc.player.isTouchingWater()) return;
+    private final Setting<Boolean> applySpeedPotions = sgGeneral.add(new BoolSetting.Builder().name("apply-speed-potions").description("Apply speed potion effect.").defaultValue(true).build());
+    @EventHandler private final Listener<PlayerMoveEvent> onPlayerMove = new Listener<>(event -> {
+        if (event.type != MovementType.SELF || mc.player.isFallFlying() || mc.player.isClimbing() || mc.player.getVehicle() != null) {
+            return;
+        }
+        if (!whenSneaking.get() && mc.player.isSneaking()) {
+            return;
+        }
+        if (onlyOnGround.get() && !mc.player.isOnGround()) {
+            return;
+        }
+        if (!inWater.get() && mc.player.isTouchingWater()) {
+            return;
+        }
 
         float yaw = mc.player.yaw;
         if (BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing()) {
@@ -124,4 +99,8 @@ public class Speed extends ToggleModule {
 
         ((IVec3d) event.movement).set(velX, event.movement.y, velZ);
     });
+
+    public Speed() {
+        super(Category.Movement, "speed", "Speeeeeed.");
+    }
 }

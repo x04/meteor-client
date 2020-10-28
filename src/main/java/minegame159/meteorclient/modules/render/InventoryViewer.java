@@ -20,88 +20,31 @@ import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
 
 public class InventoryViewer extends ToggleModule {
-    private final SettingGroup sgBackground = settings.createGroup("Background");
-    private final SettingGroup sgX = settings.createGroup("X");
-    private final SettingGroup sgY = settings.createGroup("Y");
-
-    public enum mode {
-        LIGHT,
-        LIGHT_TRANSPARENT,
-        DARK,
-        DARK_TRANSPARENT,
-        FLAT
-    }
-
-    // Background
-    private final Setting<Boolean> bgEnabled = sgBackground.add(new BoolSetting.Builder()
-            .name("background-enabled")
-            .description("Draws intentory background.")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<mode> bgMode = sgBackground.add(new EnumSetting.Builder<mode>()
-            .name("background-mode")
-            .description("Which background to use.")
-            .defaultValue(mode.LIGHT)
-            .build()
-    );
-    public final Setting<Color> flatBgColor = sgBackground.add(new ColorSetting.Builder()
-            .name("flat-background-color")
-            .description("Flat background color.")
-            .defaultValue(new Color(0, 0, 0, 64))
-            .build()
-    );
-
-    // X
-    private final Setting<AlignmentX> xAlignment = sgX.add(new EnumSetting.Builder<AlignmentX>()
-            .name("x-alignment")
-            .description("X alignment.")
-            .defaultValue(AlignmentX.Left)
-            .build()
-    );
-
-    private final Setting<Integer> xOffset = sgX.add(new IntSetting.Builder()
-            .name("x-offset")
-            .description("X offset.")
-            .defaultValue(3)
-            .sliderMax(200)
-            .build()
-    );
-
-    // Y
-    private final Setting<AlignmentY> yAlignment = sgY.add(new EnumSetting.Builder<AlignmentY>()
-            .name("y-alignment")
-            .description("Y alignment.")
-            .defaultValue(AlignmentY.Bottom)
-            .build()
-    );
-
-    private final Setting<Integer> yOffset = sgY.add(new IntSetting.Builder()
-            .name("y-offset")
-            .description("Y offset.")
-            .defaultValue(3)
-            .sliderMax(200)
-            .build()
-    );
-
     private static final Identifier TEXTURE_LIGHT = new Identifier("meteor-client", "container_3x9.png");
     private static final Identifier TEXTURE_LIGHT_TRANSPARENT = new Identifier("meteor-client", "container_3x9-transparent.png");
     private static final Identifier TEXTURE_DARK = new Identifier("meteor-client", "container_3x9-dark.png");
     private static final Identifier TEXTURE_DARK_TRANSPARENT = new Identifier("meteor-client", "container_3x9-dark-transparent.png");
-
     private static final int WIDTH = 176;
     private static final int HEIGHT = 67;
-
-    public InventoryViewer() {
-        super(Category.Render, "inventory-viewer", "Displays your inventory.");
-    }
-
-    @EventHandler
-    private final Listener<Render2DEvent> onRender2D = new Listener<>(event -> {
+    private final SettingGroup sgBackground = settings.createGroup("Background");
+    public final Setting<Color> flatBgColor = sgBackground.add(new ColorSetting.Builder().name("flat-background-color").description("Flat background color.").defaultValue(new Color(0, 0, 0, 64)).build());
+    private final SettingGroup sgX = settings.createGroup("X");
+    private final SettingGroup sgY = settings.createGroup("Y");
+    // Background
+    private final Setting<Boolean> bgEnabled = sgBackground.add(new BoolSetting.Builder().name("background-enabled").description("Draws intentory background.").defaultValue(true).build());
+    private final Setting<mode> bgMode = sgBackground.add(new EnumSetting.Builder<mode>().name("background-mode").description("Which background to use.").defaultValue(mode.LIGHT).build());
+    // X
+    private final Setting<AlignmentX> xAlignment = sgX.add(new EnumSetting.Builder<AlignmentX>().name("x-alignment").description("X alignment.").defaultValue(AlignmentX.Left).build());
+    private final Setting<Integer> xOffset = sgX.add(new IntSetting.Builder().name("x-offset").description("X offset.").defaultValue(3).sliderMax(200).build());
+    // Y
+    private final Setting<AlignmentY> yAlignment = sgY.add(new EnumSetting.Builder<AlignmentY>().name("y-alignment").description("Y alignment.").defaultValue(AlignmentY.Bottom).build());
+    private final Setting<Integer> yOffset = sgY.add(new IntSetting.Builder().name("y-offset").description("Y offset.").defaultValue(3).sliderMax(200).build());
+    @EventHandler private final Listener<Render2DEvent> onRender2D = new Listener<>(event -> {
         int x = getX(event.screenWidth);
         int y = getY(event.screenHeight);
-        if (bgEnabled.get()) drawBackground(x, y);
+        if (bgEnabled.get()) {
+            drawBackground(x, y);
+        }
         DiffuseLighting.enable();
 
         for (int row = 0; row < 3; row++) {
@@ -112,17 +55,21 @@ public class InventoryViewer extends ToggleModule {
         DiffuseLighting.disable();
     });
 
+    public InventoryViewer() {
+        super(Category.Render, "inventory-viewer", "Displays your inventory.");
+    }
 
     private void drawItem(ItemStack itemStack, int x, int y) {
         mc.getItemRenderer().renderGuiItemIcon(itemStack, x, y);
         mc.getItemRenderer().renderGuiItemOverlay(mc.textRenderer, itemStack, x, y, null);
     }
+
     private void drawBackground(int x, int y) {
         Identifier BACKGROUND;
         int posX = getX(mc.getWindow().getScaledWidth());
         int posY = getY(mc.getWindow().getScaledHeight());
 
-        switch(bgMode.get()) {
+        switch (bgMode.get()) {
             case LIGHT:
                 BACKGROUND = TEXTURE_LIGHT;
                 RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -156,19 +103,31 @@ public class InventoryViewer extends ToggleModule {
 
     private int getX(int screenWidth) {
         switch (xAlignment.get()) {
-            case Left:   return xOffset.get();
-            case Center: return screenWidth / 2 - WIDTH / 2 + xOffset.get();
-            case Right:  return screenWidth - WIDTH - xOffset.get();
-            default:     return 0;
+            case Left:
+                return xOffset.get();
+            case Center:
+                return screenWidth / 2 - WIDTH / 2 + xOffset.get();
+            case Right:
+                return screenWidth - WIDTH - xOffset.get();
+            default:
+                return 0;
         }
     }
 
     private int getY(int screenHeight) {
         switch (yAlignment.get()) {
-            case Top:    return yOffset.get();
-            case Center: return screenHeight / 2 - HEIGHT / 2 + yOffset.get();
-            case Bottom: return screenHeight - HEIGHT - yOffset.get();
-            default:     return 0;
+            case Top:
+                return yOffset.get();
+            case Center:
+                return screenHeight / 2 - HEIGHT / 2 + yOffset.get();
+            case Bottom:
+                return screenHeight - HEIGHT - yOffset.get();
+            default:
+                return 0;
         }
+    }
+
+    public enum mode {
+        LIGHT, LIGHT_TRANSPARENT, DARK, DARK_TRANSPARENT, FLAT
     }
 }

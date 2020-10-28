@@ -14,10 +14,13 @@ public class Reset extends Command {
     @Override
     public void run(String[] args) {
         Module module = Utils.tryToGetModule(args);
-        if (module == null) return;
+        if (module == null) {
+            return;
+        }
 
         for (SettingGroup sg : module.settings) {
-            for (Setting<?> setting : sg) setting.reset();
+            for (Setting<?> setting : sg)
+                setting.reset();
         }
     }
 }

@@ -16,19 +16,8 @@ import java.util.List;
 public class SoundBlocker extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<List<SoundEvent>> sounds = sgGeneral.add(new SoundEventListSetting.Builder()
-            .name("sounds")
-            .description("Sounds to block.")
-            .defaultValue(new ArrayList<>(0))
-            .build()
-    );
-
-    public SoundBlocker() {
-        super(Category.Misc, "sound-blocker", "Blocks selected sounds.");
-    }
-
-    @EventHandler
-    private final Listener<PlaySoundEvent> onPlaySound = new Listener<>(event -> {
+    private final Setting<List<SoundEvent>> sounds = sgGeneral.add(new SoundEventListSetting.Builder().name("sounds").description("Sounds to block.").defaultValue(new ArrayList<>(0)).build());
+    @EventHandler private final Listener<PlaySoundEvent> onPlaySound = new Listener<>(event -> {
         for (SoundEvent sound : sounds.get()) {
             if (sound.getId().equals(event.sound.getId())) {
                 event.cancel();
@@ -36,4 +25,8 @@ public class SoundBlocker extends ToggleModule {
             }
         }
     });
+
+    public SoundBlocker() {
+        super(Category.Misc, "sound-blocker", "Blocks selected sounds.");
+    }
 }

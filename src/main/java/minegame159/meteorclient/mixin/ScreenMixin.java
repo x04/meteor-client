@@ -13,6 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ScreenMixin {
     @Inject(method = "renderBackground(Lnet/minecraft/client/util/math/MatrixStack;)V", at = @At("HEAD"), cancellable = true)
     private void onRenderBackground(CallbackInfo info) {
-        if (Utils.canUpdate() && ModuleManager.INSTANCE.get(NoRender.class).noGuiBackground()) info.cancel();
+        if (Utils.canUpdate() && ModuleManager.INSTANCE.get(NoRender.class).noGuiBackground()) {
+            info.cancel();
+        }
     }
 }

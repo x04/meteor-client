@@ -18,41 +18,29 @@ import net.minecraft.util.Hand;
 
 public class AutoShearer extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    
-    private final Setting<Double> distance = sgGeneral.add(new DoubleSetting.Builder()
-            .name("distance")
-            .description("Maximum distance.")
-            .min(0.0)
-            .defaultValue(5.0)
-            .build()
-    );
 
-    private final Setting<Boolean> preserveBrokenShears = sgGeneral.add(new BoolSetting.Builder()
-            .name("preserve-broken-shears")
-            .description("Will not break shears.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Double> distance = sgGeneral.add(new DoubleSetting.Builder().name("distance").description("Maximum distance.").min(0.0).defaultValue(5.0).build());
 
-    public AutoShearer() {
-        super(Category.Misc, "auto-shearer", "Automatically shears sheeps.");
-    }
-
-    @EventHandler
-    private Listener<TickEvent> onTick = new Listener<>(event -> {
+    private final Setting<Boolean> preserveBrokenShears = sgGeneral.add(new BoolSetting.Builder().name("preserve-broken-shears").description("Will not break shears.").defaultValue(false).build());
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         for (Entity entity : mc.world.getEntities()) {
-            if (!(entity instanceof SheepEntity) || ((SheepEntity) entity).isSheared() || ((SheepEntity) entity).isBaby() || mc.player.distanceTo(entity) > distance.get()) continue;
+            if (!(entity instanceof SheepEntity) || ((SheepEntity) entity).isSheared() || ((SheepEntity) entity).isBaby() || mc.player.distanceTo(entity) > distance.get()) {
+                continue;
+            }
 
             boolean findNewShears = false;
             boolean offHand = false;
             if (mc.player.inventory.getMainHandStack().getItem() instanceof ShearsItem) {
-                if (preserveBrokenShears.get() && mc.player.inventory.getMainHandStack().getDamage() >= mc.player.inventory.getMainHandStack().getMaxDamage() - 1) findNewShears = true;
-            }
-            else if (mc.player.inventory.offHand.get(0).getItem() instanceof ShearsItem) {
-                if (preserveBrokenShears.get() && mc.player.inventory.offHand.get(0).getDamage() >= mc.player.inventory.offHand.get(0).getMaxDamage() - 1) findNewShears = true;
-                else offHand = true;
-            }
-            else {
+                if (preserveBrokenShears.get() && mc.player.inventory.getMainHandStack().getDamage() >= mc.player.inventory.getMainHandStack().getMaxDamage() - 1) {
+                    findNewShears = true;
+                }
+            } else if (mc.player.inventory.offHand.get(0).getItem() instanceof ShearsItem) {
+                if (preserveBrokenShears.get() && mc.player.inventory.offHand.get(0).getDamage() >= mc.player.inventory.offHand.get(0).getMaxDamage() - 1) {
+                    findNewShears = true;
+                } else {
+                    offHand = true;
+                }
+            } else {
                 findNewShears = true;
             }
 
@@ -72,4 +60,8 @@ public class AutoShearer extends ToggleModule {
             }
         }
     });
+
+    public AutoShearer() {
+        super(Category.Misc, "auto-shearer", "Automatically shears sheeps.");
+    }
 }

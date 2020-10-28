@@ -21,7 +21,9 @@ public class WModuleCategory extends WWindow {
         getDefaultCell().space(0);
 
         for (Module module : ModuleManager.INSTANCE.getGroup(category)) {
-            if (!(module instanceof ToggleModule)) continue;
+            if (!(module instanceof ToggleModule)) {
+                continue;
+            }
 
             add(new WModule((ToggleModule) module)).fillX().expandX();
             row();
@@ -30,11 +32,16 @@ public class WModuleCategory extends WWindow {
 
     private static GuiConfig.WindowType get(Category category) {
         switch (category) {
-            case Combat:   return GuiConfig.WindowType.Combat;
-            case Player:   return GuiConfig.WindowType.Player;
-            case Movement: return GuiConfig.WindowType.Movement;
-            case Render:   return GuiConfig.WindowType.Render;
-            case Misc:     return GuiConfig.WindowType.Misc;
+            case Combat:
+                return GuiConfig.WindowType.Combat;
+            case Player:
+                return GuiConfig.WindowType.Player;
+            case Movement:
+                return GuiConfig.WindowType.Movement;
+            case Render:
+                return GuiConfig.WindowType.Render;
+            case Misc:
+                return GuiConfig.WindowType.Misc;
         }
 
         return null;

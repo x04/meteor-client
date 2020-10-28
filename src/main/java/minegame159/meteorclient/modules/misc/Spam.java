@@ -3,9 +3,9 @@ package minegame159.meteorclient.modules.misc;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import minegame159.meteorclient.events.TickEvent;
+import minegame159.meteorclient.gui.widgets.*;
 import minegame159.meteorclient.modules.Category;
 import minegame159.meteorclient.modules.ToggleModule;
-import minegame159.meteorclient.gui.widgets.*;
 import minegame159.meteorclient.settings.BoolSetting;
 import minegame159.meteorclient.settings.IntSetting;
 import minegame159.meteorclient.settings.Setting;
@@ -22,46 +22,26 @@ import java.util.List;
 public class Spam extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
-            .name("delay")
-            .description("How much ticks to wait between messages. 20 ticks = 1 second.")
-            .defaultValue(20)
-            .min(0)
-            .sliderMax(100)
-            .build()
-    );
+    private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder().name("delay").description("How much ticks to wait between messages. 20 ticks = 1 second.").defaultValue(20).min(0).sliderMax(100).build());
 
-    private final Setting<Boolean> random = sgGeneral.add(new BoolSetting.Builder()
-            .name("random")
-            .description("Selects random message.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> random = sgGeneral.add(new BoolSetting.Builder().name("random").description("Selects random message.").defaultValue(false).build());
 
     private final List<String> messages = new ArrayList<>();
     private int timer;
     private int messageI;
-
-    public Spam() {
-        super(Category.Misc, "spam", "Spams message in chat.");
-    }
-
-    @Override
-    public void onActivate() {
-        timer = delay.get();
-        messageI = 0;
-    }
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (messages.isEmpty()) return;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (messages.isEmpty()) {
+            return;
+        }
 
         if (timer <= 0) {
             int i;
             if (random.get()) {
                 i = Utils.random(0, messages.size());
             } else {
-                if (messageI >= messages.size()) messageI = 0;
+                if (messageI >= messages.size()) {
+                    messageI = 0;
+                }
                 i = messageI++;
             }
 
@@ -72,6 +52,16 @@ public class Spam extends ToggleModule {
             timer--;
         }
     });
+
+    public Spam() {
+        super(Category.Misc, "spam", "Spams message in chat.");
+    }
+
+    @Override
+    public void onActivate() {
+        timer = delay.get();
+        messageI = 0;
+    }
 
     @Override
     public WWidget getWidget() {
@@ -121,7 +111,8 @@ public class Spam extends ToggleModule {
         messages.removeIf(String::isEmpty);
         ListTag messagesTag = new ListTag();
 
-        for (String message : messages) messagesTag.add(StringTag.of(message));
+        for (String message : messages)
+            messagesTag.add(StringTag.of(message));
         tag.put("messages", messagesTag);
 
         return tag;
@@ -133,7 +124,8 @@ public class Spam extends ToggleModule {
 
         if (tag.contains("messages")) {
             ListTag messagesTag = tag.getList("messages", 8);
-            for (Tag messageTag : messagesTag) messages.add(messageTag.asString());
+            for (Tag messageTag : messagesTag)
+                messages.add(messageTag.asString());
         } else {
             messages.add("Meteor on Crack!");
         }

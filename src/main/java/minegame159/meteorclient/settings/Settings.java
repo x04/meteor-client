@@ -12,13 +12,15 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Settings implements ISerializable<Settings>, Iterable<SettingGroup> {
-    private SettingGroup defaultGroup;
     private final List<SettingGroup> groups = new ArrayList<>(1);
+    private SettingGroup defaultGroup;
 
     public Setting<?> get(String name) {
         for (SettingGroup sg : this) {
             for (Setting<?> setting : sg) {
-                if (name.equalsIgnoreCase(setting.name)) return setting;
+                if (name.equalsIgnoreCase(setting.name)) {
+                    return setting;
+                }
             }
         }
 
@@ -27,7 +29,9 @@ public class Settings implements ISerializable<Settings>, Iterable<SettingGroup>
 
     public SettingGroup getGroup(String name) {
         for (SettingGroup sg : this) {
-            if (sg.name.equals(name)) return sg;
+            if (sg.name.equals(name)) {
+                return sg;
+            }
         }
 
         return null;
@@ -38,7 +42,9 @@ public class Settings implements ISerializable<Settings>, Iterable<SettingGroup>
     }
 
     public SettingGroup getDefaultGroup() {
-        if (defaultGroup == null) defaultGroup = createGroup("General");
+        if (defaultGroup == null) {
+            defaultGroup = createGroup("General");
+        }
         return defaultGroup;
     }
 
@@ -47,6 +53,7 @@ public class Settings implements ISerializable<Settings>, Iterable<SettingGroup>
         groups.add(group);
         return group;
     }
+
     public SettingGroup createGroup(String name) {
         return createGroup(name, true);
     }
@@ -56,7 +63,9 @@ public class Settings implements ISerializable<Settings>, Iterable<SettingGroup>
 
         for (SettingGroup sg : this) {
             for (Setting<?> setting : sg) {
-                if (activate) setting.onActivated();
+                if (activate) {
+                    setting.onActivated();
+                }
                 setting.resetWidget();
             }
         }
@@ -67,6 +76,7 @@ public class Settings implements ISerializable<Settings>, Iterable<SettingGroup>
 
         return table;
     }
+
     public WTable createTable() {
         return createTable(true);
     }
@@ -91,7 +101,9 @@ public class Settings implements ISerializable<Settings>, Iterable<SettingGroup>
             CompoundTag groupTag = (CompoundTag) t;
 
             SettingGroup sg = getGroup(groupTag.getString("name"));
-            if (sg != null) sg.fromTag(groupTag);
+            if (sg != null) {
+                sg.fromTag(groupTag);
+            }
         }
 
         return this;

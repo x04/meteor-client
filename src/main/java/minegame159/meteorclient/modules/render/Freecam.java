@@ -19,92 +19,31 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class Freecam extends ToggleModule {
-    private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    
-    private final Setting<Double> speed = sgGeneral.add(new DoubleSetting.Builder()
-            .name("speed")
-            .description("Speed")
-            .defaultValue(1.0)
-            .min(0.0)
-            .build()
-    );
-
-    private final Setting<Boolean> reloadChunks = sgGeneral.add(new BoolSetting.Builder()
-            .name("reload-chunks")
-            .description("Disables cave culling.")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Boolean> renderHands = sgGeneral.add(new BoolSetting.Builder()
-            .name("render-hands")
-            .description("Render hands when in freecam.")
-            .defaultValue(true)
-            .build()
-    );
-
     public final Vec3d pos = new Vec3d(0, 0, 0);
     public final Vec3d prevPos = new Vec3d(0, 0, 0);
-
+    private final SettingGroup sgGeneral = settings.getDefaultGroup();
+    private final Setting<Double> speed = sgGeneral.add(new DoubleSetting.Builder().name("speed").description("Speed").defaultValue(1.0).min(0.0).build());
+    private final Setting<Boolean> reloadChunks = sgGeneral.add(new BoolSetting.Builder().name("reload-chunks").description("Disables cave culling.").defaultValue(true).build());
+    private final Setting<Boolean> renderHands = sgGeneral.add(new BoolSetting.Builder().name("render-hands").description("Render hands when in freecam.").defaultValue(true).build());
+    @EventHandler private final Listener<OpenScreenEvent> onOpenScreen = new Listener<>(event -> unpress());
     public float yaw, pitch;
     public float prevYaw, prevPitch;
-
     private boolean forward, backward, right, left, up, down;
-
-    public Freecam() {
-        super(Category.Render, "freecam", "You know what it does.");
-    }
-
-    @Override
-    public void onActivate() {
-        ((IVec3d) pos).set(mc.gameRenderer.getCamera().getPos());
-        ((IVec3d) prevPos).set(mc.gameRenderer.getCamera().getPos());
-
-        yaw = mc.player.yaw;
-        pitch = mc.player.pitch;
-        prevYaw = yaw;
-        prevPitch = pitch;
-
-        forward = false;
-        backward = false;
-        right = false;
-        left = false;
-        up = false;
-        down = false;
-
-        unpress();
-        if (reloadChunks.get()) mc.worldRenderer.reload();
-    }
-
-    @Override
-    public void onDeactivate() {
-        if (reloadChunks.get()) mc.worldRenderer.reload();
-    }
-
-    @EventHandler
-    private final Listener<OpenScreenEvent> onOpenScreen = new Listener<>(event -> unpress());
-
-    private void unpress() {
-        ((IKeyBinding) mc.options.keyForward).setPressed(false);
-        ((IKeyBinding) mc.options.keyBack).setPressed(false);
-        ((IKeyBinding) mc.options.keyRight).setPressed(false);
-        ((IKeyBinding) mc.options.keyLeft).setPressed(false);
-        ((IKeyBinding) mc.options.keyJump).setPressed(false);
-        ((IKeyBinding) mc.options.keySneak).setPressed(false);
-    }
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         Vec3d forward = Vec3d.fromPolar(0, getYaw(1 / 20f));
         Vec3d right = Vec3d.fromPolar(0, getYaw(1 / 20f) + 90);
         double velX = 0;
         double velY = 0;
         double velZ = 0;
 
-        if (mc.options.keyForward.isPressed()) System.out.println("OMG");
+        if (mc.options.keyForward.isPressed()) {
+            System.out.println("OMG");
+        }
 
         double s = 0.5;
-        if (mc.options.keySprint.isPressed()) s = 1;
+        if (mc.options.keySprint.isPressed()) {
+            s = 1;
+        }
 
         boolean a = false;
         if (this.forward) {
@@ -146,9 +85,7 @@ public class Freecam extends ToggleModule {
         ((IVec3d) prevPos).set(pos);
         ((IVec3d) pos).set(pos.x + velX, pos.y + velY, pos.z + velZ);
     });
-
-    @EventHandler
-    private final Listener<KeyEvent> onKey = new Listener<>(event -> {
+    @EventHandler private final Listener<KeyEvent> onKey = new Listener<>(event -> {
         boolean cancel = true;
 
         if (KeyBindingHelper.getBoundKeyOf(mc.options.keyForward).getCode() == event.key) {
@@ -167,8 +104,53 @@ public class Freecam extends ToggleModule {
             cancel = false;
         }
 
-        if (cancel) event.cancel();
+        if (cancel) {
+            event.cancel();
+        }
     });
+
+    public Freecam() {
+        super(Category.Render, "freecam", "You know what it does.");
+    }
+
+    @Override
+    public void onActivate() {
+        ((IVec3d) pos).set(mc.gameRenderer.getCamera().getPos());
+        ((IVec3d) prevPos).set(mc.gameRenderer.getCamera().getPos());
+
+        yaw = mc.player.yaw;
+        pitch = mc.player.pitch;
+        prevYaw = yaw;
+        prevPitch = pitch;
+
+        forward = false;
+        backward = false;
+        right = false;
+        left = false;
+        up = false;
+        down = false;
+
+        unpress();
+        if (reloadChunks.get()) {
+            mc.worldRenderer.reload();
+        }
+    }
+
+    @Override
+    public void onDeactivate() {
+        if (reloadChunks.get()) {
+            mc.worldRenderer.reload();
+        }
+    }
+
+    private void unpress() {
+        ((IKeyBinding) mc.options.keyForward).setPressed(false);
+        ((IKeyBinding) mc.options.keyBack).setPressed(false);
+        ((IKeyBinding) mc.options.keyRight).setPressed(false);
+        ((IKeyBinding) mc.options.keyLeft).setPressed(false);
+        ((IKeyBinding) mc.options.keyJump).setPressed(false);
+        ((IKeyBinding) mc.options.keySneak).setPressed(false);
+    }
 
     public void changeLookDirection(double deltaX, double deltaY) {
         prevYaw = yaw;

@@ -13,6 +13,24 @@ import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 
 public class AutoSign extends ToggleModule {
     private String[] text;
+    @EventHandler private final Listener<SendPacketEvent> onSendPacket = new Listener<>(event -> {
+        if (!(event.packet instanceof UpdateSignC2SPacket)) {
+            return;
+        }
+
+        text = ((UpdateSignC2SPacket) event.packet).getText();
+    });
+    @EventHandler private final Listener<OpenScreenEvent> onOpenScreen = new Listener<>(event -> {
+        if (!(event.screen instanceof SignEditScreen) || text == null) {
+            return;
+        }
+
+        SignBlockEntity sign = ((ISignEditScreen) event.screen).getSign();
+
+        mc.player.networkHandler.sendPacket(new UpdateSignC2SPacket(sign.getPos(), text[0], text[1], text[2], text[3]));
+
+        event.cancel();
+    });
 
     public AutoSign() {
         super(Category.Misc, "auto-sign", "Automatically writes signs. When enabled first sign's text will be used.");
@@ -22,22 +40,4 @@ public class AutoSign extends ToggleModule {
     public void onDeactivate() {
         text = null;
     }
-
-    @EventHandler
-    private Listener<SendPacketEvent> onSendPacket = new Listener<>(event -> {
-        if (!(event.packet instanceof UpdateSignC2SPacket)) return;
-
-        text = ((UpdateSignC2SPacket) event.packet).getText();
-    });
-
-    @EventHandler
-    private Listener<OpenScreenEvent> onOpenScreen = new Listener<>(event -> {
-        if (!(event.screen instanceof SignEditScreen) || text == null) return;
-
-        SignBlockEntity sign = ((ISignEditScreen) event.screen).getSign();
-
-        mc.player.networkHandler.sendPacket(new UpdateSignC2SPacket(sign.getPos(), text[0], text[1], text[2], text[3]));
-
-        event.cancel();
-    });
 }

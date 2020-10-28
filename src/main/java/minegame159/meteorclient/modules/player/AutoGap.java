@@ -19,104 +19,60 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.Items;
 
 public class AutoGap extends ToggleModule {
-    public enum Mode{
-        Fire_Resistance,
-        Regeneration,
-        Constant
-    }
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
-    public AutoGap(){
-        super(Category.Player, "auto-gap", "Automatically eats gapples and egaps if their effects run out.");
-    }
-
-    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>()
-            .name("mode")
-            .description("Determines when you eat the gapple.")
-            .defaultValue(Mode.Regeneration)
-            .build()
-    );
-
-    private final Setting<Boolean> preferEgap = sgGeneral.add(new BoolSetting.Builder()
-            .name("prefer-egap")
-            .description("Prefers to eat egapps over regular gapples")
-            .defaultValue(false)
-            .build()
-    );
-
-    private final Setting<Boolean> preferAutoEat = sgGeneral.add(new BoolSetting.Builder()
-            .name("prefer-auto-eat")
-            .description("Whether to use auto-eat or this in the event of a conflict")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Boolean> disableAuras = sgGeneral.add(new BoolSetting.Builder()
-            .name("disable-auras")
-            .description("disable all auras")
-            .defaultValue(false)
-            .build()
-    );
-
-    @Override
-    public void onDeactivate() {
-        if(wasThis) {
-            ((IKeyBinding) mc.options.keyUse).setPressed(false);
-            wasThis = false;
-        }
-    }
-
+    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("mode").description("Determines when you eat the gapple.").defaultValue(Mode.Regeneration).build());
+    private final Setting<Boolean> preferEgap = sgGeneral.add(new BoolSetting.Builder().name("prefer-egap").description("Prefers to eat egapps over regular gapples").defaultValue(false).build());
+    private final Setting<Boolean> preferAutoEat = sgGeneral.add(new BoolSetting.Builder().name("prefer-auto-eat").description("Whether to use auto-eat or this in the event of a conflict").defaultValue(true).build());
+    private final Setting<Boolean> disableAuras = sgGeneral.add(new BoolSetting.Builder().name("disable-auras").description("disable all auras").defaultValue(false).build());
     private int prevSlot;
     private boolean wasKillActive = false;
     private boolean wasCrystalActive = false;
     private boolean wasThis = false;
     private boolean wasAutoEatOn = false;
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if(mc.options.keyUse.isPressed() && !wasThis && ModuleManager.INSTANCE.get(AutoEat.class).isActive() && preferAutoEat.get()){
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (mc.options.keyUse.isPressed() && !wasThis && ModuleManager.INSTANCE.get(AutoEat.class).isActive() && preferAutoEat.get()) {
             return;
-        }else if(mc.options.keyUse.isPressed() && wasThis && ModuleManager.INSTANCE.get(AutoEat.class).isActive() && !preferAutoEat.get()){
+        } else if (mc.options.keyUse.isPressed() && wasThis && ModuleManager.INSTANCE.get(AutoEat.class).isActive() && !preferAutoEat.get()) {
             ModuleManager.INSTANCE.get(AutoEat.class).toggle();
             wasAutoEatOn = true;
         }
-        if (mode.get() == Mode.Constant && (mc.player.getMainHandStack().getItem() == Items.GOLDEN_APPLE
-                || mc.player.getMainHandStack().getItem() == Items.ENCHANTED_GOLDEN_APPLE)) {
+        if (mode.get() == Mode.Constant && (mc.player.getMainHandStack().getItem() == Items.GOLDEN_APPLE || mc.player.getMainHandStack().getItem() == Items.ENCHANTED_GOLDEN_APPLE)) {
             wasThis = true;
             ((IKeyBinding) mc.options.keyUse).setPressed(true);
             return;
-        } else if (mode.get() == Mode.Constant &&!(mc.player.getMainHandStack().getItem() == Items.GOLDEN_APPLE
-                || mc.player.getMainHandStack().getItem() == Items.ENCHANTED_GOLDEN_APPLE)) {
+        } else if (mode.get() == Mode.Constant && !(mc.player.getMainHandStack().getItem() == Items.GOLDEN_APPLE || mc.player.getMainHandStack().getItem() == Items.ENCHANTED_GOLDEN_APPLE)) {
             wasThis = false;
             ((IKeyBinding) mc.options.keyUse).setPressed(false);
             return;
         }
-        if(mc.player.getActiveStatusEffects().containsKey(StatusEffects.ABSORPTION) && mc.player.getActiveStatusEffects().containsKey(StatusEffects.REGENERATION)){
-            if(mc.options.keyUse.isPressed()){
+        if (mc.player.getActiveStatusEffects().containsKey(StatusEffects.ABSORPTION) && mc.player.getActiveStatusEffects().containsKey(StatusEffects.REGENERATION)) {
+            if (mc.options.keyUse.isPressed()) {
                 ((IKeyBinding) mc.options.keyUse).setPressed(false);
                 wasThis = false;
-                if(wasAutoEatOn){
+                if (wasAutoEatOn) {
                     ModuleManager.INSTANCE.get(AutoEat.class).toggle();
                     wasAutoEatOn = false;
                 }
-                if(wasKillActive){
+                if (wasKillActive) {
                     ModuleManager.INSTANCE.get(KillAura.class).toggle();
                     wasKillActive = false;
                 }
-                if(wasCrystalActive){
+                if (wasCrystalActive) {
                     ModuleManager.INSTANCE.get(CrystalAura.class).toggle();
                     wasCrystalActive = false;
                 }
                 mc.player.inventory.selectedSlot = prevSlot;
             }
         } else {
-            if(mode.get() == Mode.Fire_Resistance && mc.player.getActiveStatusEffects().containsKey(StatusEffects.FIRE_RESISTANCE)) return;
+            if (mode.get() == Mode.Fire_Resistance && mc.player.getActiveStatusEffects().containsKey(StatusEffects.FIRE_RESISTANCE)) {
+                return;
+            }
             int gappleSlot = -1;
             int egapSlot = -1;
-            for(int i = 0; i < 9; i++){
-                if(mc.player.inventory.getStack(i).getItem() == Items.GOLDEN_APPLE && gappleSlot == -1){
+            for (int i = 0; i < 9; i++) {
+                if (mc.player.inventory.getStack(i).getItem() == Items.GOLDEN_APPLE && gappleSlot == -1) {
                     gappleSlot = i;
-                }else if(mc.player.inventory.getStack(i).getItem() == Items.ENCHANTED_GOLDEN_APPLE && egapSlot == -1){
+                } else if (mc.player.inventory.getStack(i).getItem() == Items.ENCHANTED_GOLDEN_APPLE && egapSlot == -1) {
                     egapSlot = i;
                 }
             }
@@ -155,7 +111,23 @@ public class AutoGap extends ToggleModule {
         }
     });
 
+    public AutoGap() {
+        super(Category.Player, "auto-gap", "Automatically eats gapples and egaps if their effects run out.");
+    }
+
+    @Override
+    public void onDeactivate() {
+        if (wasThis) {
+            ((IKeyBinding) mc.options.keyUse).setPressed(false);
+            wasThis = false;
+        }
+    }
+
     public boolean rightClickThings() {
         return !isActive() || !wasThis;
+    }
+
+    public enum Mode {
+        Fire_Resistance, Regeneration, Constant
     }
 }

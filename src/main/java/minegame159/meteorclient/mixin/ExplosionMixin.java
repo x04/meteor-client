@@ -22,7 +22,9 @@ public class ExplosionMixin {
 
     @Redirect(method = "collectBlocksAndDamageEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;add(DDD)Lnet/minecraft/util/math/Vec3d;"))
     private Vec3d collectBlocksAndDamageEntitiesVec3dAddProxy(Vec3d vec3d, double x, double y, double z) {
-        if (!entity.getUuid().equals(Meteor.INSTANCE.getMinecraft().player.getUuid())) return vec3d.add(x, y, z);
+        if (!entity.getUuid().equals(Meteor.INSTANCE.getMinecraft().player.getUuid())) {
+            return vec3d.add(x, y, z);
+        }
 
         Velocity velocity = ModuleManager.INSTANCE.get(Velocity.class);
         Vec3d newVec3d = vec3d.add(x * velocity.getHorizontal(), y * velocity.getVertical(), z * velocity.getHorizontal());

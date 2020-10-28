@@ -11,7 +11,9 @@ public class WIntTextBox extends WTextBox {
 
     @Override
     protected boolean addChar(char c) {
-        if (c >= '0' && c <= '9') return true;
+        if (c >= '0' && c <= '9') {
+            return true;
+        }
         return c == '-' && getCursor() == 0 && !getText().contains("-");
     }
 
@@ -35,7 +37,9 @@ public class WIntTextBox extends WTextBox {
             }
         }
 
-        if (action != null && value != lastValue) action.run();
+        if (action != null && value != lastValue) {
+            action.run();
+        }
     }
 
     public int getValue() {

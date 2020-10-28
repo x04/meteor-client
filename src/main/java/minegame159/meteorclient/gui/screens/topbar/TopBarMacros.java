@@ -14,6 +14,11 @@ import minegame159.meteorclient.macros.MacroManager;
 import minegame159.meteorclient.utils.Utils;
 
 public class TopBarMacros extends TopBarWindowScreen {
+    @EventHandler private final Listener<MacroListChangedEvent> onMacroListChanged = new Listener<>(event -> {
+        clear();
+        initWidgets();
+    });
+
     public TopBarMacros() {
         super(TopBarType.Macros);
     }
@@ -41,10 +46,4 @@ public class TopBarMacros extends TopBarWindowScreen {
         WButton create = add(new WButton("Create")).fillX().expandX().getWidget();
         create.action = () -> Meteor.INSTANCE.getMinecraft().openScreen(new EditMacroScreen(null));
     }
-
-    @EventHandler
-    private final Listener<MacroListChangedEvent> onMacroListChanged = new Listener<>(event -> {
-        clear();
-        initWidgets();
-    });
 }

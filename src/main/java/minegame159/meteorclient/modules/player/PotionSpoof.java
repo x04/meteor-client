@@ -17,30 +17,27 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 public class PotionSpoof extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Object2IntMap<StatusEffect>> potions = sgGeneral.add(new StatusEffectSetting.Builder()
-            .name("potions")
-            .description("Potions to add.")
-            .defaultValue(Utils.createStatusEffectMap())
-            .build()
-    );
-
-    public PotionSpoof() {
-        super(Category.Player, "potion-spoof", "Adds you potion effects.");
-    }
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
+    private final Setting<Object2IntMap<StatusEffect>> potions = sgGeneral.add(new StatusEffectSetting.Builder().name("potions").description("Potions to add.").defaultValue(Utils.createStatusEffectMap()).build());
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         for (StatusEffect statusEffect : potions.get().keySet()) {
             int level = potions.get().getInt(statusEffect);
-            if (level <= 0) continue;
+            if (level <= 0) {
+                continue;
+            }
 
             if (mc.player.hasStatusEffect(statusEffect)) {
                 StatusEffectInstance instance = mc.player.getStatusEffect(statusEffect);
                 ((IStatusEffectInstance) instance).setAmplifier(level - 1);
-                if (instance.getDuration() < 20) ((IStatusEffectInstance) instance).setDuration(20);
+                if (instance.getDuration() < 20) {
+                    ((IStatusEffectInstance) instance).setDuration(20);
+                }
             } else {
                 mc.player.addStatusEffect(new StatusEffectInstance(statusEffect, 20, level - 1));
             }
         }
     });
+
+    public PotionSpoof() {
+        super(Category.Player, "potion-spoof", "Adds you potion effects.");
+    }
 }

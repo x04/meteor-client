@@ -10,6 +10,11 @@ import minegame159.meteorclient.friends.FriendManager;
 import minegame159.meteorclient.gui.widgets.*;
 
 public class TopBarFriends extends TopBarWindowScreen {
+    @EventHandler private final Listener<FriendListChangedEvent> onFriendListChanged = new Listener<>(event -> {
+        clear();
+        initWidgets();
+    });
+
     public TopBarFriends() {
         super(TopBarType.Friends);
     }
@@ -35,13 +40,9 @@ public class TopBarFriends extends TopBarWindowScreen {
         WPlus add = t.add(new WPlus()).getWidget();
         add.action = () -> {
             String name = username.getText().trim();
-            if (!name.isEmpty()) FriendManager.INSTANCE.add(new Friend(name));
+            if (!name.isEmpty()) {
+                FriendManager.INSTANCE.add(new Friend(name));
+            }
         };
     }
-
-    @EventHandler
-    private final Listener<FriendListChangedEvent> onFriendListChanged = new Listener<>(event -> {
-        clear();
-        initWidgets();
-    });
 }

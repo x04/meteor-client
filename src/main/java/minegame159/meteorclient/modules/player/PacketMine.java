@@ -22,28 +22,11 @@ import java.util.List;
 public class PacketMine extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Boolean> oneByOne = sgGeneral.add(new BoolSetting.Builder()
-            .name("one-by-one")
-            .description("Mines blocks one by one.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> oneByOne = sgGeneral.add(new BoolSetting.Builder().name("one-by-one").description("Mines blocks one by one.").defaultValue(true).build());
 
     private final Pool<Block> blockPool = new Pool<>(Block::new);
     private final List<Block> blocks = new ArrayList<>();
-
-    public PacketMine() {
-        super(Category.Player, "packet-mine", "Sends packet to mine blocks without mining animation.");
-    }
-
-    @Override
-    public void onDeactivate() {
-        for (Block block : blocks) blockPool.free(block);
-        blocks.clear();
-    }
-
-    @EventHandler
-    private final Listener<StartBreakingBlockEvent> onStartBreakingBlock = new Listener<>(event -> {
+    @EventHandler private final Listener<StartBreakingBlockEvent> onStartBreakingBlock = new Listener<>(event -> {
         Block block = blockPool.get();
         block.blockPos = event.blockPos;
         block.direction = event.direction;
@@ -51,9 +34,7 @@ public class PacketMine extends ToggleModule {
 
         event.cancel();
     });
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         if (oneByOne.get()) {
             if (blocks.size() > 0 && blocks.get(blocks.size() - 1).sendPackets()) {
                 blocks.remove(blocks.size() - 1);
@@ -63,13 +44,28 @@ public class PacketMine extends ToggleModule {
         }
     });
 
+    public PacketMine() {
+        super(Category.Player, "packet-mine", "Sends packet to mine blocks without mining animation.");
+    }
+
+    @Override
+    public void onDeactivate() {
+        for (Block block : blocks)
+            blockPool.free(block);
+        blocks.clear();
+    }
+
     private class Block {
         public BlockPos blockPos;
         public Direction direction;
 
         public boolean sendPackets() {
-            if (mc.world.getBlockState(blockPos).getBlock() == Blocks.AIR) return true;
-            if (Utils.distance(mc.player.getX() - 0.5, mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()), mc.player.getZ() - 0.5, blockPos.getX() + direction.getOffsetX(), blockPos.getY() + direction.getOffsetY(), blockPos.getZ() + direction.getOffsetZ()) > mc.interactionManager.getReachDistance()) return true;
+            if (mc.world.getBlockState(blockPos).getBlock() == Blocks.AIR) {
+                return true;
+            }
+            if (Utils.distance(mc.player.getX() - 0.5, mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()), mc.player.getZ() - 0.5, blockPos.getX() + direction.getOffsetX(), blockPos.getY() + direction.getOffsetY(), blockPos.getZ() + direction.getOffsetZ()) > mc.interactionManager.getReachDistance()) {
+                return true;
+            }
 
             mc.getNetworkHandler().sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockPos, direction));
             mc.getNetworkHandler().sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, blockPos, direction));

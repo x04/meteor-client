@@ -24,58 +24,20 @@ public class AutoEat extends ToggleModule {
     private final SettingGroup sgHunger = settings.createGroup("Hunger");
 
     // General
-    private final Setting<Boolean> egaps = sgGeneral.add(new BoolSetting.Builder()
-            .name("egaps")
-            .description("Eat enchanted golden apples.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> egaps = sgGeneral.add(new BoolSetting.Builder().name("egaps").description("Eat enchanted golden apples.").defaultValue(false).build());
 
-    private final Setting<Boolean> gaps = sgGeneral.add(new BoolSetting.Builder()
-            .name("gaps")
-            .description("Eat golden apples.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> gaps = sgGeneral.add(new BoolSetting.Builder().name("gaps").description("Eat golden apples.").defaultValue(false).build());
 
-    private final Setting<Boolean> chorus = sgGeneral.add(new BoolSetting.Builder()
-            .name("chorus")
-            .description("Eat chorus fruit.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> chorus = sgGeneral.add(new BoolSetting.Builder().name("chorus").description("Eat chorus fruit.").defaultValue(false).build());
 
-    private final Setting<Boolean> noBad = sgGeneral.add(new BoolSetting.Builder()
-            .name("filter-negative-effects")
-            .description("Filters out food items that give you negative potion effects.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> noBad = sgGeneral.add(new BoolSetting.Builder().name("filter-negative-effects").description("Filters out food items that give you negative potion effects.").defaultValue(true).build());
 
-    private final Setting<Boolean> disableAuras = sgGeneral.add(new BoolSetting.Builder()
-            .name("disable-auras")
-            .description("disable all auras")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> disableAuras = sgGeneral.add(new BoolSetting.Builder().name("disable-auras").description("disable all auras").defaultValue(false).build());
 
     // Hunger
-    private final Setting<Boolean> autoHunger = sgHunger.add(new BoolSetting.Builder()
-            .name("auto-hunger")
-            .description("Automatically eats whenever it can.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> autoHunger = sgHunger.add(new BoolSetting.Builder().name("auto-hunger").description("Automatically eats whenever it can.").defaultValue(true).build());
 
-    private final Setting<Integer> minHunger = sgHunger.add(new IntSetting.Builder()
-            .name("hunger")
-            .description("The hunger you eat at.")
-            .defaultValue(17)
-            .min(1)
-            .max(19)
-            .sliderMax(19)
-            .build()
-    );
+    private final Setting<Integer> minHunger = sgHunger.add(new IntSetting.Builder().name("hunger").description("The hunger you eat at.").defaultValue(17).min(1).max(19).sliderMax(19).build());
 
     private boolean wasKillActive = false;
     private boolean wasCrystalActive = false;
@@ -83,35 +45,26 @@ public class AutoEat extends ToggleModule {
     private int preSelectedSlot, preFoodLevel;
     private int slot;
     private boolean wasThis = false;
-
-    public AutoEat() {
-        super(Category.Player, "auto-eat", "Automatically eats food.");
-    }
-
-    @Override
-    public void onDeactivate() {
-        if (isEating) {
-            ((IKeyBinding) mc.options.keyUse).setPressed(false);
-            isEating = false;
-            if (preSelectedSlot != -1) mc.player.inventory.selectedSlot = preSelectedSlot;
-            if (wasThis) BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("resume"); wasThis = false;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (mc.player.abilities.creativeMode) {
+            return;
         }
-    }
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (mc.player.abilities.creativeMode) return;
-        if (isEating && !mc.player.getMainHandStack().getItem().isFood()) ((IKeyBinding) mc.options.keyUse).setPressed(false);
+        if (isEating && !mc.player.getMainHandStack().getItem().isFood()) {
+            ((IKeyBinding) mc.options.keyUse).setPressed(false);
+        }
 
         slot = -1;
         int bestHunger = -1;
 
         for (int i = 0; i < 9; i++) {
             Item item = mc.player.inventory.getStack(i).getItem();
-            if (!item.isFood()) continue;
+            if (!item.isFood()) {
+                continue;
+            }
             if (noBad.get()) {
-                if (item == Items.POISONOUS_POTATO || item == Items.PUFFERFISH || item == Items.CHICKEN
-                        || item == Items.ROTTEN_FLESH || item == Items.SPIDER_EYE || item == Items.SUSPICIOUS_STEW) continue;
+                if (item == Items.POISONOUS_POTATO || item == Items.PUFFERFISH || item == Items.CHICKEN || item == Items.ROTTEN_FLESH || item == Items.SPIDER_EYE || item == Items.SUSPICIOUS_STEW) {
+                    continue;
+                }
             }
 
             if (item == Items.ENCHANTED_GOLDEN_APPLE && item.getFoodComponent().getHunger() > bestHunger) {
@@ -134,7 +87,7 @@ public class AutoEat extends ToggleModule {
                 slot = i;
             }
         }
-        if(mc.player.getOffHandStack().isFood() && mc.player.getOffHandStack().getItem().getFoodComponent().getHunger() > bestHunger){
+        if (mc.player.getOffHandStack().isFood() && mc.player.getOffHandStack().getItem().getFoodComponent().getHunger() > bestHunger) {
             bestHunger = mc.player.getOffHandStack().getItem().getFoodComponent().getHunger();
             slot = InvUtils.OFFHAND_SLOT;
         }
@@ -144,21 +97,26 @@ public class AutoEat extends ToggleModule {
                 isEating = false;
                 mc.interactionManager.stopUsingItem(mc.player);
                 ((IKeyBinding) mc.options.keyUse).setPressed(false);
-                if(wasKillActive){
+                if (wasKillActive) {
                     ModuleManager.INSTANCE.get(KillAura.class).toggle();
                     wasKillActive = false;
                 }
-                if(wasCrystalActive){
+                if (wasCrystalActive) {
                     ModuleManager.INSTANCE.get(CrystalAura.class).toggle();
                     wasCrystalActive = false;
                 }
-                if (preSelectedSlot != -1) mc.player.inventory.selectedSlot = preSelectedSlot;
-                if (wasThis) BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("resume"); wasThis = false;
+                if (preSelectedSlot != -1) {
+                    mc.player.inventory.selectedSlot = preSelectedSlot;
+                }
+                if (wasThis) {
+                    BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("resume");
+                }
+                wasThis = false;
 
                 return;
             }
 
-            if(slot != InvUtils.OFFHAND_SLOT) {
+            if (slot != InvUtils.OFFHAND_SLOT) {
                 mc.player.inventory.selectedSlot = slot;
             }
 
@@ -186,7 +144,7 @@ public class AutoEat extends ToggleModule {
 
         if (slot != -1 && (20 - mc.player.getHungerManager().getFoodLevel() >= bestHunger && autoHunger.get()) || (20 - mc.player.getHungerManager().getFoodLevel() >= minHunger.get() && autoHunger.get())) {
             preSelectedSlot = mc.player.inventory.selectedSlot;
-            if(slot != InvUtils.OFFHAND_SLOT && slot != -1) {
+            if (slot != InvUtils.OFFHAND_SLOT && slot != -1) {
                 mc.player.inventory.selectedSlot = slot;
             }
             isEating = true;
@@ -195,6 +153,25 @@ public class AutoEat extends ToggleModule {
             wasThis = true;
         }
     });
+
+    public AutoEat() {
+        super(Category.Player, "auto-eat", "Automatically eats food.");
+    }
+
+    @Override
+    public void onDeactivate() {
+        if (isEating) {
+            ((IKeyBinding) mc.options.keyUse).setPressed(false);
+            isEating = false;
+            if (preSelectedSlot != -1) {
+                mc.player.inventory.selectedSlot = preSelectedSlot;
+            }
+            if (wasThis) {
+                BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("resume");
+            }
+            wasThis = false;
+        }
+    }
 
     public boolean rightClickThings() {
         return !isActive() || !isEating;

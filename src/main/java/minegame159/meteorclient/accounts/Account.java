@@ -10,10 +10,9 @@ import net.minecraft.client.util.Session;
 import net.minecraft.nbt.CompoundTag;
 
 public abstract class Account<T extends Account<?>> implements ISerializable<T> {
+    protected final AccountCache cache;
     protected AccountType type;
     protected String name;
-
-    protected final AccountCache cache;
 
     public Account(AccountType type, String name) {
         this.type = type;
@@ -35,7 +34,9 @@ public abstract class Account<T extends Account<?>> implements ISerializable<T> 
     }
 
     public String getUsername() {
-        if (cache.username.isEmpty()) return name;
+        if (cache.username.isEmpty()) {
+            return name;
+        }
         return cache.username;
     }
 
@@ -64,7 +65,9 @@ public abstract class Account<T extends Account<?>> implements ISerializable<T> 
 
     @Override
     public T fromTag(CompoundTag tag) {
-        if (!tag.contains("name") || !tag.contains("cache")) throw new NbtException();
+        if (!tag.contains("name") || !tag.contains("cache")) {
+            throw new NbtException();
+        }
 
         name = tag.getString("name");
         cache.fromTag(tag.getCompound("cache"));

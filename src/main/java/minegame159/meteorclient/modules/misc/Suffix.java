@@ -20,44 +20,28 @@ public class Suffix extends ToggleModule {
     static {
         String[] a = "abcdefghijklmnopqrstuvwxyz".split("");
         String[] b = "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴩqʀꜱᴛᴜᴠᴡxyᴢ".split("");
-        for (int i = 0; i < a.length; i++) SMALL_CAPS.put(a[i].charAt(0), b[i].charAt(0));
+        for (int i = 0; i < a.length; i++)
+            SMALL_CAPS.put(a[i].charAt(0), b[i].charAt(0));
     }
 
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<String> text = sgGeneral.add(new StringSetting.Builder()
-            .name("text")
-            .description("Text to add.")
-            .defaultValue(" meteor on crack")
-            .build()
-    );
+    private final Setting<String> text = sgGeneral.add(new StringSetting.Builder().name("text").description("Text to add.").defaultValue(" meteor on crack").build());
 
-    private final Setting<Boolean> smallCaps = sgGeneral.add(new BoolSetting.Builder()
-            .name("small-caps")
-            .description("Uses small font.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> smallCaps = sgGeneral.add(new BoolSetting.Builder().name("small-caps").description("Uses small font.").defaultValue(true).build());
 
-    private final Setting<Boolean> random = sgGeneral.add(new BoolSetting.Builder()
-            .name("random")
-            .description("Example: <msg> (538)")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> random = sgGeneral.add(new BoolSetting.Builder().name("random").description("Example: <msg> (538)").defaultValue(false).build());
 
     private final StringBuilder sb = new StringBuilder();
-
-    public Suffix() {
-        super(Category.Misc, "suffix", "Adds a suffix after every message you send.");
-    }
-
-    @EventHandler
-    private final Listener<SendMessageEvent> onSendMessage = new Listener<>(event -> {
+    @EventHandler private final Listener<SendMessageEvent> onSendMessage = new Listener<>(event -> {
         if (!event.msg.startsWith(Config.INSTANCE.getPrefix() + "b")) {
             event.msg += getSuffix();
         }
     });
+
+    public Suffix() {
+        super(Category.Misc, "suffix", "Adds a suffix after every message you send.");
+    }
 
     private String getSuffix() {
         String text;
@@ -71,8 +55,11 @@ public class Suffix extends ToggleModule {
                 sb.setLength(0);
 
                 for (char ch : text.toCharArray()) {
-                    if (SMALL_CAPS.containsKey(ch)) sb.append(SMALL_CAPS.get(ch));
-                    else sb.append(ch);
+                    if (SMALL_CAPS.containsKey(ch)) {
+                        sb.append(SMALL_CAPS.get(ch));
+                    } else {
+                        sb.append(ch);
+                    }
                 }
 
                 text = sb.toString();

@@ -16,28 +16,9 @@ import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
 
 public class ChestSwap extends ToggleModule {
-    public enum Chestplate {
-        Diamond,
-        Netherite,
-        PreferDiamond,
-        PreferNetherite
-    }
-
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
-    private final Setting<Chestplate> chestplate = sgGeneral.add(new EnumSetting.Builder<Chestplate>()
-            .name("chestplate")
-            .description("Which chestplate to switch to.")
-            .defaultValue(Chestplate.PreferNetherite)
-            .build()
-    );
-
-    private final Setting<Boolean> stayOn = sgGeneral.add(new BoolSetting.Builder()
-            .name("stay-on")
-            .description("Stays on and activates when you turn it off too.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Chestplate> chestplate = sgGeneral.add(new EnumSetting.Builder<Chestplate>().name("chestplate").description("Which chestplate to switch to.").defaultValue(Chestplate.PreferNetherite).build());
+    private final Setting<Boolean> stayOn = sgGeneral.add(new BoolSetting.Builder().name("stay-on").description("Stays on and activates when you turn it off too.").defaultValue(false).build());
 
     public ChestSwap() {
         super(Category.Player, "chest-swap", "Swaps between chestplate and elytra.");
@@ -46,12 +27,16 @@ public class ChestSwap extends ToggleModule {
     @Override
     public void onActivate() {
         swap();
-        if (!stayOn.get()) toggle();
+        if (!stayOn.get()) {
+            toggle();
+        }
     }
 
     @Override
     public void onDeactivate() {
-        if (stayOn.get()) swap();
+        if (stayOn.get()) {
+            swap();
+        }
     }
 
     public void swap() {
@@ -62,7 +47,9 @@ public class ChestSwap extends ToggleModule {
         } else if (currentItem instanceof ArmorItem && ((ArmorItem) currentItem).getSlotType() == EquipmentSlot.CHEST) {
             equipElytra();
         } else {
-            if (!equipChestplate()) equipElytra();
+            if (!equipChestplate()) {
+                equipElytra();
+            }
         }
     }
 
@@ -104,10 +91,14 @@ public class ChestSwap extends ToggleModule {
                     break;
             }
 
-            if (breakLoop) break;
+            if (breakLoop) {
+                break;
+            }
         }
 
-        if (bestSlot != -1) equip(bestSlot);
+        if (bestSlot != -1) {
+            equip(bestSlot);
+        }
         return bestSlot != -1;
     }
 
@@ -133,7 +124,14 @@ public class ChestSwap extends ToggleModule {
 
     @Override
     public void sendToggledMsg() {
-        if (stayOn.get()) super.sendToggledMsg();
-        else if (Config.INSTANCE.chatCommandsInfo) Chat.info("Triggered (highlight)%s(default).", title);
+        if (stayOn.get()) {
+            super.sendToggledMsg();
+        } else if (Config.INSTANCE.chatCommandsInfo) {
+            Chat.info("Triggered (highlight)%s(default).", title);
+        }
+    }
+
+    public enum Chestplate {
+        Diamond, Netherite, PreferDiamond, PreferNetherite
     }
 }

@@ -1,7 +1,6 @@
 package minegame159.meteorclient.utils;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.math.Vec3d;
 
 import java.util.Objects;
 
@@ -53,11 +52,14 @@ public class Vector2 implements ISerializable<Vector2> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Vector2 vector2 = (Vector2) o;
-        return Double.compare(vector2.x, x) == 0 &&
-                Double.compare(vector2.y, y) == 0;
+        return Double.compare(vector2.x, x) == 0 && Double.compare(vector2.y, y) == 0;
     }
 
     @Override

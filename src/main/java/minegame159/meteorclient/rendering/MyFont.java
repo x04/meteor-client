@@ -18,10 +18,8 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 public class MyFont {
-    private final MeshBuilder mb = new MeshBuilder(16384);
-
     public final AbstractTexture texture;
-
+    private final MeshBuilder mb = new MeshBuilder(16384);
     private final int height;
     private final float scale;
     private final float ascent;
@@ -69,17 +67,7 @@ public class MyFont {
             float ipw = 1f / 512;
             float iph = 1f / 512;
 
-            charData[i] = new CharData(
-                    packedChar.xoff(),
-                    packedChar.yoff(),
-                    packedChar.xoff2(),
-                    packedChar.yoff2(),
-                    packedChar.x0() * ipw,
-                    packedChar.y0() * iph,
-                    packedChar.x1() * ipw,
-                    packedChar.y1() * iph,
-                    packedChar.xadvance()
-            );
+            charData[i] = new CharData(packedChar.xoff(), packedChar.yoff(), packedChar.xoff2(), packedChar.yoff2(), packedChar.x0() * ipw, packedChar.y0() * iph, packedChar.x1() * ipw, packedChar.y1() * iph, packedChar.xadvance());
         }
     }
 
@@ -88,7 +76,9 @@ public class MyFont {
 
         for (int i = 0; i < length; i++) {
             int cp = string.charAt(i);
-            if (cp < 32 || cp > 128) cp = 32;
+            if (cp < 32 || cp > 128) {
+                cp = 32;
+            }
             CharData c = charData[cp - 32];
 
             width += c.xAdvance;
@@ -96,6 +86,7 @@ public class MyFont {
 
         return width;
     }
+
     public double getWidth(String string) {
         return getWidth(string, string.length());
     }
@@ -119,13 +110,17 @@ public class MyFont {
 
     public void render(String string, double x, double y, Color color) {
         boolean wasBuilding = isBuilding();
-        if (!isBuilding()) begin();
+        if (!isBuilding()) {
+            begin();
+        }
 
         y += ascent * scale;
 
         for (int i = 0; i < string.length(); i++) {
             int cp = string.charAt(i);
-            if (cp < 32 || cp > 128) cp = 32;
+            if (cp < 32 || cp > 128) {
+                cp = 32;
+            }
             CharData c = charData[cp - 32];
 
             mb.pos(x + c.x0, y + c.y0, 0).color(color).texture(c.u0, c.v0).endVertex();
@@ -139,7 +134,9 @@ public class MyFont {
             x += c.xAdvance;
         }
 
-        if (!wasBuilding) end();
+        if (!wasBuilding) {
+            end();
+        }
     }
 
     private static class CharData {

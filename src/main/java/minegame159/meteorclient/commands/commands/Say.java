@@ -10,7 +10,7 @@ import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 
 public class Say extends Command {
 
-    public Say(){
+    public Say() {
         super("say", "Sends messages in chat.");
     }
 

@@ -16,9 +16,8 @@ public class Outlines {
     public static boolean renderingOutlines;
 
     public static Framebuffer outlinesFbo;
-    private static ShaderEffect outlinesShader;
-
     public static OutlineVertexConsumerProvider vertexConsumerProvider;
+    private static ShaderEffect outlinesShader;
 
     public static void load() {
         try {
@@ -64,6 +63,8 @@ public class Outlines {
     }
 
     public static void onResized(int width, int height) {
-        if (outlinesShader != null) outlinesShader.setupDimensions(width, height);
+        if (outlinesShader != null) {
+            outlinesShader.setupDimensions(width, height);
+        }
     }
 }

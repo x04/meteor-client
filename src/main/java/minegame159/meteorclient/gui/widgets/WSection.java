@@ -7,11 +7,9 @@ import minegame159.meteorclient.utils.Utils;
 import java.util.List;
 
 public class WSection extends WTable {
-    public Runnable action;
-
     private final WHeader header;
     private final WTable table;
-
+    public Runnable action;
     private boolean expanded;
     private double animationProgress;
     private boolean idkDudeNamingIsHard;
@@ -26,7 +24,9 @@ public class WSection extends WTable {
 
         this.expanded = expanded;
         this.animationProgress = expanded ? 1 : 0;
-        if (!expanded) idkDudeNamingIsHard = true;
+        if (!expanded) {
+            idkDudeNamingIsHard = true;
+        }
     }
 
     public WSection(String name, boolean expanded) {
@@ -64,18 +64,28 @@ public class WSection extends WTable {
 
     public void setExpanded(boolean expanded, boolean animation) {
         this.expanded = expanded;
-        if (!animation) animationProgress = expanded ? 1 : 0;
-        if (action != null) action.run();
+        if (!animation) {
+            animationProgress = expanded ? 1 : 0;
+        }
+        if (action != null) {
+            action.run();
+        }
     }
 
     @Override
     public void render(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
-        if (!visible) return;
+        if (!visible) {
+            return;
+        }
 
         boolean scissor = (animationProgress != 0 && animationProgress != 1) || (expanded && animationProgress != 1);
-        if (scissor) renderer.beginScissor(x, y, width, (height - header.height) * animationProgress + header.height);
+        if (scissor) {
+            renderer.beginScissor(x, y, width, (height - header.height) * animationProgress + header.height);
+        }
         super.render(renderer, mouseX, mouseY, delta);
-        if (scissor) renderer.endScissor();
+        if (scissor) {
+            renderer.endScissor();
+        }
     }
 
     @Override
@@ -87,8 +97,11 @@ public class WSection extends WTable {
             idkDudeNamingIsHard = false;
         }
 
-        if (expanded) animationProgress += delta / 4;
-        else animationProgress -= delta / 4;
+        if (expanded) {
+            animationProgress += delta / 4;
+        } else {
+            animationProgress -= delta / 4;
+        }
         animationProgress = Utils.clamp(animationProgress, 0, 1);
 
         header.triangle.rotation = (1 - animationProgress) * -90;
@@ -117,12 +130,16 @@ public class WSection extends WTable {
             }
         }
 
-        if (widget.parent.parent != null) moveParent(widget.parent, toMove);
+        if (widget.parent.parent != null) {
+            moveParent(widget.parent, toMove);
+        }
     }
 
     private int getCellIndexInParent(WWidget widget) {
         for (int i = 0; i < widget.parent.getCells().size(); i++) {
-            if (widget.parent.getCells().get(i).getWidget() == widget) return i;
+            if (widget.parent.getCells().get(i).getWidget() == widget) {
+                return i;
+            }
         }
 
         return -1;
@@ -131,13 +148,18 @@ public class WSection extends WTable {
     private void changeHeight(WWidget widget, double delta) {
         if (widget instanceof WView) {
             double change = ((WView) widget).changeHeight(delta);
-            if (change != 0) delta = -change;
-            else return;
+            if (change != 0) {
+                delta = -change;
+            } else {
+                return;
+            }
         } else {
             widget.height += delta;
         }
 
-        if (widget.parent != null && !(widget.parent instanceof WRoot)) changeHeight(widget.parent, delta);
+        if (widget.parent != null && !(widget.parent instanceof WRoot)) {
+            changeHeight(widget.parent, delta);
+        }
     }
 
     @Override
@@ -158,23 +180,31 @@ public class WSection extends WTable {
         WHeader(String name, WWidget widget) {
             add(new WHorizontalSeparator(name));
             removeRow();
-            if (widget != null) add(widget);
+            if (widget != null) {
+                add(widget);
+            }
             triangle = add(new WTriangle()).pad(4).getWidget();
             triangle.color = triangle.colorHovered = triangle.colorPressed = GuiConfig.INSTANCE.separator;
 
             triangle.action = () -> {
                 expanded = !expanded;
-                if (action != null) action.run();
+                if (action != null) {
+                    action.run();
+                }
             };
         }
 
         @Override
         protected boolean onMouseClicked(boolean used, int button) {
-            if (used) return false;
+            if (used) {
+                return false;
+            }
 
             if (mouseOver) {
                 expanded = !expanded;
-                if (action != null) action.run();
+                if (action != null) {
+                    action.run();
+                }
             }
 
             return mouseOver;

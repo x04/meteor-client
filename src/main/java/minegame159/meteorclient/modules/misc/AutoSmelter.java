@@ -5,7 +5,6 @@ import minegame159.meteorclient.modules.Category;
 import minegame159.meteorclient.modules.ToggleModule;
 import minegame159.meteorclient.utils.Chat;
 import minegame159.meteorclient.utils.InvUtils;
-import minegame159.meteorclient.utils.Utils;
 import net.minecraft.screen.AbstractFurnaceScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 
@@ -42,14 +41,20 @@ public class AutoSmelter extends ToggleModule {
         }
 
         // Check fuel
-        if (checkFuel(c)) return;
+        if (checkFuel(c)) {
+            return;
+        }
 
         // Wait for smelting to complete
-        if (c.getCookProgress() != 0 || timer < 5) return;
+        if (c.getCookProgress() != 0 || timer < 5) {
+            return;
+        }
 
         if (step == 0) {
             // Take smelted results
-            if (takeResults(c)) return;
+            if (takeResults(c)) {
+                return;
+            }
 
             step++;
             timer = 0;
@@ -65,14 +70,18 @@ public class AutoSmelter extends ToggleModule {
             }
 
             // Insert items
-            if (insertItems(c)) return;
+            if (insertItems(c)) {
+                return;
+            }
 
             waitingForItemsToSmelt = true;
         }
     }
 
     private boolean insertItems(AbstractFurnaceScreenHandler c) {
-        if (!c.slots.get(0).getStack().isEmpty()) return true;
+        if (!c.slots.get(0).getStack().isEmpty()) {
+            return true;
+        }
 
         int slot = -1;
 

@@ -9,7 +9,9 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(SignEditScreen.class)
 public class SignEditScreenMixin implements ISignEditScreen {
-    @Shadow @Final private SignBlockEntity sign;
+    @Shadow
+    @Final
+    private SignBlockEntity sign;
 
     @Override
     public SignBlockEntity getSign() {

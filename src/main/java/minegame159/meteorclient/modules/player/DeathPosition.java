@@ -3,10 +3,10 @@ package minegame159.meteorclient.modules.player;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import minegame159.meteorclient.events.TookDamageEvent;
-import minegame159.meteorclient.modules.Category;
-import minegame159.meteorclient.modules.ToggleModule;
 import minegame159.meteorclient.gui.widgets.WLabel;
 import minegame159.meteorclient.gui.widgets.WWidget;
+import minegame159.meteorclient.modules.Category;
+import minegame159.meteorclient.modules.ToggleModule;
 import minegame159.meteorclient.settings.BoolSetting;
 import minegame159.meteorclient.settings.Setting;
 import minegame159.meteorclient.settings.SettingGroup;
@@ -21,23 +21,12 @@ import java.util.Date;
 public class DeathPosition extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Boolean> createWaypoint = sgGeneral.add(new BoolSetting.Builder()
-            .name("create-waypoint")
-            .description("Creates waypoint when you die.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> createWaypoint = sgGeneral.add(new BoolSetting.Builder().name("create-waypoint").description("Creates waypoint when you die.").defaultValue(true).build());
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     private final WLabel label = new WLabel("No latest death");
-
-    public DeathPosition() {
-        super(Category.Player, "death-position", "Sends to your chat where you died.");
-    }
-
-    @EventHandler
-    private final Listener<TookDamageEvent> onTookDamage = new Listener<>(event -> {
+    @EventHandler private final Listener<TookDamageEvent> onTookDamage = new Listener<>(event -> {
         if (event.entity.getUuid() != null && event.entity.getUuid().equals(mc.player.getUuid()) && event.entity.getHealth() <= 0) {
             label.setText(String.format("Latest death: %.1f, %.1f, %.1f", mc.player.getX(), mc.player.getY(), mc.player.getZ()));
 
@@ -55,15 +44,25 @@ public class DeathPosition extends ToggleModule {
                 waypoint.maxVisibleDistance = Integer.MAX_VALUE;
 
                 switch (Utils.getDimension()) {
-                    case Overworld: waypoint.overworld = true; break;
-                    case Nether:    waypoint.nether = true; break;
-                    case End:       waypoint.end = true; break;
+                    case Overworld:
+                        waypoint.overworld = true;
+                        break;
+                    case Nether:
+                        waypoint.nether = true;
+                        break;
+                    case End:
+                        waypoint.end = true;
+                        break;
                 }
 
                 Waypoints.INSTANCE.add(waypoint);
             }
         }
     });
+
+    public DeathPosition() {
+        super(Category.Player, "death-position", "Sends to your chat where you died.");
+    }
 
     @Override
     public WWidget getWidget() {

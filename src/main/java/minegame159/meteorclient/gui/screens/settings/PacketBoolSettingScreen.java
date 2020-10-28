@@ -48,7 +48,9 @@ public class PacketBoolSettingScreen extends WindowScreen {
 
         for (Class<? extends Packet<?>> packet : packets) {
             String name = PacketUtils.getName(packet);
-            if (!StringUtils.containsIgnoreCase(name, filterText)) continue;
+            if (!StringUtils.containsIgnoreCase(name, filterText)) {
+                continue;
+            }
 
             if (setting.get().getBoolean(packet)) {
                 right.add(new WLabel(name));

@@ -9,14 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WLabel extends WWidget {
+    private final List<String> lines;
     public Color color;
-
+    public boolean shadow;
+    public double maxWidth;
     private String text;
     private boolean recalculate;
-    private final List<String> lines;
-    public boolean shadow;
-
-    public double maxWidth;
 
     public WLabel(String text, boolean shadow) {
         this.lines = new ArrayList<>(1);
@@ -62,8 +60,14 @@ public class WLabel extends WWidget {
                 }
             }
 
-            if (split) onCalculateSize(renderer);
+            if (split) {
+                onCalculateSize(renderer);
+            }
         }
+    }
+
+    public String getText() {
+        return text;
     }
 
     public void setText(String text) {
@@ -72,10 +76,6 @@ public class WLabel extends WWidget {
         lines.add(text);
         recalculate = true;
         invalidate();
-    }
-
-    public String getText() {
-        return text;
     }
 
     @Override

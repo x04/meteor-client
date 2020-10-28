@@ -17,8 +17,11 @@ public abstract class ToggleModule extends Module {
         super(category, name, description);
     }
 
-    public void onActivate() {}
-    public void onDeactivate() {}
+    public void onActivate() {
+    }
+
+    public void onDeactivate() {
+    }
 
     public void toggle(boolean onActivateDeactivate) {
         if (!active) {
@@ -27,7 +30,9 @@ public abstract class ToggleModule extends Module {
 
             for (SettingGroup sg : settings) {
                 for (Setting setting : sg) {
-                    if (setting.onModuleActivated != null) setting.onModuleActivated.accept(setting);
+                    if (setting.onModuleActivated != null) {
+                        setting.onModuleActivated.accept(setting);
+                    }
                 }
             }
 
@@ -35,8 +40,7 @@ public abstract class ToggleModule extends Module {
                 Meteor.INSTANCE.getEventBus().subscribe(this);
                 onActivate();
             }
-        }
-        else {
+        } else {
             active = false;
             ModuleManager.INSTANCE.removeActive(this);
 
@@ -46,6 +50,7 @@ public abstract class ToggleModule extends Module {
             }
         }
     }
+
     public void toggle() {
         toggle(true);
     }
@@ -74,10 +79,16 @@ public abstract class ToggleModule extends Module {
         super.fromTag(tag);
 
         boolean active = tag.getBoolean("active");
-        if (active != isActive()) toggle(false);
+        if (active != isActive()) {
+            toggle(false);
+        }
         setVisible(tag.getBoolean("visible"));
 
         return this;
+    }
+
+    public boolean isVisible() {
+        return visible;
     }
 
     public void setVisible(boolean visible) {
@@ -85,15 +96,13 @@ public abstract class ToggleModule extends Module {
         Meteor.INSTANCE.getEventBus().post(EventStore.moduleVisibilityChangedEvent(this));
     }
 
-    public boolean isVisible() {
-        return visible;
-    }
-
     public boolean isActive() {
         return active;
     }
 
     public void sendToggledMsg() {
-        if (Config.INSTANCE.chatCommandsInfo) Chat.info("Toggled (highlight)%s(default) %s(default).", title, isActive() ? Formatting.GREEN + "on" : Formatting.RED + "off");
+        if (Config.INSTANCE.chatCommandsInfo) {
+            Chat.info("Toggled (highlight)%s(default) %s(default).", title, isActive() ? Formatting.GREEN + "on" : Formatting.RED + "off");
+        }
     }
 }

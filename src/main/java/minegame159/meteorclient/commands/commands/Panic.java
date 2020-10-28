@@ -15,6 +15,7 @@ public class Panic extends Command {
     @Override
     public void run(String[] args) {
         List<ToggleModule> active = new ArrayList<>(ModuleManager.INSTANCE.getActive());
-        for (ToggleModule module : active) module.toggle();
+        for (ToggleModule module : active)
+            module.toggle();
     }
 }

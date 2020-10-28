@@ -17,25 +17,20 @@ import java.util.UUID;
 
 public class TotemPopNotifier extends ToggleModule {
     private final Map<UUID, Integer> totemPops = new HashMap<>();
-
-    public TotemPopNotifier() {
-        super(Category.Combat, "totem-pop-notifier", "Send chat message when someone pops a totem or dies.");
-    }
-
-    @Override
-    public void onActivate() {
-        totemPops.clear();
-    }
-
-    @EventHandler
-    private final Listener<ReceivePacketEvent> onReceivePacket = new Listener<>(event -> {
-        if (!(event.packet instanceof EntityStatusS2CPacket)) return;
+    @EventHandler private final Listener<ReceivePacketEvent> onReceivePacket = new Listener<>(event -> {
+        if (!(event.packet instanceof EntityStatusS2CPacket)) {
+            return;
+        }
 
         EntityStatusS2CPacket p = (EntityStatusS2CPacket) event.packet;
-        if (p.getStatus() != 35) return;
+        if (p.getStatus() != 35) {
+            return;
+        }
 
         Entity entity = p.getEntity(mc.world);
-        if (entity == null) return;
+        if (entity == null) {
+            return;
+        }
 
         synchronized (totemPops) {
             int pops = totemPops.getOrDefault(entity.getUuid(), 0);
@@ -45,12 +40,12 @@ public class TotemPopNotifier extends ToggleModule {
             Chat.info("(highlight)%s (default)popped (highlight)%d (default)%s.", entity.getName().getString(), pops, pops == 1 ? "totem" : "totems");
         }
     });
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         synchronized (totemPops) {
             for (PlayerEntity player : mc.world.getPlayers()) {
-                if (!totemPops.containsKey(player.getUuid())) continue;
+                if (!totemPops.containsKey(player.getUuid())) {
+                    continue;
+                }
 
                 if (player.deathTime > 0 || player.getHealth() <= 0) {
                     int pops = totemPops.remove(player.getUuid());
@@ -60,4 +55,13 @@ public class TotemPopNotifier extends ToggleModule {
             }
         }
     });
+
+    public TotemPopNotifier() {
+        super(Category.Combat, "totem-pop-notifier", "Send chat message when someone pops a totem or dies.");
+    }
+
+    @Override
+    public void onActivate() {
+        totemPops.clear();
+    }
 }

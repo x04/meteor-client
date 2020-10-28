@@ -30,17 +30,9 @@ import net.minecraft.world.RaycastContext;
 public class SmartSurround extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Boolean> onlyObsidian = sgGeneral.add(new BoolSetting.Builder()
-            .name("only-obsidian")
-            .description("Only uses Obsidian")
-            .defaultValue(false)
-            .build());
+    private final Setting<Boolean> onlyObsidian = sgGeneral.add(new BoolSetting.Builder().name("only-obsidian").description("Only uses Obsidian").defaultValue(false).build());
 
-    private final Setting<Double> minDamage = sgGeneral.add(new DoubleSetting.Builder()
-            .name("min-damage")
-            .description("The minimum damage before this activates.")
-            .defaultValue(5.5)
-            .build());
+    private final Setting<Double> minDamage = sgGeneral.add(new DoubleSetting.Builder().name("min-damage").description("The minimum damage before this activates.").defaultValue(5.5).build());
 
     private int oldSlot;
 
@@ -51,13 +43,7 @@ public class SmartSurround extends ToggleModule {
     private int rPosZ;
 
     private Entity crystal;
-
-    public SmartSurround(){
-        super(Category.Combat, "smart-surround", "Tries to save you from crystals automatically.");
-    }
-
-    @EventHandler
-    private final Listener<EntityAddedEvent> onSpawn = new Listener<>(event -> {
+    @EventHandler private final Listener<EntityAddedEvent> onSpawn = new Listener<>(event -> {
         crystal = event.entity;
         if (event.entity.getType() == EntityType.END_CRYSTAL) {
             if (DamageCalcUtils.crystalDamage(mc.player, event.entity.getPos()) > minDamage.get()) {
@@ -83,10 +69,8 @@ public class SmartSurround extends ToggleModule {
             }
         }
     });
-
-    @EventHandler
-    private final  Listener<TickEvent> onTick = new Listener<>(event -> {
-        if(slot != -1){
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (slot != -1) {
             if ((rPosX >= 2) && (rPosZ == 0)) {
                 placeObi(rPosX - 1, 0, crystal);
             } else if ((rPosX > 1) && (rPosZ > 1)) {
@@ -114,6 +98,10 @@ public class SmartSurround extends ToggleModule {
             }
         }
     });
+
+    public SmartSurround() {
+        super(Category.Combat, "smart-surround", "Tries to save you from crystals automatically.");
+    }
 
     private void placeObi(int x, int z, Entity crystal) {
         //Place block packet

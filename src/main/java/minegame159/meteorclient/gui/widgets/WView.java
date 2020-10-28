@@ -6,12 +6,10 @@ import minegame159.meteorclient.gui.renderer.GuiRenderer;
 import minegame159.meteorclient.utils.Utils;
 
 public class WView extends WTable {
+    private final boolean onlyWhenMouseOver;
     public double maxHeight;
-
     private boolean hasScrollBar;
     private double actualHeight;
-
-    private boolean onlyWhenMouseOver;
     private double scrollHeight, lastScrollHeight;
 
     public WView(boolean onlyWhenMouseOver) {
@@ -47,7 +45,9 @@ public class WView extends WTable {
                 lastScrollHeight = 0;
             }
         } else {
-            if (hadScrollBar) moveWidgets(scrollHeight);
+            if (hadScrollBar) {
+                moveWidgets(scrollHeight);
+            }
             hasScrollBar = false;
             actualHeight = height;
         }
@@ -81,17 +81,24 @@ public class WView extends WTable {
     }
 
     private void moveWidgets(double deltaY) {
-        for (Cell<?> cell : getCells()) move(cell.getWidget(), 0, deltaY, false);
+        for (Cell<?> cell : getCells())
+            move(cell.getWidget(), 0, deltaY, false);
         mouseMoved(Meteor.INSTANCE.getMinecraft().mouse.getX(), Meteor.INSTANCE.getMinecraft().mouse.getY());
     }
 
     @Override
     public void render(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
-        if (!visible) return;
+        if (!visible) {
+            return;
+        }
 
         boolean scissor = hasScrollBar;
-        if (scissor) renderer.beginScissor(x, y, width, height);
+        if (scissor) {
+            renderer.beginScissor(x, y, width, height);
+        }
         super.render(renderer, mouseX, mouseY, delta);
-        if (scissor) renderer.endScissor();
+        if (scissor) {
+            renderer.endScissor();
+        }
     }
 }

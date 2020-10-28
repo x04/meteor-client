@@ -20,12 +20,6 @@ public abstract class BlockMixin extends AbstractBlock implements ItemConvertibl
         super(settings);
     }
 
-    @Override
-    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
-        if (ModuleManager.INSTANCE.isActive(XRay.class)) return 1;
-        return super.getAmbientOcclusionLightLevel(state, world, pos);
-    }
-
     @Inject(at = @At("HEAD"), method = "shouldDrawSide", cancellable = true)
     private static void onShouldDrawSide(BlockState state, BlockView view, BlockPos pos, Direction facing, CallbackInfoReturnable<Boolean> info) {
         XRay xray = ModuleManager.INSTANCE.get(XRay.class);
@@ -33,5 +27,13 @@ public abstract class BlockMixin extends AbstractBlock implements ItemConvertibl
         if (xray.isActive()) {
             info.setReturnValue(!xray.isBlocked(state.getBlock()));
         }
+    }
+
+    @Override
+    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+        if (ModuleManager.INSTANCE.isActive(XRay.class)) {
+            return 1;
+        }
+        return super.getAmbientOcclusionLightLevel(state, world, pos);
     }
 }

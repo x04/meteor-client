@@ -20,46 +20,27 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
 
 public class MiddleClickExtra extends ToggleModule {
-    public enum Mode{
-        Pearl(Items.ENDER_PEARL),
-        Bow(Items.ARROW),
-        Gap(Items.GOLDEN_APPLE),
-        EGap(Items.ENCHANTED_GOLDEN_APPLE),
-        Rod(Items.FISHING_ROD);
-
-        private final Item item;
-
-        Mode(Item item){this.item = item;}
-    }
-
-    public MiddleClickExtra(){
-        super(Category.Player, "middle-click-extra", "Lets you use items on middle click (works at the same time as Middle Click Friend).");
-    }
-
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
-    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>()
-            .name("mode")
-            .description("What to do when you middle click.")
-            .defaultValue(Mode.Pearl)
-            .build()
-    );
-
-    private final Setting<Boolean> notify = sgGeneral.add(new BoolSetting.Builder()
-            .name("notify")
-            .description("Notify you when you don't have the selected item in your hotbar")
-            .defaultValue(true)
-            .build()
-    );
-
+    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("mode").description("What to do when you middle click.").defaultValue(Mode.Pearl).build());
+    private final Setting<Boolean> notify = sgGeneral.add(new BoolSetting.Builder().name("notify").description("Notify you when you don't have the selected item in your hotbar").defaultValue(true).build());
     private boolean wasUsing = false;
     private int preSlot;
     private int preCount;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (!wasUsing) {
+            return;
+        }
+        if (preCount > InvUtils.findItemWithCount(mode.get().item).count || (mc.player.getMainHandStack().getItem() != mode.get().item && (mode.get() == Mode.Bow && mc.player.getMainHandStack().getItem() != Items.BOW))) {
+            ((IKeyBinding) mc.options.keyUse).setPressed(false);
+            mc.player.inventory.selectedSlot = preSlot;
+            wasUsing = false;
+        } else {
+            ((IKeyBinding) mc.options.keyUse).setPressed(true);
+        }
+    });
     private InvUtils.FindItemResult result;
-
-    @EventHandler
-    private final Listener<MiddleMouseButtonEvent> onMiddleMouse = new Listener<>(event -> {
-        switch(mode.get()){
+    @EventHandler private final Listener<MiddleMouseButtonEvent> onMiddleMouse = new Listener<>(event -> {
+        switch (mode.get()) {
             case Pearl: {
                 result = InvUtils.findItemWithCount(Items.ENDER_PEARL);
                 if (result.slot <= 8 && result.slot != -1) {
@@ -71,7 +52,8 @@ public class MiddleClickExtra extends ToggleModule {
                     Chat.error(this, "Unable to find selected item.");
                 }
                 break;
-            }case Gap: {
+            }
+            case Gap: {
                 result = InvUtils.findItemWithCount(Items.GOLDEN_APPLE);
                 if (result.slot <= 8 && result.slot != -1) {
                     preSlot = mc.player.inventory.selectedSlot;
@@ -79,11 +61,12 @@ public class MiddleClickExtra extends ToggleModule {
                     preCount = result.count;
                     ((IKeyBinding) mc.options.keyUse).setPressed(true);
                     wasUsing = true;
-                } else if(notify.get()) {
+                } else if (notify.get()) {
                     Chat.error(this, "Unable to find selected item.");
                 }
                 break;
-            }case EGap:{
+            }
+            case EGap: {
                 result = InvUtils.findItemWithCount(Items.ENCHANTED_GOLDEN_APPLE);
                 if (result.slot <= 8 && result.slot != -1) {
                     preSlot = mc.player.inventory.selectedSlot;
@@ -91,11 +74,12 @@ public class MiddleClickExtra extends ToggleModule {
                     preCount = result.count;
                     ((IKeyBinding) mc.options.keyUse).setPressed(true);
                     wasUsing = true;
-                } else if(notify.get()) {
+                } else if (notify.get()) {
                     Chat.error(this, "Unable to find selected item.");
                 }
                 break;
-            }case Bow:{
+            }
+            case Bow: {
                 result = InvUtils.findItemWithCount(Items.BOW);
                 if (result.slot <= 8 && result.slot != -1) {
                     preSlot = mc.player.inventory.selectedSlot;
@@ -103,11 +87,12 @@ public class MiddleClickExtra extends ToggleModule {
                     result = InvUtils.findItemWithCount(Items.ARROW);
                     preCount = result.count;
                     wasUsing = true;
-                } else if(notify.get()) {
+                } else if (notify.get()) {
                     Chat.error(this, "Unable to find selected item.");
                 }
                 break;
-            }case Rod: {
+            }
+            case Rod: {
                 result = InvUtils.findItemWithCount(Items.FISHING_ROD);
                 if (result.slot <= 8 && result.slot != -1) {
                     preSlot = mc.player.inventory.selectedSlot;
@@ -121,16 +106,17 @@ public class MiddleClickExtra extends ToggleModule {
         }
     });
 
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if(!wasUsing) return;
-        if(preCount > InvUtils.findItemWithCount(mode.get().item).count || (mc.player.getMainHandStack().getItem() != mode.get().item
-                && (mode.get() == Mode.Bow && mc.player.getMainHandStack().getItem() != Items.BOW))){
-            ((IKeyBinding) mc.options.keyUse).setPressed(false);
-            mc.player.inventory.selectedSlot = preSlot;
-            wasUsing = false;
-        } else {
-            ((IKeyBinding) mc.options.keyUse).setPressed(true);
+    public MiddleClickExtra() {
+        super(Category.Player, "middle-click-extra", "Lets you use items on middle click (works at the same time as Middle Click Friend).");
+    }
+
+    public enum Mode {
+        Pearl(Items.ENDER_PEARL), Bow(Items.ARROW), Gap(Items.GOLDEN_APPLE), EGap(Items.ENCHANTED_GOLDEN_APPLE), Rod(Items.FISHING_ROD);
+
+        private final Item item;
+
+        Mode(Item item) {
+            this.item = item;
         }
-    });
+    }
 }

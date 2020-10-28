@@ -20,9 +20,13 @@ public class WWaypoint extends WTable {
         WLabel name = add(new WLabel(waypoint.name)).getWidget();
         boolean goodDimension = false;
         Dimension dimension = Utils.getDimension();
-        if (waypoint.overworld && dimension == Dimension.Overworld) goodDimension = true;
-        else if (waypoint.nether && dimension == Dimension.Nether) goodDimension = true;
-        else if (waypoint.end && dimension == Dimension.End) goodDimension = true;
+        if (waypoint.overworld && dimension == Dimension.Overworld) {
+            goodDimension = true;
+        } else if (waypoint.nether && dimension == Dimension.Nether) {
+            goodDimension = true;
+        } else if (waypoint.end && dimension == Dimension.End) {
+            goodDimension = true;
+        }
         name.color = goodDimension ? WHITE : GRAY;
 
         // Visible, edit, remove

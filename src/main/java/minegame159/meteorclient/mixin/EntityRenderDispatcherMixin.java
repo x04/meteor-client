@@ -20,9 +20,8 @@ public class EntityRenderDispatcherMixin {
     private <E extends Entity> void onRender(E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
         NoRender noRender = ModuleManager.INSTANCE.get(NoRender.class);
 
-        if ((noRender.noItems() && entity instanceof ItemEntity) ||
-                (noRender.noFallingBlocks() && entity instanceof FallingBlockEntity) ||
-                (noRender.noArmorStands() && entity instanceof ArmorStandEntity)
-        ) info.cancel();
+        if ((noRender.noItems() && entity instanceof ItemEntity) || (noRender.noFallingBlocks() && entity instanceof FallingBlockEntity) || (noRender.noArmorStands() && entity instanceof ArmorStandEntity)) {
+            info.cancel();
+        }
     }
 }

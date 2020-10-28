@@ -152,10 +152,16 @@ public class GuiConfig implements ISerializable<GuiConfig> {
 
     @Override
     public GuiConfig fromTag(CompoundTag tag) {
-        if (tag.contains("guiScale")) guiScale = tag.getDouble("guiScale");
-        if (tag.contains("scrollSensitivity")) scrollSensitivity = tag.getDouble("scrollSensitivity");
+        if (tag.contains("guiScale")) {
+            guiScale = tag.getDouble("guiScale");
+        }
+        if (tag.contains("scrollSensitivity")) {
+            scrollSensitivity = tag.getDouble("scrollSensitivity");
+        }
 
-        if (tag.contains("moduleNameAlignment")) moduleNameAlignment = AlignmentX.valueOf(tag.getString("moduleNameAlignment"));
+        if (tag.contains("moduleNameAlignment")) {
+            moduleNameAlignment = AlignmentX.valueOf(tag.getString("moduleNameAlignment"));
+        }
 
         read(tag, "text", text);
         read(tag, "windowHeaderText", windowHeaderText);
@@ -216,18 +222,13 @@ public class GuiConfig implements ISerializable<GuiConfig> {
     }
 
     private void read(CompoundTag tag, String name, ISerializable<?> serializable) {
-        if (tag.contains(name)) serializable.fromTag(tag.getCompound(name));
+        if (tag.contains(name)) {
+            serializable.fromTag(tag.getCompound(name));
+        }
     }
 
     public enum WindowType {
-        Combat,
-        Player,
-        Movement,
-        Render,
-        Misc,
-        Setting,
-        Profiles,
-        Search
+        Combat, Player, Movement, Render, Misc, Setting, Profiles, Search
     }
 
     public static class WindowConfig implements ISerializable<WindowConfig> {

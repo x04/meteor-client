@@ -10,14 +10,12 @@ import minegame159.meteorclient.gui.renderer.Region;
 import org.lwjgl.glfw.GLFW;
 
 public class WTextBox extends WWidget {
-    public Runnable action;
-
-    private String text;
     private final DoubleList textWidths = new DoubleArrayList();
+    private final double uWidth;
+    public Runnable action;
+    private String text;
     private int cursor = 0;
     private int fixedCursor = -1;
-
-    private final double uWidth;
     private boolean focused;
 
     private double cursorTimer;
@@ -32,15 +30,17 @@ public class WTextBox extends WWidget {
         this.uWidth = width;
     }
 
+    public String getText() {
+        return text;
+    }
+
     public void setText(String text) {
         this.text = text;
         cursor = -1;
-        if (renderer != null) calculateTextWidths();
+        if (renderer != null) {
+            calculateTextWidths();
+        }
         changed = true;
-    }
-
-    public String getText() {
-        return text;
     }
 
     public boolean isFocused() {
@@ -48,8 +48,11 @@ public class WTextBox extends WWidget {
     }
 
     public void setFocused(boolean focused) {
-        if (!this.focused && focused) GuiKeyEvents.setPostKeyEvents(true);
-        else if (this.focused && !focused) GuiKeyEvents.setPostKeyEvents(false);
+        if (!this.focused && focused) {
+            GuiKeyEvents.setPostKeyEvents(true);
+        } else if (this.focused && !focused) {
+            GuiKeyEvents.setPostKeyEvents(false);
+        }
 
         this.focused = focused;
     }
@@ -66,8 +69,11 @@ public class WTextBox extends WWidget {
 
     @Override
     protected boolean onMouseClicked(boolean used, int button) {
-        if (!focused && mouseOver) GuiKeyEvents.setPostKeyEvents(true);
-        else if (focused && !mouseOver) GuiKeyEvents.setPostKeyEvents(false);
+        if (!focused && mouseOver) {
+            GuiKeyEvents.setPostKeyEvents(true);
+        } else if (focused && !mouseOver) {
+            GuiKeyEvents.setPostKeyEvents(false);
+        }
 
         if (!used) {
             focused = mouseOver;
@@ -78,14 +84,18 @@ public class WTextBox extends WWidget {
                 if (!text.equals(preText)) {
                     changed = false;
                     callActionOnTextChanged();
-                    if (!changed) calculateTextWidths();
+                    if (!changed) {
+                        calculateTextWidths();
+                    }
                 }
 
                 resetCursorTimer();
                 return true;
             }
         } else {
-            if (!mouseOver) focused = false;
+            if (!mouseOver) {
+                focused = false;
+            }
         }
 
         return false;
@@ -130,7 +140,9 @@ public class WTextBox extends WWidget {
                 if (!preText.equals(text)) {
                     changed = false;
                     callActionOnTextChanged();
-                    if (!changed) calculateTextWidths();
+                    if (!changed) {
+                        calculateTextWidths();
+                    }
                 }
 
                 resetCursorTimer();
@@ -141,8 +153,12 @@ public class WTextBox extends WWidget {
                 int lengthToDelete = 0;
                 boolean hadSpace = false;
                 for (int i = text.length() - 1; i >= 0; i--) {
-                    if (hadSpace) break;
-                    if (text.charAt(i) == ' ') hadSpace = true;
+                    if (hadSpace) {
+                        break;
+                    }
+                    if (text.charAt(i) == ' ') {
+                        hadSpace = true;
+                    }
                     lengthToDelete++;
                 }
                 text = text.substring(0, text.length() - lengthToDelete);
@@ -150,7 +166,9 @@ public class WTextBox extends WWidget {
                 if (!preText.equals(text)) {
                     changed = false;
                     callActionOnTextChanged();
-                    if (!changed) calculateTextWidths();
+                    if (!changed) {
+                        calculateTextWidths();
+                    }
                 }
 
                 resetCursorTimer();
@@ -175,12 +193,16 @@ public class WTextBox extends WWidget {
     private boolean onKeyPressedOrRepeated(int key) {
         if (key == GLFW.GLFW_KEY_LEFT) {
             cursor--;
-            if (cursor < 0) cursor = 0;
+            if (cursor < 0) {
+                cursor = 0;
+            }
             resetCursorTimer();
             return true;
         } else if (key == GLFW.GLFW_KEY_RIGHT) {
             cursor++;
-            if (cursor > text.length()) cursor = text.length();
+            if (cursor > text.length()) {
+                cursor = text.length();
+            }
             resetCursorTimer();
             return true;
         } else if (key == GLFW.GLFW_KEY_BACKSPACE && cursor > 0) {
@@ -240,7 +262,9 @@ public class WTextBox extends WWidget {
 
     @Override
     public void render(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
-        if (!visible) return;
+        if (!visible) {
+            return;
+        }
         if (this.renderer == null) {
             this.renderer = renderer;
             calculateTextWidths();
@@ -261,10 +285,14 @@ public class WTextBox extends WWidget {
             cursorTimer += delta / 8;
         }
 
-        if (fixedCursor != -1) calculateTextWidths();
+        if (fixedCursor != -1) {
+            calculateTextWidths();
+        }
 
         double overflowWidth = getCursorTextWidthForPreview() - width + 16;
-        if (overflowWidth < 0) overflowWidth = 0;
+        if (overflowWidth < 0) {
+            overflowWidth = 0;
+        }
 
         if (!text.isEmpty()) {
             renderer.beginScissor(x + 6, y + 6, width - 12, height - 12);
@@ -283,11 +311,15 @@ public class WTextBox extends WWidget {
     }
 
     protected void callActionOnTextChanged() {
-        if (action != null) action.run();
+        if (action != null) {
+            action.run();
+        }
     }
 
     private void calculateTextWidths() {
-        if (renderer == null) return;
+        if (renderer == null) {
+            return;
+        }
         textWidths.clear();
 
         for (int i = 0; i <= text.length(); i++) {
@@ -303,14 +335,20 @@ public class WTextBox extends WWidget {
     }
 
     private double getCursorTextWidth() {
-        if (textWidths.isEmpty()) return 0;
+        if (textWidths.isEmpty()) {
+            return 0;
+        }
         return textWidths.getDouble(cursor);
     }
 
     private double getCursorTextWidthForPreview() {
-        if (textWidths.isEmpty()) return 0;
+        if (textWidths.isEmpty()) {
+            return 0;
+        }
         int c = cursor + 2;
-        if (c > text.length()) c = text.length();
+        if (c > text.length()) {
+            c = text.length();
+        }
         return textWidths.getDouble(c);
     }
 }

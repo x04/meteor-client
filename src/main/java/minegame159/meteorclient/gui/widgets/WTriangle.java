@@ -23,9 +23,13 @@ public class WTriangle extends WPressable {
     @Override
     protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
         Color color;
-        if (pressed) color = colorPressed;
-        else if (mouseOver) color = colorHovered;
-        else color = this.color;
+        if (pressed) {
+            color = colorPressed;
+        } else if (mouseOver) {
+            color = colorHovered;
+        } else {
+            color = this.color;
+        }
 
         renderer.triangle(x, y + width / 4, width, rotation, color);
     }

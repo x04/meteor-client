@@ -14,7 +14,9 @@ public class Bind extends Command {
     @Override
     public void run(String[] args) {
         Module module = Utils.tryToGetModule(args);
-        if (module == null) return;
+        if (module == null) {
+            return;
+        }
 
         Chat.info("Press some key.");
         ModuleManager.INSTANCE.setModuleToBind(module);

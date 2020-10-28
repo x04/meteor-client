@@ -38,14 +38,14 @@ public class WDropbox<T extends Enum<?>> extends WWidget {
         setValue(value);
     }
 
+    public T getValue() {
+        return value;
+    }
+
     public void setValue(T value) {
         this.value = value;
         this.valueName = value.toString();
         this.valueNameWidth = -1;
-    }
-
-    public T getValue() {
-        return value;
     }
 
     @Override
@@ -69,7 +69,9 @@ public class WDropbox<T extends Enum<?>> extends WWidget {
     @Override
     protected boolean onMouseClicked(boolean used, int button) {
         if (open) {
-            if (root.mouseClicked(used, button)) return true;
+            if (root.mouseClicked(used, button)) {
+                return true;
+            }
         }
 
         if (open && (!mouseOver && !root.mouseOver)) {
@@ -77,7 +79,9 @@ public class WDropbox<T extends Enum<?>> extends WWidget {
             return true;
         }
 
-        if (used) return open;
+        if (used) {
+            return open;
+        }
 
         if (mouseOver) {
             open = !open;
@@ -89,36 +93,48 @@ public class WDropbox<T extends Enum<?>> extends WWidget {
 
     @Override
     protected boolean onMouseReleased(boolean used, int button) {
-        if (open) root.mouseReleased(used, button);
+        if (open) {
+            root.mouseReleased(used, button);
+        }
         return open;
     }
 
     @Override
     protected void onMouseMoved(double mouseX, double mouseY) {
-        if (open) root.mouseMoved(mouseX, mouseY);
+        if (open) {
+            root.mouseMoved(mouseX, mouseY);
+        }
     }
 
     @Override
     protected boolean onMouseScrolled(double amount) {
-        if (open) root.mouseScrolled(amount);
+        if (open) {
+            root.mouseScrolled(amount);
+        }
         return open;
     }
 
     @Override
     protected boolean onKeyPressed(int key, int mods) {
-        if (open) root.keyPressed(key, mods);
+        if (open) {
+            root.keyPressed(key, mods);
+        }
         return open;
     }
 
     @Override
     protected boolean onKeyRepeated(int key, int mods) {
-        if (open) root.keyRepeated(key, mods);
+        if (open) {
+            root.keyRepeated(key, mods);
+        }
         return open;
     }
 
     @Override
     protected boolean onCharTyped(char c, int key) {
-        if (open) root.charTyped(c, key);
+        if (open) {
+            root.charTyped(c, key);
+        }
         return open;
     }
 
@@ -131,7 +147,9 @@ public class WDropbox<T extends Enum<?>> extends WWidget {
     protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
         renderer.background(this, mouseOver, false);
 
-        if (valueNameWidth == -1) valueNameWidth = renderer.textWidth(valueName);
+        if (valueNameWidth == -1) {
+            valueNameWidth = renderer.textWidth(valueName);
+        }
 
         renderer.text(valueName, x + 6 + (root.width - valueNameWidth) / 2, y + 6, false, GuiConfig.INSTANCE.text);
         renderer.triangle(x + 6 + root.width + 4, y + 6 + renderer.textHeight() / 4, renderer.textHeight(), 0, GuiConfig.INSTANCE.separator);
@@ -142,6 +160,27 @@ public class WDropbox<T extends Enum<?>> extends WWidget {
                 root.render(RENDERER, mouseX, mouseY, delta);
                 RENDERER.end();
             });
+        }
+    }
+
+    private static class WTableRoot extends WTable implements WRoot {
+        @Override
+        public void invalidate() {
+        }
+
+        @Override
+        protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
+            Color color = GuiConfig.INSTANCE.outline;
+            int preAlpha = color.a;
+            color.a = 255;
+
+            double a = 6 + renderer.textHeight() + 4 + 6;
+
+            renderer.quad(Region.FULL, x, y, 1, height, color);
+            renderer.quad(Region.FULL, x + width + a - 1, y, 1, height, color);
+            renderer.quad(Region.FULL, x, y + height, width + a, 1, color);
+
+            color.a = preAlpha;
         }
     }
 
@@ -169,12 +208,16 @@ public class WDropbox<T extends Enum<?>> extends WWidget {
 
         @Override
         protected boolean onMouseClicked(boolean used, int button) {
-            if (used) return false;
+            if (used) {
+                return false;
+            }
 
             if (mouseOver) {
                 open = false;
                 setValue(value);
-                if (action != null) action.run();
+                if (action != null) {
+                    action.run();
+                }
                 return true;
             }
 
@@ -184,7 +227,9 @@ public class WDropbox<T extends Enum<?>> extends WWidget {
         @Override
         protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
             Color color = GuiConfig.INSTANCE.background;
-            if (mouseOver || WDropbox.this.value == value) color = GuiConfig.INSTANCE.backgroundHovered;
+            if (mouseOver || WDropbox.this.value == value) {
+                color = GuiConfig.INSTANCE.backgroundHovered;
+            }
 
             int preAlpha = color.a;
             color.a = 255;
@@ -192,26 +237,6 @@ public class WDropbox<T extends Enum<?>> extends WWidget {
             color.a = preAlpha;
 
             renderer.text(text, x + 6 + 1, y + 6 + 1, false, GuiConfig.INSTANCE.text);
-        }
-    }
-
-    private static class WTableRoot extends WTable implements WRoot {
-        @Override
-        public void invalidate() {}
-
-        @Override
-        protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
-            Color color = GuiConfig.INSTANCE.outline;
-            int preAlpha = color.a;
-            color.a = 255;
-
-            double a = 6 + renderer.textHeight() + 4 + 6;
-
-            renderer.quad(Region.FULL, x, y, 1, height, color);
-            renderer.quad(Region.FULL, x + width + a - 1, y, 1, height, color);
-            renderer.quad(Region.FULL, x, y + height, width + a, 1, color);
-
-            color.a = preAlpha;
         }
     }
 }

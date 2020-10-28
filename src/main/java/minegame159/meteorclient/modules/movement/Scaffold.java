@@ -24,75 +24,37 @@ import java.util.List;
 public class Scaffold extends ToggleModule {
     private final SettingGroup sg = settings.getDefaultGroup();
 
-    private final Setting<Boolean> safeWalk = sg.add(new BoolSetting.Builder()
-            .name("safe-walk")
-            .description("Safe walk.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> safeWalk = sg.add(new BoolSetting.Builder().name("safe-walk").description("Safe walk.").defaultValue(true).build());
 
-    private final Setting<Boolean> fastTower = sg.add(new BoolSetting.Builder()
-            .name("fast-tower")
-            .description("To the sky.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> fastTower = sg.add(new BoolSetting.Builder().name("fast-tower").description("To the sky.").defaultValue(false).build());
 
-    private final Setting<Boolean> airPlace = sg.add(new BoolSetting.Builder()
-            .name("air-place")
-            .description("Places scaffold blocks in mid air if it can.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> airPlace = sg.add(new BoolSetting.Builder().name("air-place").description("Places scaffold blocks in mid air if it can.").defaultValue(true).build());
 
-    private final Setting<Integer> radius = sg.add(new IntSetting.Builder()
-            .name("radius")
-            .description("Radius.")
-            .defaultValue(1)
-            .min(1)
-            .sliderMin(1)
-            .sliderMax(7)
-            .build()
-    );
+    private final Setting<Integer> radius = sg.add(new IntSetting.Builder().name("radius").description("Radius.").defaultValue(1).min(1).sliderMin(1).sliderMax(7).build());
 
-    private final Setting<Boolean> swingHand = sg.add(new BoolSetting.Builder()
-            .name("swing-hand")
-            .description("Only client side.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> swingHand = sg.add(new BoolSetting.Builder().name("swing-hand").description("Only client side.").defaultValue(false).build());
 
-    private final Setting<List<Block>> blackList = sg.add(new BlockListSetting.Builder()
-            .name("blacklist")
-            .description("Stops you from placing certain blocks as scaffold.")
-            .defaultValue(new ArrayList<>())
-            .build()
-    );
+    private final Setting<List<Block>> blackList = sg.add(new BlockListSetting.Builder().name("blacklist").description("Stops you from placing certain blocks as scaffold.").defaultValue(new ArrayList<>()).build());
 
-    private final Setting<Boolean> selfToggle = sg.add(new BoolSetting.Builder()
-            .name("self-toggle")
-            .description("Toggles when you run out of blocks.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> selfToggle = sg.add(new BoolSetting.Builder().name("self-toggle").description("Toggles when you run out of blocks.").defaultValue(true).build());
 
     private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
     private BlockState blockState, slotBlockState;
     private int slot, prevSelectedSlot;
-
-    public Scaffold() {
-        super(Category.Movement, "scaffold", "Places blocks under you.");
-    }
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (fastTower.get() && !mc.world.getBlockState(setPos(0, -1, 0)).getMaterial().isReplaceable() && mc.options.keyJump.isPressed() && findSlot(mc.world.getBlockState(setPos(0, -1, 0))) != -1 && mc.player.sidewaysSpeed == 0 &&mc.player.forwardSpeed == 0) mc.player.jump();
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (fastTower.get() && !mc.world.getBlockState(setPos(0, -1, 0)).getMaterial().isReplaceable() && mc.options.keyJump.isPressed() && findSlot(mc.world.getBlockState(setPos(0, -1, 0))) != -1 && mc.player.sidewaysSpeed == 0 && mc.player.forwardSpeed == 0) {
+            mc.player.jump();
+        }
         blockState = mc.world.getBlockState(setPos(0, -1, 0));
-        if (!blockState.getMaterial().isReplaceable()) return;
+        if (!blockState.getMaterial().isReplaceable()) {
+            return;
+        }
 
         // Search for block in hotbar
         slot = findSlot(blockState);
-        if (slot == -1) return;
+        if (slot == -1) {
+            return;
+        }
 
         // Change slot
         prevSelectedSlot = mc.player.inventory.selectedSlot;
@@ -106,24 +68,35 @@ public class Scaffold extends ToggleModule {
             BlockState neighbourLeft = mc.world.getBlockState(setPos(-1, -1, 0));
             BlockState neighbourTop = mc.world.getBlockState(setPos(0, -1, 1));
             BlockState neighbourBottom = mc.world.getBlockState(setPos(0, -1, -1));
-            if (!isSolid(neighbourUnder) && !isSolid(neighbourRight) && !isSolid(neighbourLeft) && !isSolid(neighbourTop) && !isSolid(neighbourBottom))
+            if (!isSolid(neighbourUnder) && !isSolid(neighbourRight) && !isSolid(neighbourLeft) && !isSolid(neighbourTop) && !isSolid(neighbourBottom)) {
                 hasNeighbour = false;
+            }
 
             // No neighbour so player is going diagonally
             if (!hasNeighbour) {
                 // Place extra block
                 boolean placed = Utils.place(slotBlockState, setPos(1, -1, 0), swingHand.get(), false, true);
-                if (!placed) placed = Utils.place(slotBlockState, setPos(-1, -1, 0), swingHand.get(), false, true);
-                if (!placed) placed = Utils.place(slotBlockState, setPos(0, -1, 1), swingHand.get(), false, true);
-                if (!placed) placed = Utils.place(slotBlockState, setPos(0, -1, -1), swingHand.get(), false, true);
-                if (!placed) placed = Utils.place(slotBlockState, setPos(0, -1 - 1, 0), swingHand.get(), false, true);
+                if (!placed) {
+                    placed = Utils.place(slotBlockState, setPos(-1, -1, 0), swingHand.get(), false, true);
+                }
+                if (!placed) {
+                    placed = Utils.place(slotBlockState, setPos(0, -1, 1), swingHand.get(), false, true);
+                }
+                if (!placed) {
+                    placed = Utils.place(slotBlockState, setPos(0, -1, -1), swingHand.get(), false, true);
+                }
+                if (!placed) {
+                    placed = Utils.place(slotBlockState, setPos(0, -1 - 1, 0), swingHand.get(), false, true);
+                }
                 if (!placed) {
                     System.err.println("[Meteor]: Scaffold: Failed to place extra block when going diagonally. This shouldn't happen.");
                     return;
                 }
 
                 // Search for extra block is needed
-                if (!findBlock()) return;
+                if (!findBlock()) {
+                    return;
+                }
             }
 
             // Place block
@@ -139,33 +112,49 @@ public class Scaffold extends ToggleModule {
 
             // Forward
             for (int j = 0; j < count; j++) {
-                if (!findBlock()) return;
+                if (!findBlock()) {
+                    return;
+                }
                 Utils.place(slotBlockState, setPos(j - countHalf, -1, i), swingHand.get(), false, false);
             }
             // Backward
             for (int j = 0; j < count; j++) {
-                if (!findBlock()) return;
+                if (!findBlock()) {
+                    return;
+                }
                 Utils.place(slotBlockState, setPos(j - countHalf, -1, -i), swingHand.get(), false, false);
             }
             // Right
             for (int j = 0; j < count; j++) {
-                if (!findBlock()) return;
+                if (!findBlock()) {
+                    return;
+                }
                 Utils.place(slotBlockState, setPos(i, -1, j - countHalf), swingHand.get(), false, false);
             }
             // Left
             for (int j = 0; j < count; j++) {
-                if (!findBlock()) return;
+                if (!findBlock()) {
+                    return;
+                }
                 Utils.place(slotBlockState, setPos(-i, -1, j - countHalf), swingHand.get(), false, false);
             }
 
             // Diagonals
-            if (!findBlock()) return;
+            if (!findBlock()) {
+                return;
+            }
             Utils.place(slotBlockState, setPos(-i, -1, i), swingHand.get(), false, false);
-            if (!findBlock()) return;
+            if (!findBlock()) {
+                return;
+            }
             Utils.place(slotBlockState, setPos(i, -1, i), swingHand.get(), false, false);
-            if (!findBlock()) return;
+            if (!findBlock()) {
+                return;
+            }
             Utils.place(slotBlockState, setPos(-i, -1, -i), swingHand.get(), false, false);
-            if (!findBlock()) return;
+            if (!findBlock()) {
+                return;
+            }
             Utils.place(slotBlockState, setPos(i, -1, -i), swingHand.get(), false, false);
         }
 
@@ -173,12 +162,18 @@ public class Scaffold extends ToggleModule {
         mc.player.inventory.selectedSlot = prevSelectedSlot;
     });
 
+    public Scaffold() {
+        super(Category.Movement, "scaffold", "Places blocks under you.");
+    }
+
     private boolean findBlock() {
         if (mc.player.inventory.getStack(slot).isEmpty()) {
             slot = findSlot(blockState);
             if (slot == -1) {
                 mc.player.inventory.selectedSlot = prevSelectedSlot;
-                if (selfToggle.get()) this.toggle();
+                if (selfToggle.get()) {
+                    this.toggle();
+                }
                 return false;
             }
         }
@@ -192,9 +187,15 @@ public class Scaffold extends ToggleModule {
 
     private BlockPos setPos(int x, int y, int z) {
         blockPos.set(mc.player.getX(), mc.player.getY(), mc.player.getZ());
-        if (x != 0) blockPos.setX(blockPos.getX() + x);
-        if (y != 0) blockPos.setY(blockPos.getY() + y);
-        if (z != 0) blockPos.setZ(blockPos.getZ() + z);
+        if (x != 0) {
+            blockPos.setX(blockPos.getX() + x);
+        }
+        if (y != 0) {
+            blockPos.setY(blockPos.getY() + y);
+        }
+        if (z != 0) {
+            blockPos.setZ(blockPos.getZ() + z);
+        }
         return blockPos;
     }
 
@@ -202,34 +203,50 @@ public class Scaffold extends ToggleModule {
         int slot = -1;
         for (int i = 0; i < 9; i++) {
             ItemStack stack = mc.player.inventory.getStack(i);
-            if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) continue;
+            if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) {
+                continue;
+            }
 
-            if (blackList.get().contains(Block.getBlockFromItem(stack.getItem()))) continue;
+            if (blackList.get().contains(Block.getBlockFromItem(stack.getItem()))) {
+                continue;
+            }
 
             // Filter out non solid blocks
             Block block = ((BlockItem) stack.getItem()).getBlock();
             slotBlockState = block.getDefaultState();
-            if (!Block.isShapeFullCube(slotBlockState.getCollisionShape(mc.world, setPos(0, -1, 0)))) continue;
+            if (!Block.isShapeFullCube(slotBlockState.getCollisionShape(mc.world, setPos(0, -1, 0)))) {
+                continue;
+            }
 
             // Filter out blocks that would fall
-            if (block instanceof FallingBlock && FallingBlock.canFallThrough(blockState)) continue;
+            if (block instanceof FallingBlock && FallingBlock.canFallThrough(blockState)) {
+                continue;
+            }
 
             slot = i;
             break;
         }
 
         ItemStack handStack = mc.player.getMainHandStack();
-        if (handStack.isEmpty() || !(handStack.getItem() instanceof BlockItem)) return slot;
+        if (handStack.isEmpty() || !(handStack.getItem() instanceof BlockItem)) {
+            return slot;
+        }
 
-        if (blackList.get().contains(Block.getBlockFromItem(handStack.getItem()))) return slot;
+        if (blackList.get().contains(Block.getBlockFromItem(handStack.getItem()))) {
+            return slot;
+        }
 
         // Filter out non solid blocks
         Block block = ((BlockItem) handStack.getItem()).getBlock();
         slotBlockState = block.getDefaultState();
-        if (!Block.isShapeFullCube(slotBlockState.getCollisionShape(mc.world, setPos(0, -1, 0)))) return slot;
+        if (!Block.isShapeFullCube(slotBlockState.getCollisionShape(mc.world, setPos(0, -1, 0)))) {
+            return slot;
+        }
 
         // Filter out blocks that would fall
-        if (block instanceof FallingBlock && FallingBlock.canFallThrough(blockState)) return slot;
+        if (block instanceof FallingBlock && FallingBlock.canFallThrough(blockState)) {
+            return slot;
+        }
         slot = mc.player.inventory.selectedSlot;
 
         return slot;

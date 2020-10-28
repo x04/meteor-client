@@ -11,7 +11,6 @@ import minegame159.meteorclient.events.RenderEvent;
 import minegame159.meteorclient.rendering.Matrices;
 import minegame159.meteorclient.rendering.ShapeBuilder;
 import minegame159.meteorclient.utils.*;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.AbstractTexture;
@@ -27,65 +26,35 @@ public class Waypoints extends Savable<Waypoints> implements Listenable, Iterabl
     public static final Map<String, AbstractTexture> ICONS = new HashMap<>();
     public static final Waypoints INSTANCE = new Waypoints();
 
-    private static final String[] BUILTIN_ICONS = { "Square", "Circle", "Triangle", "Star", "Diamond" };
+    private static final String[] BUILTIN_ICONS = {"Square", "Circle", "Triangle", "Star", "Diamond"};
 
     private static final Color BACKGROUND = new Color(0, 0, 0, 75);
     private static final Color TEXT = new Color(255, 255, 255);
-
-    private List<Waypoint> waypoints = new ArrayList<>();
-
-    private Waypoints() {
-        super(null);
-        Meteor.INSTANCE.getEventBus().subscribe(this);
-    }
-
-    public void add(Waypoint waypoint) {
-        waypoints.add(waypoint);
-        Meteor.INSTANCE.getEventBus().post(EventStore.waypointListChangedEvent());
-        save();
-    }
-
-    public void remove(Waypoint waypoint) {
-        if (waypoints.remove(waypoint)) {
-            Meteor.INSTANCE.getEventBus().post(EventStore.waypointListChangedEvent());
-            save();
-        }
-    }
-
-    @EventHandler
-    private final Listener<GameJoinedEvent> onGameJoined = new Listener<>(event -> load());
-
-    @EventHandler
-    private final Listener<GameDisconnectedEvent> onGameDisconnected = new Listener<>(event -> {
-        save();
-        waypoints.clear();
-    });
-
-    private boolean checkDimension(Waypoint waypoint) {
-        Dimension dimension = Utils.getDimension();
-
-        if (waypoint.overworld && dimension == Dimension.Overworld) return true;
-        if (waypoint.nether && dimension == Dimension.Nether) return true;
-        return waypoint.end && dimension == Dimension.End;
-    }
-
-    @EventHandler
-    private final Listener<RenderEvent> onRender = new Listener<>(event -> {
+    @EventHandler private final Listener<GameJoinedEvent> onGameJoined = new Listener<>(event -> load());
+    @EventHandler private final Listener<RenderEvent> onRender = new Listener<>(event -> {
         for (Waypoint waypoint : this) {
-            if (!waypoint.visible || !checkDimension(waypoint)) continue;
+            if (!waypoint.visible || !checkDimension(waypoint)) {
+                continue;
+            }
 
             Camera camera = Meteor.INSTANCE.getMinecraft().gameRenderer.getCamera();
 
             // Compute scale
             double dist = Utils.distanceToCamera(waypoint.x, waypoint.y, waypoint.z);
-            if (dist > waypoint.maxVisibleDistance) continue;
+            if (dist > waypoint.maxVisibleDistance) {
+                continue;
+            }
             double scale = 0.04;
-            if(dist > 15) scale *= dist / 15;
+            if (dist > 15) {
+                scale *= dist / 15;
+            }
 
             double a = 1;
             if (dist < 10) {
                 a = dist / 10;
-                if (a < 0.1) continue;
+                if (a < 0.1) {
+                    continue;
+                }
             }
 
             int preBgA = BACKGROUND.a;
@@ -153,29 +122,15 @@ public class Waypoints extends Savable<Waypoints> implements Listenable, Iterabl
             TEXT.a = preTextA;
         }
     });
+    private List<Waypoint> waypoints = new ArrayList<>();
+    @EventHandler private final Listener<GameDisconnectedEvent> onGameDisconnected = new Listener<>(event -> {
+        save();
+        waypoints.clear();
+    });
 
-    @Override
-    public File getFile() {
-        return new File(new File(Meteor.INSTANCE.getFolder(), "waypoints"), Utils.getWorldName() + ".nbt");
-    }
-
-    @Override
-    public CompoundTag toTag() {
-        CompoundTag tag = new CompoundTag();
-        tag.put("waypoints", NbtUtils.listToTag(waypoints));
-        return tag;
-    }
-
-    @Override
-    public Waypoints fromTag(CompoundTag tag) {
-        waypoints = NbtUtils.listFromTag(tag.getList("waypoints", 10), tag1 -> new Waypoint().fromTag((CompoundTag) tag1));
-
-        return this;
-    }
-
-    @Override
-    public Iterator<Waypoint> iterator() {
-        return waypoints.iterator();
+    private Waypoints() {
+        super(null);
+        Meteor.INSTANCE.getEventBus().subscribe(this);
     }
 
     public static void loadIcons() {
@@ -184,7 +139,9 @@ public class Waypoints extends Savable<Waypoints> implements Listenable, Iterabl
 
         for (String builtinIcon : BUILTIN_ICONS) {
             File iconFile = new File(iconsFolder, builtinIcon + ".png");
-            if (!iconFile.exists()) copyIcon(iconFile);
+            if (!iconFile.exists()) {
+                copyIcon(iconFile);
+            }
         }
 
         File[] files = iconsFolder.listFiles();
@@ -208,12 +165,62 @@ public class Waypoints extends Savable<Waypoints> implements Listenable, Iterabl
 
             byte[] bytes = new byte[256];
             int read;
-            while ((read = in.read(bytes)) > 0) out.write(bytes, 0, read);
+            while ((read = in.read(bytes)) > 0)
+                out.write(bytes, 0, read);
 
             out.close();
             in.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void add(Waypoint waypoint) {
+        waypoints.add(waypoint);
+        Meteor.INSTANCE.getEventBus().post(EventStore.waypointListChangedEvent());
+        save();
+    }
+
+    public void remove(Waypoint waypoint) {
+        if (waypoints.remove(waypoint)) {
+            Meteor.INSTANCE.getEventBus().post(EventStore.waypointListChangedEvent());
+            save();
+        }
+    }
+
+    private boolean checkDimension(Waypoint waypoint) {
+        Dimension dimension = Utils.getDimension();
+
+        if (waypoint.overworld && dimension == Dimension.Overworld) {
+            return true;
+        }
+        if (waypoint.nether && dimension == Dimension.Nether) {
+            return true;
+        }
+        return waypoint.end && dimension == Dimension.End;
+    }
+
+    @Override
+    public File getFile() {
+        return new File(new File(Meteor.INSTANCE.getFolder(), "waypoints"), Utils.getWorldName() + ".nbt");
+    }
+
+    @Override
+    public CompoundTag toTag() {
+        CompoundTag tag = new CompoundTag();
+        tag.put("waypoints", NbtUtils.listToTag(waypoints));
+        return tag;
+    }
+
+    @Override
+    public Waypoints fromTag(CompoundTag tag) {
+        waypoints = NbtUtils.listFromTag(tag.getList("waypoints", 10), tag1 -> new Waypoint().fromTag((CompoundTag) tag1));
+
+        return this;
+    }
+
+    @Override
+    public Iterator<Waypoint> iterator() {
+        return waypoints.iterator();
     }
 }

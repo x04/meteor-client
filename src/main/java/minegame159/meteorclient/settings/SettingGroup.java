@@ -13,9 +13,8 @@ import java.util.List;
 
 public class SettingGroup implements ISerializable<SettingGroup>, Iterable<Setting<?>> {
     public final String name;
-    public boolean sectionExpanded;
-
     final List<Setting<?>> settings = new ArrayList<>(1);
+    public boolean sectionExpanded;
 
     SettingGroup(String name, boolean sectionExpanded) {
         this.name = name;
@@ -24,7 +23,9 @@ public class SettingGroup implements ISerializable<SettingGroup>, Iterable<Setti
 
     public Setting<?> get(String name) {
         for (Setting<?> setting : this) {
-            if (setting.name.equals(name)) return setting;
+            if (setting.name.equals(name)) {
+                return setting;
+            }
         }
 
         return null;
@@ -47,13 +48,17 @@ public class SettingGroup implements ISerializable<SettingGroup>, Iterable<Setti
     }
 
     private void fillTable(WSection section, Setting<?> setting) {
-        if (setting.widget instanceof WTextBox) ((WTextBox) setting.widget).setFocused(false);
+        if (setting.widget instanceof WTextBox) {
+            ((WTextBox) setting.widget).setFocused(false);
+        }
 
         WLabel label = section.add(new WLabel(setting.title)).getWidget();
         label.tooltip = setting.description;
 
         Cell<?> cell = section.add(setting.widget).fillX();
-        if (setting.widget instanceof WIntEdit || setting.widget instanceof WDoubleEdit) cell.expandX();
+        if (setting.widget instanceof WIntEdit || setting.widget instanceof WDoubleEdit) {
+            cell.expandX();
+        }
         WWidget widget = cell.getWidget();
         widget.tooltip = setting.description;
 
@@ -89,7 +94,9 @@ public class SettingGroup implements ISerializable<SettingGroup>, Iterable<Setti
             CompoundTag settingTag = (CompoundTag) t;
 
             Setting<?> setting = get(settingTag.getString("name"));
-            if (setting != null) setting.fromTag(settingTag);
+            if (setting != null) {
+                setting.fromTag(settingTag);
+            }
         }
 
         return this;

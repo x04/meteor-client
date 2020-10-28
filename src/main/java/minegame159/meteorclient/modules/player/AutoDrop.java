@@ -19,28 +19,14 @@ import java.util.List;
 
 public class AutoDrop extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    
-    private final Setting<List<Item>> items = sgGeneral.add(new ItemListSetting.Builder()
-            .name("items")
-            .description("Items to drop.")
-            .defaultValue(new ArrayList<>(0))
-            .build()
-    );
 
-    private final Setting<Boolean> excludeHotbar = sgGeneral.add(new BoolSetting.Builder()
-            .name("exclude-hotbar")
-            .description("Doesn't drop items from hotbar.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<List<Item>> items = sgGeneral.add(new ItemListSetting.Builder().name("items").description("Items to drop.").defaultValue(new ArrayList<>(0)).build());
 
-    public AutoDrop() {
-        super(Category.Player, "auto-drop", "Automatically drops selected items.");
-    }
-
-    @EventHandler
-    private Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (mc.currentScreen instanceof HandledScreen<?>) return;
+    private final Setting<Boolean> excludeHotbar = sgGeneral.add(new BoolSetting.Builder().name("exclude-hotbar").description("Doesn't drop items from hotbar.").defaultValue(false).build());
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (mc.currentScreen instanceof HandledScreen<?>) {
+            return;
+        }
 
         for (int i = excludeHotbar.get() ? 9 : 0; i < mc.player.inventory.size(); i++) {
             if (items.get().contains(mc.player.inventory.getStack(i).getItem())) {
@@ -48,4 +34,8 @@ public class AutoDrop extends ToggleModule {
             }
         }
     });
+
+    public AutoDrop() {
+        super(Category.Player, "auto-drop", "Automatically drops selected items.");
+    }
 }

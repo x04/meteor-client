@@ -43,11 +43,17 @@ public class BlockListSetting extends Setting<List<Block>> {
             for (String value : values) {
                 String val = value.trim();
                 Identifier id;
-                if (val.contains(":")) id = new Identifier(val);
-                else id = new Identifier("minecraft", val);
-                if (Registry.BLOCK.containsId(id)) blocks.add(Registry.BLOCK.get(id));
+                if (val.contains(":")) {
+                    id = new Identifier(val);
+                } else {
+                    id = new Identifier("minecraft", val);
+                }
+                if (Registry.BLOCK.containsId(id)) {
+                    blocks.add(Registry.BLOCK.get(id));
+                }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         return blocks;
     }

@@ -19,14 +19,7 @@ public class TickRate implements Listenable {
     private final float[] tickRates = new float[20];
     private int nextIndex = 0;
     private long timeLastTimeUpdate = -1;
-    private long timeGameJoined;
-
-    private TickRate() {
-        Meteor.INSTANCE.getEventBus().subscribe(this);
-    }
-
-    @EventHandler
-    private Listener<ReceivePacketEvent> onReceivePacket = new Listener<>(event -> {
+    @EventHandler private final Listener<ReceivePacketEvent> onReceivePacket = new Listener<>(event -> {
         if (event.packet instanceof WorldTimeUpdateS2CPacket) {
             if (timeLastTimeUpdate != -1L) {
                 float timeElapsed = (float) (System.currentTimeMillis() - timeLastTimeUpdate) / 1000.0F;
@@ -36,17 +29,22 @@ public class TickRate implements Listenable {
             timeLastTimeUpdate = System.currentTimeMillis();
         }
     });
-
-    @EventHandler
-    private Listener<GameJoinedEvent> onGameJoined = new Listener<>(event -> {
+    private long timeGameJoined;
+    @EventHandler private final Listener<GameJoinedEvent> onGameJoined = new Listener<>(event -> {
         Arrays.fill(tickRates, 0);
         nextIndex = 0;
         timeLastTimeUpdate = -1;
         timeGameJoined = System.currentTimeMillis();
     });
 
+    private TickRate() {
+        Meteor.INSTANCE.getEventBus().subscribe(this);
+    }
+
     public float getTickRate() {
-        if (System.currentTimeMillis() - timeGameJoined < 4000) return 20;
+        if (System.currentTimeMillis() - timeGameJoined < 4000) {
+            return 20;
+        }
 
         float numTicks = 0.0f;
         float sumTickRates = 0.0f;
@@ -60,7 +58,9 @@ public class TickRate implements Listenable {
     }
 
     public float getTimeSinceLastTick() {
-        if (System.currentTimeMillis() - timeGameJoined < 4000) return 0;
+        if (System.currentTimeMillis() - timeGameJoined < 4000) {
+            return 0;
+        }
         return (System.currentTimeMillis() - timeLastTimeUpdate) / 1000f;
     }
 }

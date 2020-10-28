@@ -25,12 +25,16 @@ public class AccountCache implements ISerializable<AccountCache> {
     }
 
     public ByteTexture getHeadTexture() {
-        if (steve) return STEVE;
+        if (steve) {
+            return STEVE;
+        }
         return headTexture;
     }
 
     public boolean makeHead(String skinUrl) {
-        if (steve && STEVE != null) return true;
+        if (steve && STEVE != null) {
+            return true;
+        }
 
         try {
             BufferedImage skin = ImageIO.read(new URL(skinUrl));
@@ -58,7 +62,9 @@ public class AccountCache implements ISerializable<AccountCache> {
 
                     int a = pixel[3];
                     for (int j = 0; j < 3; j++) {
-                        if (a == 255) head[i] = (byte) pixel[j];
+                        if (a == 255) {
+                            head[i] = (byte) pixel[j];
+                        }
                         i++;
                     }
                 }
@@ -89,7 +95,9 @@ public class AccountCache implements ISerializable<AccountCache> {
 
     @Override
     public AccountCache fromTag(CompoundTag tag) {
-        if (!tag.contains("username") || !tag.contains("uuid")) throw new NbtException();
+        if (!tag.contains("username") || !tag.contains("uuid")) {
+            throw new NbtException();
+        }
 
         username = tag.getString("username");
         uuid = tag.getString("uuid");

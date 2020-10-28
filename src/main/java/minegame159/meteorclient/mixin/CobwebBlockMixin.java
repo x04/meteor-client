@@ -17,6 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class CobwebBlockMixin {
     @Inject(method = "onEntityCollision", at = @At("HEAD"), cancellable = true)
     private void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, CallbackInfo info) {
-        if (ModuleManager.INSTANCE.get(NoSlow.class).web() && entity == Meteor.INSTANCE.getMinecraft().player) info.cancel();
+        if (ModuleManager.INSTANCE.get(NoSlow.class).web() && entity == Meteor.INSTANCE.getMinecraft().player) {
+            info.cancel();
+        }
     }
 }

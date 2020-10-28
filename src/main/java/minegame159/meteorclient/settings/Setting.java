@@ -12,14 +12,12 @@ import java.util.stream.Collectors;
 
 public abstract class Setting<T> implements ISerializable<T> {
     public final String name, title, description;
-    private String usage;
-
-    protected final T defaultValue;
-    protected T value;
-
-    private final Consumer<T> onChanged;
     public final Consumer<Setting<T>> onModuleActivated;
+    protected final T defaultValue;
+    private final Consumer<T> onChanged;
     public WWidget widget;
+    protected T value;
+    private String usage;
 
     public Setting(String name, String description, T defaultValue, Consumer<T> onChanged, Consumer<Setting<T>> onModuleActivated) {
         this.name = name;
@@ -36,7 +34,9 @@ public abstract class Setting<T> implements ISerializable<T> {
     }
 
     public boolean set(T value) {
-        if (!isValueValid(value)) return false;
+        if (!isValueValid(value)) {
+            return false;
+        }
         this.value = value;
         resetWidget();
         changed();
@@ -50,6 +50,7 @@ public abstract class Setting<T> implements ISerializable<T> {
             changed();
         }
     }
+
     public void reset() {
         reset(true);
     }
@@ -69,11 +70,15 @@ public abstract class Setting<T> implements ISerializable<T> {
     }
 
     public void changed() {
-        if (onChanged != null) onChanged.accept(value);
+        if (onChanged != null) {
+            onChanged.accept(value);
+        }
     }
 
     public void onActivated() {
-        if (onModuleActivated != null) onModuleActivated.accept(this);
+        if (onModuleActivated != null) {
+            onModuleActivated.accept(this);
+        }
     }
 
     protected abstract T parseImpl(String str);
@@ -83,7 +88,9 @@ public abstract class Setting<T> implements ISerializable<T> {
     protected abstract boolean isValueValid(T value);
 
     public String getUsage() {
-        if (usage == null) usage = generateUsage();
+        if (usage == null) {
+            usage = generateUsage();
+        }
         return usage;
     }
 
@@ -102,8 +109,12 @@ public abstract class Setting<T> implements ISerializable<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Setting<?> setting = (Setting<?>) o;
         return Objects.equals(name, setting.name);
     }

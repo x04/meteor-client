@@ -45,7 +45,9 @@ public class WModuleSearch extends WWindow {
                 row();
 
                 for (Pair<Module, Integer> pair : modules) {
-                    if (!(pair.getLeft() instanceof ToggleModule)) continue;
+                    if (!(pair.getLeft() instanceof ToggleModule)) {
+                        continue;
+                    }
 
                     section.add(new WModule((ToggleModule) pair.getLeft())).fillX().expandX().space(0);
                     section.row();
@@ -59,7 +61,9 @@ public class WModuleSearch extends WWindow {
                 row();
 
                 for (Pair<Module, Integer> pair : modules) {
-                    if (!(pair.getLeft() instanceof ToggleModule)) continue;
+                    if (!(pair.getLeft() instanceof ToggleModule)) {
+                        continue;
+                    }
 
                     section.add(new WModule((ToggleModule) pair.getLeft())).fillX().expandX().space(0);
                     section.row();

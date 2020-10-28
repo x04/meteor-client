@@ -11,9 +11,13 @@ public abstract class WPressable extends WWidget {
 
     @Override
     protected boolean onMouseClicked(boolean used, int button) {
-        if (used) return false;
+        if (used) {
+            return false;
+        }
 
-        if (mouseOver) pressed = true;
+        if (mouseOver) {
+            pressed = true;
+        }
         return mouseOver;
     }
 
@@ -21,14 +25,17 @@ public abstract class WPressable extends WWidget {
     protected boolean onMouseReleased(boolean used, int button) {
         if (mouseOver && pressed) {
             onAction(button);
-            if (action != null && runAction()) action.run();
+            if (action != null && runAction()) {
+                action.run();
+            }
         }
 
         pressed = false;
         return mouseOver && !used;
     }
 
-    protected void onAction(int button) {}
+    protected void onAction(int button) {
+    }
 
     protected boolean runAction() {
         return true;

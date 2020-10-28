@@ -59,7 +59,9 @@ public class StatusEffectSetting extends Setting<Object2IntMap<StatusEffect>> {
         CompoundTag valueTag = new CompoundTag();
         for (StatusEffect statusEffect : get().keySet()) {
             Identifier id = Registry.STATUS_EFFECT.getId(statusEffect);
-            if (id != null) valueTag.putInt(id.toString(), get().getInt(statusEffect));
+            if (id != null) {
+                valueTag.putInt(id.toString(), get().getInt(statusEffect));
+            }
         }
         tag.put("value", valueTag);
 
@@ -73,7 +75,9 @@ public class StatusEffectSetting extends Setting<Object2IntMap<StatusEffect>> {
         CompoundTag valueTag = tag.getCompound("value");
         for (String key : valueTag.getKeys()) {
             StatusEffect statusEffect = Registry.STATUS_EFFECT.get(new Identifier(key));
-            if (statusEffect != null) get().put(statusEffect, valueTag.getInt(key));
+            if (statusEffect != null) {
+                get().put(statusEffect, valueTag.getInt(key));
+            }
         }
 
         changed();

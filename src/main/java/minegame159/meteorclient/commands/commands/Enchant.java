@@ -10,11 +10,11 @@ import net.minecraft.enchantment.Enchantments;
 
 
 public class Enchant extends Command {
-    public Enchant(){
+    private final MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
+
+    public Enchant() {
         super("enchant", "Enchants the currently held item with almost every enchantment (must be in creative)");
     }
-
-    private final MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
 
     @Override
     public void run(String[] args) {

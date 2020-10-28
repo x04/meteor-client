@@ -11,7 +11,9 @@ import java.util.Set;
 
 @Mixin(MiningToolItem.class)
 public class MiningToolItemMixin implements IMiningToolItem {
-    @Shadow @Final private Set<Block> effectiveBlocks;
+    @Shadow
+    @Final
+    private Set<Block> effectiveBlocks;
 
     @Override
     public boolean isEffectiveOn(Block block) {

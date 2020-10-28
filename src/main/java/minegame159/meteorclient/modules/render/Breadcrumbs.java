@@ -18,61 +18,24 @@ import java.util.Queue;
 public class Breadcrumbs extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Color> color = sgGeneral.add(new ColorSetting.Builder()
-            .name("color")
-            .description("Color of the line.")
-            .defaultValue(new Color(225, 25, 25))
-            .build()
-    );
+    private final Setting<Color> color = sgGeneral.add(new ColorSetting.Builder().name("color").description("Color of the line.").defaultValue(new Color(225, 25, 25)).build());
 
-    private final Setting<Integer> maxSections = sgGeneral.add(new IntSetting.Builder()
-            .name("max-sections")
-            .description("Maximum number of sections.")
-            .defaultValue(1000)
-            .min(0)
-            .sliderMax(5000)
-            .build()
-    );
+    private final Setting<Integer> maxSections = sgGeneral.add(new IntSetting.Builder().name("max-sections").description("Maximum number of sections.").defaultValue(1000).min(0).sliderMax(5000).build());
 
-    private final Setting<Double> sectionLength = sgGeneral.add(new DoubleSetting.Builder()
-            .name("section-length")
-            .description("Section length, 1 is equal to 1 block.")
-            .defaultValue(0.5)
-            .min(0)
-            .sliderMin(0)
-            .sliderMax(1)
-            .build()
-    );
+    private final Setting<Double> sectionLength = sgGeneral.add(new DoubleSetting.Builder().name("section-length").description("Section length, 1 is equal to 1 block.").defaultValue(0.5).min(0).sliderMin(0).sliderMax(1).build());
 
     private final Pool<Section> sectionPool = new Pool<>(Section::new);
     private final Queue<Section> sections = new ArrayDeque<>();
-
+    @EventHandler private final Listener<RenderEvent> onRender = new Listener<>(event -> {
+        for (Section section : sections)
+            section.render();
+    });
     private Section section;
-
     private DimensionType lastDimension;
-
-    public Breadcrumbs() {
-        super(Category.Render, "breadcrumbs", "Displays a line where you walked.");
-    }
-
-    @Override
-    public void onActivate() {
-        section = sectionPool.get();
-        section.set1();
-
-        lastDimension = mc.world.getDimension();
-    }
-
-    @Override
-    public void onDeactivate() {
-        for (Section section : sections) sectionPool.free(section);
-        sections.clear();
-    }
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         if (lastDimension != mc.world.getDimension()) {
-            for (Section sec : sections) sectionPool.free(sec);
+            for (Section sec : sections)
+                sectionPool.free(sec);
             sections.clear();
         }
 
@@ -91,10 +54,24 @@ public class Breadcrumbs extends ToggleModule {
         lastDimension = mc.world.getDimension();
     });
 
-    @EventHandler
-    private final Listener<RenderEvent> onRender = new Listener<>(event -> {
-        for (Section section : sections) section.render();
-    });
+    public Breadcrumbs() {
+        super(Category.Render, "breadcrumbs", "Displays a line where you walked.");
+    }
+
+    @Override
+    public void onActivate() {
+        section = sectionPool.get();
+        section.set1();
+
+        lastDimension = mc.world.getDimension();
+    }
+
+    @Override
+    public void onDeactivate() {
+        for (Section section : sections)
+            sectionPool.free(section);
+        sections.clear();
+    }
 
     private boolean isFarEnough(double x, double y, double z) {
         return Math.abs(mc.player.getX() - x) >= sectionLength.get() || Math.abs(mc.player.getY() - y) >= sectionLength.get() || Math.abs(mc.player.getZ() - z) >= sectionLength.get();

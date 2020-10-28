@@ -4,7 +4,6 @@ import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.commands.Command;
 import minegame159.meteorclient.utils.Chat;
 import minegame159.meteorclient.utils.Utils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -14,7 +13,7 @@ import net.minecraft.screen.ShulkerBoxScreenHandler;
 import net.minecraft.text.Text;
 
 public class Peek extends Command {
-    private static ItemStack[] ITEMS = new ItemStack[27];
+    private static final ItemStack[] ITEMS = new ItemStack[27];
 
     public Peek() {
         super("peek", "Lets you see whats inside shulker boxes.");
@@ -25,9 +24,11 @@ public class Peek extends Command {
         PlayerEntity player = Meteor.INSTANCE.getMinecraft().player;
 
         ItemStack itemStack;
-        if (Utils.isShulker(player.getMainHandStack().getItem())) itemStack = player.getMainHandStack();
-        else if (Utils.isShulker(player.getOffHandStack().getItem())) itemStack = player.getOffHandStack();
-        else {
+        if (Utils.isShulker(player.getMainHandStack().getItem())) {
+            itemStack = player.getMainHandStack();
+        } else if (Utils.isShulker(player.getOffHandStack().getItem())) {
+            itemStack = player.getOffHandStack();
+        } else {
             Chat.error("You must be holding a shulker box.");
             return;
         }

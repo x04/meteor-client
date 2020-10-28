@@ -40,12 +40,13 @@ import javax.annotation.Nullable;
 
 @Mixin(HandledScreen.class)
 public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen implements ScreenHandlerProvider<T> {
-    @Shadow @Nullable protected Slot focusedSlot;
-
-    @Shadow protected int x;
-    @Shadow protected int y;
     private static final Identifier TEXTURE = new Identifier("meteor-client", "container_3x9.png");
     private static MinecraftClient mc;
+    @Shadow
+    @Nullable
+    protected Slot focusedSlot;
+    @Shadow protected int x;
+    @Shadow protected int y;
 
     public HandledScreenMixin(Text title) {
         super(title);
@@ -93,8 +94,11 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     @Inject(method = "drawMouseoverTooltip", at = @At("HEAD"), cancellable = true)
     private void onDrawMouseoverTooltip(MatrixStack matrices, int x, int y, CallbackInfo info) {
         if (focusedSlot != null && !focusedSlot.getStack().isEmpty()) {
-            if (Utils.isShulker(focusedSlot.getStack().getItem()) && KeyBinds.SHULKER_PEEK.isPressed()) info.cancel();
-            else if (focusedSlot.getStack().getItem() == Items.ENDER_CHEST && ModuleManager.INSTANCE.isActive(EChestPreview.class)) info.cancel();
+            if (Utils.isShulker(focusedSlot.getStack().getItem()) && KeyBinds.SHULKER_PEEK.isPressed()) {
+                info.cancel();
+            } else if (focusedSlot.getStack().getItem() == Items.ENDER_CHEST && ModuleManager.INSTANCE.isActive(EChestPreview.class)) {
+                info.cancel();
+            }
         }
     }
 

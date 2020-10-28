@@ -9,6 +9,7 @@ public class Chat {
     public static void info(Module module, String format, Object... args) {
         sendMsg(module, formatMsg(format, Formatting.GRAY, args), Formatting.GRAY);
     }
+
     public static void info(String format, Object... args) {
         info(null, format, args);
     }
@@ -16,6 +17,7 @@ public class Chat {
     public static void warning(Module module, String format, Object... args) {
         sendMsg(module, formatMsg(format, Formatting.YELLOW, args), Formatting.YELLOW);
     }
+
     public static void warning(String format, Object... args) {
         warning(null, format, args);
     }
@@ -23,14 +25,17 @@ public class Chat {
     public static void error(Module module, String format, Object... args) {
         sendMsg(module, formatMsg(format, Formatting.RED, args), Formatting.RED);
     }
+
     public static void error(String format, Object... args) {
         error(null, format, args);
     }
 
     private static void sendMsg(Module module, String msg, Formatting color) {
-        if (Meteor.INSTANCE.getMinecraft().world == null) return;
+        if (Meteor.INSTANCE.getMinecraft().world == null) {
+            return;
+        }
         if (module != null) {
-            Meteor.INSTANCE.getMinecraft().player.sendMessage(new LiteralText(String.format("%s[%sMeteor%s] %s[%s] %s%s", Formatting.GRAY, Formatting.BLUE,Formatting.GRAY, Formatting.AQUA, module.title, color, msg)), false);
+            Meteor.INSTANCE.getMinecraft().player.sendMessage(new LiteralText(String.format("%s[%sMeteor%s] %s[%s] %s%s", Formatting.GRAY, Formatting.BLUE, Formatting.GRAY, Formatting.AQUA, module.title, color, msg)), false);
         } else {
             Meteor.INSTANCE.getMinecraft().player.sendMessage(new LiteralText(String.format("%s[%sMeteor%s] %s%s", Formatting.GRAY, Formatting.BLUE, Formatting.GRAY, color, msg)), false);
         }

@@ -36,7 +36,9 @@ public abstract class ClientPlayNetworkHandlerMixin {
     public void onSendPacket(Packet packet, CallbackInfo info) {
         SendPacketEvent event = EventStore.sendPacketEvent(packet);
         Meteor.INSTANCE.getEventBus().post(event);
-        if (event.isCancelled()) info.cancel();
+        if (event.isCancelled()) {
+            info.cancel();
+        }
     }
 
     @Inject(at = @At("HEAD"), method = "onPlaySound")
@@ -62,7 +64,9 @@ public abstract class ClientPlayNetworkHandlerMixin {
 
     @Redirect(method = "onExplosion", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
     private void onExplosionVec3dAddProxy(ClientPlayerEntity player, Vec3d vec3d) {
-        if (player != client.player) player.setVelocity(vec3d);
+        if (player != client.player) {
+            player.setVelocity(vec3d);
+        }
 
         double deltaX = vec3d.x - player.getVelocity().x;
         double deltaY = vec3d.y - player.getVelocity().y;

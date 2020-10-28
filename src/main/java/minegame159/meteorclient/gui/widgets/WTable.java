@@ -11,20 +11,15 @@ import java.util.List;
 
 public class WTable extends WWidget {
     public final Cell<?> defaultCell = new Cell<>().centerY().space(4);
-
-    private double paddingVertical, paddingHorizontal;
-
     private final List<List<Cell<?>>> rows = new ArrayList<>(1);
-    private int rowI;
-
     private final DoubleList rowWidths = new DoubleArrayList(1);
     private final DoubleList rowHeights = new DoubleArrayList(1);
     private final DoubleList columnWidths = new DoubleArrayList(1);
-
     private final IntList rowFillXCount = new IntArrayList(1);
-
     private final DoubleList rowSpaceTop = new DoubleArrayList(1);
     private final DoubleList rowSpaceBottom = new DoubleArrayList(1);
+    private double paddingVertical, paddingHorizontal;
+    private int rowI;
 
     @Override
     public <T extends WWidget> Cell<T> add(T widget) {
@@ -34,13 +29,18 @@ public class WTable extends WWidget {
         if (rows.size() <= rowI) {
             row = new ArrayList<>(1);
             rows.add(row);
-        } else row = rows.get(rowI);
+        } else {
+            row = rows.get(rowI);
+        }
         row.add(cell);
 
         if (widget instanceof WHorizontalSeparator) {
             cell.fillX().expandX();
-            if (parent instanceof WWindow) ((WWindow) parent).row();
-            else row();
+            if (parent instanceof WWindow) {
+                ((WWindow) parent).row();
+            } else {
+                row();
+            }
         } else if (widget instanceof WVerticalSeparator) {
             cell.expandY();
         } else if (widget instanceof WSection) {
@@ -226,11 +226,16 @@ public class WTable extends WWidget {
 
                 // Calculate column width
                 double cellWidth = cell.padLeft + cell.getWidget().width + cell.padRight;
-                if (columnWidths.size() <= cellI) columnWidths.add(cellWidth);
-                else columnWidths.set(cellI, Math.max(columnWidths.getDouble(cellI), cellWidth));
+                if (columnWidths.size() <= cellI) {
+                    columnWidths.add(cellWidth);
+                } else {
+                    columnWidths.set(cellI, Math.max(columnWidths.getDouble(cellI), cellWidth));
+                }
 
                 // Calculate row fillX
-                if (cell.fillX) rowFillXCount++;
+                if (cell.fillX) {
+                    rowFillXCount++;
+                }
 
                 // Calculate row space top and bottom
                 rowSpaceTop = Math.max(rowSpaceTop, cell.spaceTop);

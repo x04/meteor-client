@@ -25,7 +25,9 @@ public class EnumSetting<T extends Enum<?>> extends Setting<T> {
     @Override
     protected T parseImpl(String str) {
         for (T possibleValue : values) {
-            if (str.equalsIgnoreCase(possibleValue.toString())) return possibleValue;
+            if (str.equalsIgnoreCase(possibleValue.toString())) {
+                return possibleValue;
+            }
         }
 
         return null;
@@ -46,7 +48,9 @@ public class EnumSetting<T extends Enum<?>> extends Setting<T> {
         String usage = "";
 
         for (int i = 0; i < values.length; i++) {
-            if (i > 0) usage += " (default)or ";
+            if (i > 0) {
+                usage += " (default)or ";
+            }
             usage += "(highlight)" + values[i];
         }
 

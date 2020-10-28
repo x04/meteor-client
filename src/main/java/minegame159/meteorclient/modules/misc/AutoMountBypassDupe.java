@@ -36,54 +36,27 @@ import java.util.List;
 public class AutoMountBypassDupe extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Boolean> shulkersOnly = sgGeneral.add(new BoolSetting.Builder()
-            .name("shulker-only")
-            .description("Only moves shulker boxes into the inventory")
-            .defaultValue(true)
-            .build());
+    private final Setting<Boolean> shulkersOnly = sgGeneral.add(new BoolSetting.Builder().name("shulker-only").description("Only moves shulker boxes into the inventory").defaultValue(true).build());
 
-    private final Setting<Boolean> faceDown = sgGeneral.add(new BoolSetting.Builder()
-            .name("face-down")
-            .description("Faces down when dropping items.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> faceDown = sgGeneral.add(new BoolSetting.Builder().name("face-down").description("Faces down when dropping items.").defaultValue(true).build());
 
-    private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
-            .name("delay")
-            .description("Time in ticks between actions. 20 ticks = 1 second.")
-            .defaultValue(4)
-            .min(0)
-            .build()
-    );
+    private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder().name("delay").description("Time in ticks between actions. 20 ticks = 1 second.").defaultValue(4).min(0).build());
 
     private final List<Integer> slotsToMove = new ArrayList<>();
     private final List<Integer> slotsToThrow = new ArrayList<>();
 
     private boolean noCancel = false;
-    private AbstractDonkeyEntity entity;
-    private boolean sneak = false;
-    private int timer;
-
-    public AutoMountBypassDupe() {
-        super(Category.Misc, "auto-mount-bypass-dupe", "Does the mount bypass dupe for you. Disable with esc.");
-    }
-
-    @Override
-    public void onActivate() {
-        timer = 0;
-    }
-
-
-    @EventHandler
-    private final Listener<SendPacketEvent> onSendPacket = new Listener<>(event -> {
-        if (noCancel) return;
+    @EventHandler private final Listener<SendPacketEvent> onSendPacket = new Listener<>(event -> {
+        if (noCancel) {
+            return;
+        }
 
         ModuleManager.INSTANCE.get(MountBypass.class).onSendPacket(event);
     });
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
+    private AbstractDonkeyEntity entity;
+    private boolean sneak = false;
+    private int timer;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         if (GLFW.glfwGetKey(mc.getWindow().getHandle(), GLFW.GLFW_KEY_ESCAPE) == GLFW.GLFW_PRESS) {
             toggle();
             mc.player.closeHandledScreen();
@@ -104,7 +77,9 @@ public class AutoMountBypassDupe extends ToggleModule {
                 entity = (AbstractDonkeyEntity) e;
             }
         }
-        if (entity == null) return;
+        if (entity == null) {
+            return;
+        }
 
         if (sneak) {
             mc.player.networkHandler.sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
@@ -114,13 +89,13 @@ public class AutoMountBypassDupe extends ToggleModule {
         }
 
         if (slots == -1) {
-            if (entity.hasChest() || mc.player.getMainHandStack().getItem() == Items.CHEST){
+            if (entity.hasChest() || mc.player.getMainHandStack().getItem() == Items.CHEST) {
                 mc.player.networkHandler.sendPacket(new PlayerInteractEntityC2SPacket(entity, Hand.MAIN_HAND, mc.player.isSneaking()));
             } else {
                 int slot = InvUtils.findItemWithCount(Items.CHEST).slot;
                 if (slot != -1 && slot < 9) {
-                    mc.player.inventory.selectedSlot  = slot;
-                 } else {
+                    mc.player.inventory.selectedSlot = slot;
+                } else {
                     Chat.warning(this, "Cannot find chest in your hotbar. Disabling!");
                     this.toggle();
                 }
@@ -149,7 +124,7 @@ public class AutoMountBypassDupe extends ToggleModule {
             }
         } else if (!(mc.currentScreen instanceof HorseScreen)) {
             mc.player.openRidingInventory();
-        } else if (slots > 0 ) {
+        } else if (slots > 0) {
             if (slotsToMove.isEmpty()) {
                 boolean empty = true;
                 for (int i = 2; i <= slots; i++) {
@@ -161,11 +136,17 @@ public class AutoMountBypassDupe extends ToggleModule {
                 if (empty) {
                     for (int i = slots + 2; i < mc.player.currentScreenHandler.getStacks().size(); i++) {
                         if (!(mc.player.currentScreenHandler.getStacks().get(i).isEmpty())) {
-                            if (mc.player.currentScreenHandler.getSlot(i).getStack().getItem() == Items.CHEST) continue;
-                            if (!(mc.player.currentScreenHandler.getSlot(i).getStack().getItem() instanceof BlockItem && ((BlockItem) mc.player.currentScreenHandler.getSlot(i).getStack().getItem()).getBlock() instanceof ShulkerBoxBlock) && shulkersOnly.get()) continue;
+                            if (mc.player.currentScreenHandler.getSlot(i).getStack().getItem() == Items.CHEST) {
+                                continue;
+                            }
+                            if (!(mc.player.currentScreenHandler.getSlot(i).getStack().getItem() instanceof BlockItem && ((BlockItem) mc.player.currentScreenHandler.getSlot(i).getStack().getItem()).getBlock() instanceof ShulkerBoxBlock) && shulkersOnly.get()) {
+                                continue;
+                            }
                             slotsToMove.add(i);
 
-                            if (slotsToMove.size() >= slots) break;
+                            if (slotsToMove.size() >= slots) {
+                                break;
+                            }
                         }
                     }
                 } else {
@@ -177,16 +158,31 @@ public class AutoMountBypassDupe extends ToggleModule {
             }
 
             if (!slotsToMove.isEmpty()) {
-                for (int i : slotsToMove) InvUtils.clickSlot(i, 0, SlotActionType.QUICK_MOVE);
+                for (int i : slotsToMove)
+                    InvUtils.clickSlot(i, 0, SlotActionType.QUICK_MOVE);
                 slotsToMove.clear();
             }
         }
     });
 
-    private int getInvSize(Entity e){
-        if (!(e instanceof AbstractDonkeyEntity)) return -1;
 
-        if (!((AbstractDonkeyEntity)e).hasChest()) return 0;
+    public AutoMountBypassDupe() {
+        super(Category.Misc, "auto-mount-bypass-dupe", "Does the mount bypass dupe for you. Disable with esc.");
+    }
+
+    @Override
+    public void onActivate() {
+        timer = 0;
+    }
+
+    private int getInvSize(Entity e) {
+        if (!(e instanceof AbstractDonkeyEntity)) {
+            return -1;
+        }
+
+        if (!((AbstractDonkeyEntity) e).hasChest()) {
+            return 0;
+        }
 
         if (e instanceof LlamaEntity) {
             return 3 * ((LlamaEntity) e).getStrength();

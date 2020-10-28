@@ -2,11 +2,9 @@ package minegame159.meteorclient.modules.render;
 
 import minegame159.meteorclient.modules.Category;
 import minegame159.meteorclient.modules.ToggleModule;
-import minegame159.meteorclient.settings.BoolSetting;
 import minegame159.meteorclient.settings.EntityTypeListSetting;
 import minegame159.meteorclient.settings.Setting;
 import minegame159.meteorclient.settings.SettingGroup;
-import minegame159.meteorclient.utils.EntityUtils;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 
@@ -15,13 +13,8 @@ import java.util.List;
 
 public class Chams extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    
-    private final Setting<List<EntityType<?>>> entities = sgGeneral.add(new EntityTypeListSetting.Builder()
-            .name("entities")
-            .description("Select entities to show through walls.")
-            .defaultValue(new ArrayList<>(0))
-            .build()
-    );
+
+    private final Setting<List<EntityType<?>>> entities = sgGeneral.add(new EntityTypeListSetting.Builder().name("entities").description("Select entities to show through walls.").defaultValue(new ArrayList<>(0)).build());
 
     public Chams() {
         super(Category.Render, "chams", "Renders entities through blocks.");

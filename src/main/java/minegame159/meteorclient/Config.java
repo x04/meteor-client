@@ -16,24 +16,22 @@ public class Config extends Savable<Config> {
     public static Config INSTANCE = new Config();
 
     public final Version version = new Version("0.3.6");
-    private String prefix = ".";
     public GuiConfig guiConfig = new GuiConfig();
-
     public boolean chatCommandsInfo = true;
-
+    private String prefix = ".";
     private Map<Category, Color> categoryColors = new HashMap<>();
 
     public Config() {
         super(new File(Meteor.INSTANCE.getFolder(), "config.nbt"));
     }
 
+    public String getPrefix() {
+        return prefix;
+    }
+
     public void setPrefix(String prefix) {
         this.prefix = prefix;
         save();
-    }
-
-    public String getPrefix() {
-        return prefix;
     }
 
     public void setCategoryColor(Category category, Color color) {

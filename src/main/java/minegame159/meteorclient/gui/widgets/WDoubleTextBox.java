@@ -13,8 +13,12 @@ public class WDoubleTextBox extends WTextBox {
 
     @Override
     protected boolean addChar(char c) {
-        if (c >= '0' && c <= '9') return true;
-        if (c == '-' && getCursor() == 0 && !getText().contains("-")) return true;
+        if (c >= '0' && c <= '9') {
+            return true;
+        }
+        if (c == '-' && getCursor() == 0 && !getText().contains("-")) {
+            return true;
+        }
         return c == '.' && !getText().contains(".");
     }
 
@@ -31,7 +35,9 @@ public class WDoubleTextBox extends WTextBox {
             }
         }
 
-        if (action != null && value != lastValue) action.run();
+        if (action != null && value != lastValue) {
+            action.run();
+        }
     }
 
     public double getValue() {

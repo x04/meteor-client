@@ -7,6 +7,9 @@ import minegame159.meteorclient.modules.Category;
 import minegame159.meteorclient.modules.ToggleModule;
 
 public class FullBright extends ToggleModule {
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        mc.options.gamma = 16;
+    });
     private double preGamma;
 
     public FullBright() {
@@ -23,9 +26,4 @@ public class FullBright extends ToggleModule {
     public void onDeactivate() {
         mc.options.gamma = preGamma;
     }
-
-    @EventHandler
-    private Listener<TickEvent> onTick = new Listener<>(event -> {
-        mc.options.gamma = 16;
-    });
 }

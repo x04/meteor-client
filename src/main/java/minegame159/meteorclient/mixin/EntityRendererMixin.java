@@ -17,7 +17,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class EntityRendererMixin<T extends Entity> {
     @Inject(method = "renderLabelIfPresent", at = @At("HEAD"), cancellable = true)
     private void onRenderLabel(T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
-        if (!(entity instanceof PlayerEntity)) return;
-        if (ModuleManager.INSTANCE.isActive(Nametags.class)) info.cancel();
+        if (!(entity instanceof PlayerEntity)) {
+            return;
+        }
+        if (ModuleManager.INSTANCE.isActive(Nametags.class)) {
+            info.cancel();
+        }
     }
 }

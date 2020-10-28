@@ -22,16 +22,24 @@ import net.minecraft.text.LiteralText;
 
 public class AutoReconnect extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    
-    private final Setting<Double> time = sgGeneral.add(new DoubleSetting.Builder()
-            .name("time")
-            .description("Time to wait before connecting.")
-            .defaultValue(2.0)
-            .min(0.0)
-            .build()
-    );
+
+    private final Setting<Double> time = sgGeneral.add(new DoubleSetting.Builder().name("time").description("Time to wait before connecting.").defaultValue(2.0).min(0.0).build());
 
     private ServerInfo lastServerInfo;
+    @EventHandler private final Listener<OpenScreenEvent> onOpenScreen = new Listener<>(event -> {
+        if (lastServerInfo == null) {
+            return;
+        }
+        if (!(event.screen instanceof DisconnectedScreen)) {
+            return;
+        }
+        if (event.screen instanceof AutoReconnectScreen) {
+            return;
+        }
+
+        mc.openScreen(new AutoReconnectScreen((DisconnectedScreen) event.screen));
+        event.cancel();
+    });
 
     public AutoReconnect() {
         super(Category.Misc, "auto-reconnect", "Automatically reconnects when kicked from server.");
@@ -40,18 +48,8 @@ public class AutoReconnect extends ToggleModule {
         }));
     }
 
-    @EventHandler
-    private Listener<OpenScreenEvent> onOpenScreen = new Listener<>(event -> {
-        if (lastServerInfo == null) return;
-        if (!(event.screen instanceof DisconnectedScreen)) return;
-        if (event.screen instanceof AutoReconnectScreen) return;
-
-        mc.openScreen(new AutoReconnectScreen((DisconnectedScreen) event.screen));
-        event.cancel();
-    });
-
     private class AutoReconnectScreen extends DisconnectedScreen {
-        private int reasonHeight;
+        private final int reasonHeight;
 
         private ButtonWidget reconnectBtn;
         private boolean timerActive = true;

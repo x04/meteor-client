@@ -22,9 +22,10 @@ import java.util.List;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
-    @Shadow public abstract CompoundTag toTag(CompoundTag tag);
-
     @Shadow private int count;
+
+    @Shadow
+    public abstract CompoundTag toTag(CompoundTag tag);
 
     @Inject(method = "getTooltip", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void onGetTooltip(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> info, List<Text> list) {

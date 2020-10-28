@@ -66,7 +66,9 @@ public class TitleScreenMixin extends Screen {
 
             MeteorExecutor.INSTANCE.execute(() -> HttpUtils.getLines("https://meteorclient.com/version.txt", s -> {
                 Version latestVer = new Version(s);
-                if (latestVer.isHigherThan(Config.INSTANCE.version)) Meteor.INSTANCE.getMinecraft().openScreen(new NewUpdateScreen(latestVer));
+                if (latestVer.isHigherThan(Config.INSTANCE.version)) {
+                    Meteor.INSTANCE.getMinecraft().openScreen(new NewUpdateScreen(latestVer));
+                }
             }));
         }
     }

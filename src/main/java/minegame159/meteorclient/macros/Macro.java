@@ -21,6 +21,14 @@ public class Macro implements Listenable, ISerializable<Macro> {
     public String name = "";
     public List<String> messages = new ArrayList<>(1);
     public int key = -1;
+    @EventHandler private final Listener<KeyEvent> onKey = new Listener<>(event -> {
+        if (event.action == KeyAction.Press && event.key == key && Meteor.INSTANCE.getMinecraft().currentScreen == null) {
+            for (String command : messages) {
+                Meteor.INSTANCE.getMinecraft().player.sendChatMessage(command);
+            }
+            event.cancel();
+        }
+    });
 
     public void addMessage(String command) {
         messages.add(command);
@@ -29,16 +37,6 @@ public class Macro implements Listenable, ISerializable<Macro> {
     public void removeMessage(int i) {
         messages.remove(i);
     }
-
-    @EventHandler
-    private final Listener<KeyEvent> onKey = new Listener<>(event -> {
-        if (event.action == KeyAction.Press && event.key == key && Meteor.INSTANCE.getMinecraft().currentScreen == null) {
-            for (String command : messages) {
-                Meteor.INSTANCE.getMinecraft().player.sendChatMessage(command);
-            }
-            event.cancel();
-        }
-    });
 
     @Override
     public CompoundTag toTag() {
@@ -50,7 +48,8 @@ public class Macro implements Listenable, ISerializable<Macro> {
 
         // Messages
         ListTag messagesTag = new ListTag();
-        for (String message : messages) messagesTag.add(StringTag.of(message));
+        for (String message : messages)
+            messagesTag.add(StringTag.of(message));
         tag.put("messages", messagesTag);
 
         return tag;
@@ -67,8 +66,12 @@ public class Macro implements Listenable, ISerializable<Macro> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Macro macro = (Macro) o;
         return Objects.equals(name, macro.name);
     }

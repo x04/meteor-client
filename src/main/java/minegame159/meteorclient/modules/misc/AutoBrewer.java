@@ -18,27 +18,9 @@ import net.minecraft.screen.BrewingStandScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 
 public class AutoBrewer extends ToggleModule {
-    public enum Modifier {
-        None,
-        Splash,
-        Lingering
-    }
-
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
-    private final Setting<MyPotion> potion = sgGeneral.add(new PotionSetting.Builder()
-            .name("potion")
-            .description("Potion to brew.")
-            .defaultValue(MyPotion.Strength)
-            .build()
-    );
-
-    private final Setting<Modifier> modifier = sgGeneral.add(new EnumSetting.Builder<Modifier>()
-            .name("modifier")
-            .description("Modifier.")
-            .defaultValue(Modifier.None).build()
-    );
-
+    private final Setting<MyPotion> potion = sgGeneral.add(new PotionSetting.Builder().name("potion").description("Potion to brew.").defaultValue(MyPotion.Strength).build());
+    private final Setting<Modifier> modifier = sgGeneral.add(new EnumSetting.Builder<Modifier>().name("modifier").description("Modifier.").defaultValue(Modifier.None).build());
     private int ingredientI;
     private boolean first;
     private int timer;
@@ -68,27 +50,39 @@ public class AutoBrewer extends ToggleModule {
         }
 
         // Wait for brewing to complete
-        if (c.getBrewTime() != 0 || timer < 5) return;
+        if (c.getBrewTime() != 0 || timer < 5) {
+            return;
+        }
 
         if (ingredientI == -2) {
             // Take bottles
-            if (takePotions(c)) return;
+            if (takePotions(c)) {
+                return;
+            }
             ingredientI++;
             timer = 0;
         } else if (ingredientI == -1) {
             // Insert water bottles
-            if (insertWaterBottles(c)) return;
+            if (insertWaterBottles(c)) {
+                return;
+            }
             ingredientI++;
             timer = 0;
         } else if (ingredientI < potion.get().ingredients.length) {
             // Check fuel and insert ingredient
-            if (checkFuel(c)) return;
-            if (insertIngredient(c, potion.get().ingredients[ingredientI])) return;
+            if (checkFuel(c)) {
+                return;
+            }
+            if (insertIngredient(c, potion.get().ingredients[ingredientI])) {
+                return;
+            }
             ingredientI++;
             timer = 0;
         } else if (ingredientI == potion.get().ingredients.length) {
             // Apply modifier
-            if (applyModifier(c)) return;
+            if (applyModifier(c)) {
+                return;
+            }
             ingredientI++;
             timer = 0;
         } else {
@@ -101,8 +95,11 @@ public class AutoBrewer extends ToggleModule {
     private boolean applyModifier(BrewingStandScreenHandler c) {
         if (modifier.get() != Modifier.None) {
             Item item;
-            if (modifier.get() == Modifier.Splash) item = Items.GUNPOWDER;
-            else item = Items.DRAGON_BREATH;
+            if (modifier.get() == Modifier.Splash) {
+                item = Items.GUNPOWDER;
+            } else {
+                item = Items.DRAGON_BREATH;
+            }
 
             int slot = -1;
 
@@ -214,5 +211,9 @@ public class AutoBrewer extends ToggleModule {
         }
 
         return false;
+    }
+
+    public enum Modifier {
+        None, Splash, Lingering
     }
 }

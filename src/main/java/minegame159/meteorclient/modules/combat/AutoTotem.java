@@ -33,42 +33,66 @@ import net.minecraft.util.math.Vec3d;
 public class AutoTotem extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Boolean> smart = sgGeneral.add(new BoolSetting.Builder()
-            .name("smart")
-            .description("Only switches to totem when in danger of dying")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> smart = sgGeneral.add(new BoolSetting.Builder().name("smart").description("Only switches to totem when in danger of dying").defaultValue(false).build());
 
-    private final Setting<Boolean> fallback = sgGeneral.add(new BoolSetting.Builder()
-            .name("fallback")
-            .description("Enables offhand extra when you are out of totems.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> fallback = sgGeneral.add(new BoolSetting.Builder().name("fallback").description("Enables offhand extra when you are out of totems.").defaultValue(true).build());
 
-    private final Setting<Boolean> inventorySwitch = sgGeneral.add(new BoolSetting.Builder()
-            .name("inventory")
-            .description("Switches totems while you are in your inventory")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> inventorySwitch = sgGeneral.add(new BoolSetting.Builder().name("inventory").description("Switches totems while you are in your inventory").defaultValue(true).build());
 
-    private final Setting<Integer> health = sgGeneral.add(new IntSetting.Builder()
-            .name("health")
-            .description("The health smart totem activates")
-            .defaultValue(10)
-            .min(0)
-            .sliderMax(20)
-            .build()
-    );
-    
+    private final Setting<Integer> health = sgGeneral.add(new IntSetting.Builder().name("health").description("The health smart totem activates").defaultValue(10).min(0).sliderMax(20).build());
+    private final MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
     private int totemCount;
     private String totemCountString = "0";
-
-    private final MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
-
     private boolean locked = false;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (mc.currentScreen instanceof HandledScreen<?> && (!(mc.currentScreen instanceof InventoryScreen) || !inventorySwitch.get())) {
+            return;
+        }
+
+        int preTotemCount = totemCount;
+        InvUtils.FindItemResult result = InvUtils.findItemWithCount(Items.TOTEM_OF_UNDYING);
+
+        if (result.count <= 0 && mc.player.inventory.getCursorStack().getItem() != Items.TOTEM_OF_UNDYING && mc.player.getOffHandStack().getItem() != Items.TOTEM_OF_UNDYING && fallback.get()) {
+            if (!ModuleManager.INSTANCE.get(OffhandExtra.class).isActive() && !ModuleManager.INSTANCE.get(OffhandExtra.class).getMessageSent()) {
+                ModuleManager.INSTANCE.get(OffhandExtra.class).toggle();
+            }
+
+            ModuleManager.INSTANCE.get(OffhandExtra.class).setTotems(true);
+            return;
+        } else if (result.count > 0 && ModuleManager.INSTANCE.get(OffhandExtra.class).isActive()) {
+            ModuleManager.INSTANCE.get(OffhandExtra.class).setTotems(false);
+        }
+
+        if (result.found() && mc.player.getOffHandStack().getItem() != Items.TOTEM_OF_UNDYING && !smart.get()) {
+            locked = true;
+            if (mc.player.inventory.getCursorStack().getItem() != Items.TOTEM_OF_UNDYING) {
+                InvUtils.clickSlot(InvUtils.invIndexToSlotId(result.slot), 0, SlotActionType.PICKUP);
+            }
+            InvUtils.clickSlot(InvUtils.OFFHAND_SLOT, 0, SlotActionType.PICKUP);
+            InvUtils.clickSlot(InvUtils.invIndexToSlotId(result.slot), 0, SlotActionType.PICKUP);
+        } else if (result.found() && mc.player.getOffHandStack().getItem() != Items.TOTEM_OF_UNDYING && smart.get() && ((mc.player.getHealth() + mc.player.getAbsorptionAmount()) < health.get() || ((mc.player.getHealth() + mc.player.getAbsorptionAmount()) - getHealthReduction()) < health.get())) {
+            locked = true;
+            if (mc.player.inventory.getCursorStack().getItem() != Items.TOTEM_OF_UNDYING) {
+                InvUtils.clickSlot(InvUtils.invIndexToSlotId(result.slot), 0, SlotActionType.PICKUP);
+            }
+            InvUtils.clickSlot(InvUtils.OFFHAND_SLOT, 0, SlotActionType.PICKUP);
+            InvUtils.clickSlot(InvUtils.invIndexToSlotId(result.slot), 0, SlotActionType.PICKUP);
+        } else if (result.found() && mc.player.getOffHandStack().isEmpty()) {
+            if (mc.player.inventory.getCursorStack().getItem() != Items.TOTEM_OF_UNDYING) {
+                InvUtils.clickSlot(InvUtils.invIndexToSlotId(result.slot), 0, SlotActionType.PICKUP);
+            }
+            InvUtils.clickSlot(InvUtils.OFFHAND_SLOT, 0, SlotActionType.PICKUP);
+            InvUtils.clickSlot(InvUtils.invIndexToSlotId(result.slot), 0, SlotActionType.PICKUP);
+        }
+        if (smart.get() && ((mc.player.getHealth() + mc.player.getAbsorptionAmount()) > health.get() && (((mc.player.getHealth() + mc.player.getAbsorptionAmount()) - getHealthReduction()) > health.get()))) {
+            locked = false;
+        }
+
+        if (result.count != preTotemCount) {
+            totemCountString = Integer.toString(result.count);
+            totemCount = result.count;
+        }
+    });
 
     public AutoTotem() {
         super(Category.Combat, "auto-totem", "Automatically equips totems.");
@@ -79,81 +103,27 @@ public class AutoTotem extends ToggleModule {
         locked = false;
     }
 
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (mc.currentScreen instanceof HandledScreen<?> && (!(mc.currentScreen instanceof InventoryScreen) || !inventorySwitch.get())) return;
-
-        int preTotemCount = totemCount;
-        InvUtils.FindItemResult result = InvUtils.findItemWithCount(Items.TOTEM_OF_UNDYING);
-
-        if (result.count <= 0
-                && mc.player.inventory.getCursorStack().getItem() != Items.TOTEM_OF_UNDYING
-                && mc.player.getOffHandStack().getItem() != Items.TOTEM_OF_UNDYING
-                && fallback.get()) {
-            if (!ModuleManager.INSTANCE.get(OffhandExtra.class).isActive()
-                    && !ModuleManager.INSTANCE.get(OffhandExtra.class).getMessageSent())
-                ModuleManager.INSTANCE.get(OffhandExtra.class).toggle();
-
-            ModuleManager.INSTANCE.get(OffhandExtra.class).setTotems(true);
-            return;
-        } else if (result.count > 0 && ModuleManager.INSTANCE.get(OffhandExtra.class).isActive()) {
-            ModuleManager.INSTANCE.get(OffhandExtra.class).setTotems(false);
-        }
-
-        if (result.found() && mc.player.getOffHandStack().getItem() != Items.TOTEM_OF_UNDYING && !smart.get()) {
-            locked = true;
-            if(mc.player.inventory.getCursorStack().getItem() != Items.TOTEM_OF_UNDYING) {
-                InvUtils.clickSlot(InvUtils.invIndexToSlotId(result.slot), 0, SlotActionType.PICKUP);
-            }
-            InvUtils.clickSlot(InvUtils.OFFHAND_SLOT, 0, SlotActionType.PICKUP);
-            InvUtils.clickSlot(InvUtils.invIndexToSlotId(result.slot), 0, SlotActionType.PICKUP);
-        }else if(result.found() && mc.player.getOffHandStack().getItem() != Items.TOTEM_OF_UNDYING && smart.get() &&
-                ((mc.player.getHealth() + mc.player.getAbsorptionAmount()) < health.get() || ((mc.player.getHealth() + mc.player.getAbsorptionAmount()) - getHealthReduction()) < health.get())){
-            locked = true;
-            if(mc.player.inventory.getCursorStack().getItem() != Items.TOTEM_OF_UNDYING) {
-                InvUtils.clickSlot(InvUtils.invIndexToSlotId(result.slot), 0, SlotActionType.PICKUP);
-            }
-            InvUtils.clickSlot(InvUtils.OFFHAND_SLOT, 0, SlotActionType.PICKUP);
-            InvUtils.clickSlot(InvUtils.invIndexToSlotId(result.slot), 0, SlotActionType.PICKUP);
-        }else if (result.found() && mc.player.getOffHandStack().isEmpty()) {
-            if(mc.player.inventory.getCursorStack().getItem() != Items.TOTEM_OF_UNDYING) {
-                InvUtils.clickSlot(InvUtils.invIndexToSlotId(result.slot), 0, SlotActionType.PICKUP);
-            }
-            InvUtils.clickSlot(InvUtils.OFFHAND_SLOT, 0, SlotActionType.PICKUP);
-            InvUtils.clickSlot(InvUtils.invIndexToSlotId(result.slot), 0, SlotActionType.PICKUP);
-        }
-        if(smart.get() && ((mc.player.getHealth() + mc.player.getAbsorptionAmount()) > health.get()
-                && (((mc.player.getHealth() + mc.player.getAbsorptionAmount()) - getHealthReduction()) > health.get()))){
-            locked = false;
-        }
-
-        if (result.count != preTotemCount) {
-            totemCountString = Integer.toString(result.count);
-            totemCount = result.count;
-        }
-    });
-
     @Override
     public String getInfoString() {
         return totemCountString;
     }
 
-    private double getHealthReduction(){
+    private double getHealthReduction() {
         double damageTaken = 0;
-        for(Entity entity : mc.world.getEntities()){
-            if(entity instanceof EndCrystalEntity && damageTaken < DamageCalcUtils.crystalDamage(mc.player, entity.getPos())){
+        for (Entity entity : mc.world.getEntities()) {
+            if (entity instanceof EndCrystalEntity && damageTaken < DamageCalcUtils.crystalDamage(mc.player, entity.getPos())) {
                 damageTaken = DamageCalcUtils.crystalDamage(mc.player, entity.getPos());
-            }else if(entity instanceof PlayerEntity && damageTaken < DamageCalcUtils.getSwordDamage((PlayerEntity) entity, true)){
-                if(!FriendManager.INSTANCE.isTrusted((PlayerEntity) entity) && mc.player.getPos().distanceTo(entity.getPos()) < 5){
-                    if(((PlayerEntity) entity).getActiveItem().getItem() instanceof SwordItem){
+            } else if (entity instanceof PlayerEntity && damageTaken < DamageCalcUtils.getSwordDamage((PlayerEntity) entity, true)) {
+                if (!FriendManager.INSTANCE.isTrusted((PlayerEntity) entity) && mc.player.getPos().distanceTo(entity.getPos()) < 5) {
+                    if (((PlayerEntity) entity).getActiveItem().getItem() instanceof SwordItem) {
                         damageTaken = DamageCalcUtils.getSwordDamage((PlayerEntity) entity, true);
                     }
                 }
             }
         }
-        if(!ModuleManager.INSTANCE.get(NoFall.class).isActive() && mc.player.fallDistance > 3){
-            double damage =mc.player.fallDistance * 0.5;
-            if(damage > damageTaken){
+        if (!ModuleManager.INSTANCE.get(NoFall.class).isActive() && mc.player.fallDistance > 3) {
+            double damage = mc.player.fallDistance * 0.5;
+            if (damage > damageTaken) {
                 damageTaken = damage;
             }
         }
@@ -167,7 +137,7 @@ public class AutoTotem extends ToggleModule {
         return damageTaken;
     }
 
-    public boolean getLocked(){
+    public boolean getLocked() {
         return locked;
     }
 

@@ -8,7 +8,9 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(TextHandler.class)
 public class TextHandlerMixin implements ITextHandler {
-    @Shadow @Final private TextHandler.WidthRetriever widthRetriever;
+    @Shadow
+    @Final
+    private TextHandler.WidthRetriever widthRetriever;
 
     @Override
     public TextHandler.WidthRetriever getWidthRetriever() {

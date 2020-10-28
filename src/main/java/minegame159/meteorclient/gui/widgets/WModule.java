@@ -40,7 +40,9 @@ public class WModule extends WPressable {
 
     @Override
     protected void onCalculateSize(GuiRenderer renderer) {
-        if (titleWidth == 0) titleWidth = renderer.textWidth(module.title);
+        if (titleWidth == 0) {
+            titleWidth = renderer.textWidth(module.title);
+        }
 
         width = 4 + titleWidth + 4;
         height = 4 + renderer.textHeight() + 4;
@@ -48,8 +50,11 @@ public class WModule extends WPressable {
 
     @Override
     protected void onAction(int button) {
-        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) module.doAction(Meteor.INSTANCE.getMinecraft().world != null);
-        else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) module.openScreen();
+        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            module.doAction(Meteor.INSTANCE.getMinecraft().world != null);
+        } else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+            module.openScreen();
+        }
     }
 
     @Override
@@ -57,15 +62,17 @@ public class WModule extends WPressable {
         if (module.isActive()) {
             animationMultiplier1 = 1;
             animationMultiplier2 = 1;
-        }
-        else {
+        } else {
             animationMultiplier1 = -1;
             animationMultiplier2 = -1;
         }
 
-        if (mouseOver) animationMultiplier1 = 1;
-        else {
-            if (!module.isActive()) animationMultiplier1 = -1;
+        if (mouseOver) {
+            animationMultiplier1 = 1;
+        } else {
+            if (!module.isActive()) {
+                animationMultiplier1 = -1;
+            }
         }
 
         animationProgress1 += delta / 10 * animationMultiplier1;
@@ -74,14 +81,17 @@ public class WModule extends WPressable {
         animationProgress2 += delta / 10 * animationMultiplier2;
         animationProgress2 = Utils.clamp(animationProgress2, 0, 1);
 
-        if (animationProgress1 > 0  || animationProgress2 > 0) {
+        if (animationProgress1 > 0 || animationProgress2 > 0) {
             renderer.quad(Region.FULL, x, y, width * animationProgress1, height, GuiConfig.INSTANCE.moduleBackground);
             renderer.quad(Region.FULL, x, y + height * (1 - animationProgress2), 2, height * animationProgress2, GuiConfig.INSTANCE.accent);
         }
 
         double nameX = x;
-        if (GuiConfig.INSTANCE.moduleNameAlignment == AlignmentX.Center) nameX += + width / 2 - titleWidth / 2;
-        else if (GuiConfig.INSTANCE.moduleNameAlignment == AlignmentX.Right) nameX += width - titleWidth;
+        if (GuiConfig.INSTANCE.moduleNameAlignment == AlignmentX.Center) {
+            nameX += +width / 2 - titleWidth / 2;
+        } else if (GuiConfig.INSTANCE.moduleNameAlignment == AlignmentX.Right) {
+            nameX += width - titleWidth;
+        }
 
         renderer.text(module.title, nameX, y + 4, false, GuiConfig.INSTANCE.text);
     }

@@ -13,13 +13,13 @@ import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.util.collection.DefaultedList;
 
 public class EChestMemory {
-    private static final MinecraftClient MC = Meteor.INSTANCE.getMinecraft();
-
-    private static int echestOpenedState;
     public static final DefaultedList<ItemStack> ITEMS = DefaultedList.ofSize(27, ItemStack.EMPTY);
-
+    private static final MinecraftClient MC = Meteor.INSTANCE.getMinecraft();
+    private static int echestOpenedState;
     private static final Listener<BlockActivateEvent> onBlockActivate = new Listener<>(event -> {
-        if (event.blockState.getBlock() instanceof EnderChestBlock && echestOpenedState == 0) echestOpenedState = 1;
+        if (event.blockState.getBlock() instanceof EnderChestBlock && echestOpenedState == 0) {
+            echestOpenedState = 1;
+        }
     });
 
     private static final Listener<OpenScreenEvent> onOpenScreenEvent = new Listener<>(event -> {
@@ -27,11 +27,17 @@ public class EChestMemory {
             echestOpenedState = 2;
             return;
         }
-        if (echestOpenedState == 0) return;
+        if (echestOpenedState == 0) {
+            return;
+        }
 
-        if (!(MC.currentScreen instanceof GenericContainerScreen)) return;
+        if (!(MC.currentScreen instanceof GenericContainerScreen)) {
+            return;
+        }
         GenericContainerScreenHandler container = ((GenericContainerScreen) MC.currentScreen).getScreenHandler();
-        if (container == null) return;
+        if (container == null) {
+            return;
+        }
         Inventory inv = container.getInventory();
 
         for (int i = 0; i < 27; i++) {

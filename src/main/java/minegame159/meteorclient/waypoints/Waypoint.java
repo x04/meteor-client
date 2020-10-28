@@ -49,7 +49,9 @@ public class Waypoint implements ISerializable<Waypoint> {
     private int findIconIndex() {
         int i = 0;
         for (String icon : Waypoints.ICONS.keySet()) {
-            if (this.icon.equals(icon)) return i;
+            if (this.icon.equals(icon)) {
+                return i;
+            }
             i++;
         }
 
@@ -57,8 +59,11 @@ public class Waypoint implements ISerializable<Waypoint> {
     }
 
     private int correctIconIndex(int i) {
-        if (i < 0) return Waypoints.ICONS.size() + i;
-        else if (i >= Waypoints.ICONS.size()) return i - Waypoints.ICONS.size();
+        if (i < 0) {
+            return Waypoints.ICONS.size() + i;
+        } else if (i >= Waypoints.ICONS.size()) {
+            return i - Waypoints.ICONS.size();
+        }
         return i;
     }
 
@@ -67,7 +72,9 @@ public class Waypoint implements ISerializable<Waypoint> {
 
         int _i = 0;
         for (String icon : Waypoints.ICONS.keySet()) {
-            if (_i == i) return icon;
+            if (_i == i) {
+                return icon;
+            }
             _i++;
         }
 
@@ -123,7 +130,9 @@ public class Waypoint implements ISerializable<Waypoint> {
         nether = tag.getBoolean("nether");
         end = tag.getBoolean("end");
 
-        if (!Waypoints.ICONS.containsKey(icon)) icon = "Square";
+        if (!Waypoints.ICONS.containsKey(icon)) {
+            icon = "Square";
+        }
 
         return this;
     }

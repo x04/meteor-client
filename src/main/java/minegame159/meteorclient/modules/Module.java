@@ -17,20 +17,16 @@ import net.minecraft.nbt.Tag;
 import java.util.Objects;
 
 public abstract class Module implements Listenable, ISerializable<Module> {
-    protected final MinecraftClient mc;
-
     public final Category category;
     public final String name;
     public final String title;
     public final String description;
     public final Color color;
-
     public final Settings settings = new Settings();
-
+    protected final MinecraftClient mc;
     public boolean serialize = true;
-
-    private int key = -1;
     public boolean toggleOnKeyRelease = false;
+    private int key = -1;
 
     public Module(Category category, String name, String description) {
         this.mc = Meteor.INSTANCE.getMinecraft();
@@ -56,13 +52,16 @@ public abstract class Module implements Listenable, ISerializable<Module> {
     public void doAction(boolean onActivateDeactivate) {
         openScreen();
     }
+
     public void doAction() {
         doAction(true);
     }
 
     @Override
     public CompoundTag toTag() {
-        if (!serialize) return null;
+        if (!serialize) {
+            return null;
+        }
         CompoundTag tag = new CompoundTag();
 
         tag.putString("name", name);
@@ -81,27 +80,36 @@ public abstract class Module implements Listenable, ISerializable<Module> {
 
         // Settings
         Tag settingsTag = tag.get("settings");
-        if (settingsTag instanceof CompoundTag) settings.fromTag((CompoundTag) settingsTag);
+        if (settingsTag instanceof CompoundTag) {
+            settings.fromTag((CompoundTag) settingsTag);
+        }
 
         return this;
     }
 
     public void setKey(int key, boolean postEvent) {
         this.key = key;
-        if (postEvent) Meteor.INSTANCE.getEventBus().post(EventStore.moduleBindChangedEvent(this));
-    }
-    public void setKey(int key) {
-        setKey(key, true);
+        if (postEvent) {
+            Meteor.INSTANCE.getEventBus().post(EventStore.moduleBindChangedEvent(this));
+        }
     }
 
     public int getKey() {
         return key;
     }
 
+    public void setKey(int key) {
+        setKey(key, true);
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Module module = (Module) o;
         return Objects.equals(name, module.name);
     }

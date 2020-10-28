@@ -8,9 +8,13 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(DimensionType.class)
 public class DimensionTypeMixin implements IDimensionType {
-    @Shadow @Final protected static DimensionType THE_NETHER;
+    @Shadow
+    @Final
+    protected static DimensionType THE_NETHER;
 
-    @Shadow @Final protected static DimensionType THE_END;
+    @Shadow
+    @Final
+    protected static DimensionType THE_END;
 
     @Override
     public DimensionType getNether() {

@@ -27,9 +27,12 @@ import javax.annotation.Nullable;
 
 @Mixin(WorldRenderer.class)
 public abstract class WorldRendererMixin {
-    @Shadow protected abstract void renderEntity(Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers);
+    @Shadow
+    @Nullable
+    private Framebuffer entityOutlinesFramebuffer;
 
-    @Shadow @Nullable private Framebuffer entityOutlinesFramebuffer;
+    @Shadow
+    protected abstract void renderEntity(Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers);
 
     @Inject(method = "loadEntityOutlineShader", at = @At("TAIL"))
     private void onLoadEntityOutlineShader(CallbackInfo info) {
@@ -43,7 +46,9 @@ public abstract class WorldRendererMixin {
 
     @Inject(method = "renderWeather", at = @At("HEAD"), cancellable = true)
     private void onRenderWeather(LightmapTextureManager manager, float f, double d, double e, double g, CallbackInfo info) {
-        if (ModuleManager.INSTANCE.get(NoRender.class).noWeather()) info.cancel();
+        if (ModuleManager.INSTANCE.get(NoRender.class).noWeather()) {
+            info.cancel();
+        }
     }
 
     @Inject(method = "renderEntity", at = @At("HEAD"))
@@ -58,7 +63,9 @@ public abstract class WorldRendererMixin {
 
     @Inject(method = "drawBlockOutline", at = @At("HEAD"), cancellable = true)
     private void onDrawHighlightedBlockOutline(MatrixStack matrixStack, VertexConsumer vertexConsumer, Entity entity, double d, double e, double f, BlockPos blockPos, BlockState blockState, CallbackInfo info) {
-        if (ModuleManager.INSTANCE.isActive(BlockSelection.class)) info.cancel();
+        if (ModuleManager.INSTANCE.isActive(BlockSelection.class)) {
+            info.cancel();
+        }
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;isSpectator()Z"))
@@ -75,10 +82,14 @@ public abstract class WorldRendererMixin {
 
     @Inject(method = "renderEntity", at = @At("INVOKE"), cancellable = true)
     private void renderEntity(Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, CallbackInfo info) {
-        if (vertexConsumers == Outlines.vertexConsumerProvider) return;
+        if (vertexConsumers == Outlines.vertexConsumerProvider) {
+            return;
+        }
 
         ESP esp = ModuleManager.INSTANCE.get(ESP.class);
-        if (!esp.isActive() || !esp.isOutline()) return;
+        if (!esp.isActive() || !esp.isOutline()) {
+            return;
+        }
 
         Color color = esp.getOutlineColor(entity);
 
@@ -92,7 +103,7 @@ public abstract class WorldRendererMixin {
             this.entityOutlinesFramebuffer = fbo;
         }
     }
-    
+
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/OutlineVertexConsumerProvider;draw()V"))
     private void onRender(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo info) {
         Outlines.endRender(tickDelta);

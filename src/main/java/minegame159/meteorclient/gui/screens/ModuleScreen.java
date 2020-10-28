@@ -15,6 +15,12 @@ public class ModuleScreen extends WindowScreen {
 
     private WLabel bindLabel;
     private boolean canResetBind = true;
+    @EventHandler private final Listener<ModuleBindChangedEvent> onModuleBindChanged = new Listener<>(event -> {
+        if (event.module == module) {
+            canResetBind = true;
+            bindLabel.setText(getBindLabelText());
+        }
+    });
 
     public ModuleScreen(Module module) {
         super(module.title, true);
@@ -42,7 +48,9 @@ public class ModuleScreen extends WindowScreen {
             }
 
             Cell<WWidget> cell = add(customWidget);
-            if (customWidget instanceof WTable) cell.fillX().expandX();
+            if (customWidget instanceof WTable) {
+                cell.fillX().expandX();
+            }
             row();
         }
 
@@ -87,7 +95,9 @@ public class ModuleScreen extends WindowScreen {
             bottomTable.add(new WLabel("Active:"));
             WCheckbox active = bottomTable.add(new WCheckbox(((ToggleModule) module).isActive())).getWidget();
             active.action = () -> {
-                if (((ToggleModule) module).isActive() != active.checked) ((ToggleModule) module).toggle(Meteor.INSTANCE.getMinecraft().world != null);
+                if (((ToggleModule) module).isActive() != active.checked) {
+                    ((ToggleModule) module).toggle(Meteor.INSTANCE.getMinecraft().world != null);
+                }
             };
 
             //   Visible
@@ -95,18 +105,12 @@ public class ModuleScreen extends WindowScreen {
             WCheckbox visibleCheckbox = bottomTable.add(new WCheckbox(((ToggleModule) module).isVisible())).getWidget();
             visibleCheckbox.tooltip = "Visible in HUD.";
             visibleCheckbox.action = () -> {
-                if (((ToggleModule) module).isVisible() != visibleCheckbox.checked) ((ToggleModule) module).setVisible(visibleCheckbox.checked);
+                if (((ToggleModule) module).isVisible() != visibleCheckbox.checked) {
+                    ((ToggleModule) module).setVisible(visibleCheckbox.checked);
+                }
             };
         }
     }
-
-    @EventHandler
-    private final Listener<ModuleBindChangedEvent> onModuleBindChanged = new Listener<>(event -> {
-        if (event.module == module) {
-            canResetBind = true;
-            bindLabel.setText(getBindLabelText());
-        }
-    });
 
     private String getBindLabelText() {
         return "Bind: " + (module.getKey() == -1 ? "none" : GLFW.glfwGetKeyName(module.getKey(), 0));

@@ -25,7 +25,7 @@ public class HttpUtils {
             return conn.getInputStream();
         } catch (SocketTimeoutException ignored) {
             return null;
-        } catch (IOException  e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -35,11 +35,14 @@ public class HttpUtils {
     public static void getLines(String url, Consumer<String> callback) {
         try {
             InputStream in = get(url);
-            if (in == null) return;
+            if (in == null) {
+                return;
+            }
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             String line;
-            while ((line = reader.readLine()) != null) callback.accept(line);
+            while ((line = reader.readLine()) != null)
+                callback.accept(line);
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -49,7 +52,9 @@ public class HttpUtils {
     public static <T> T get(String url, Type type) {
         try {
             InputStream in = get(url);
-            if (in == null) return null;
+            if (in == null) {
+                return null;
+            }
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             T response = GSON.fromJson(reader, type);

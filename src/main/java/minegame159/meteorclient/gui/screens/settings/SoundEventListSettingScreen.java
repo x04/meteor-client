@@ -24,10 +24,14 @@ public class SoundEventListSettingScreen extends LeftRightListSettingScreen<Soun
     @Override
     protected String getValueName(SoundEvent value) {
         WeightedSoundSet soundSet = Meteor.INSTANCE.getMinecraft().getSoundManager().get(value.getId());
-        if (soundSet == null) return value.getId().getPath();
+        if (soundSet == null) {
+            return value.getId().getPath();
+        }
 
         Text text = soundSet.getSubtitle();
-        if (text == null) return value.getId().getPath();
+        if (text == null) {
+            return value.getId().getPath();
+        }
 
         return text.getString();
     }

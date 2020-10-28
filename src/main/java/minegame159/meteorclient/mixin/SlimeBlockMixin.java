@@ -16,6 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class SlimeBlockMixin {
     @Inject(method = "onSteppedOn", at = @At("HEAD"), cancellable = true)
     private void onSteppedOn(World world, BlockPos pos, Entity entity, CallbackInfo info) {
-        if (ModuleManager.INSTANCE.get(NoSlow.class).slimeBlock() && entity == Meteor.INSTANCE.getMinecraft().player) info.cancel();
+        if (ModuleManager.INSTANCE.get(NoSlow.class).slimeBlock() && entity == Meteor.INSTANCE.getMinecraft().player) {
+            info.cancel();
+        }
     }
 }

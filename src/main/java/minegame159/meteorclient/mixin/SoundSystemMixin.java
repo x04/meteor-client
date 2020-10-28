@@ -17,6 +17,8 @@ public class SoundSystemMixin {
         PlaySoundEvent event = EventStore.playSoundEvent(soundInstance);
         Meteor.INSTANCE.getEventBus().post(event);
 
-        if (event.isCancelled()) info.cancel();
+        if (event.isCancelled()) {
+            info.cancel();
+        }
     }
 }

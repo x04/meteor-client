@@ -17,8 +17,11 @@ public class WMinus extends WPressable {
         renderer.background(this, mouseOver, pressed);
 
         Color color = GuiConfig.INSTANCE.minus;
-        if (pressed) color = GuiConfig.INSTANCE.minusPressed;
-        else if (mouseOver) color = GuiConfig.INSTANCE.minusHovered;
+        if (pressed) {
+            color = GuiConfig.INSTANCE.minusPressed;
+        } else if (mouseOver) {
+            color = GuiConfig.INSTANCE.minusHovered;
+        }
 
         renderer.quad(Region.FULL, x + 6, y + 6 + renderer.textHeight() / 2 - 1.5, renderer.textHeight(), 3, color);
     }

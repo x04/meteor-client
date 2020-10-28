@@ -25,6 +25,7 @@ public abstract class Savable<T> implements ISerializable<T> {
             e.printStackTrace();
         }
     }
+
     public void save() {
         save(getFile());
     }
@@ -41,6 +42,7 @@ public abstract class Savable<T> implements ISerializable<T> {
 
         return false;
     }
+
     public boolean load() {
         return load(getFile());
     }

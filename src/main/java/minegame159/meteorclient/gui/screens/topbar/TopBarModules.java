@@ -31,6 +31,18 @@ public class TopBarModules extends TopBarScreen {
         bottomLeft.add(new WLabel("Right click - open module settings", true));
     }
 
+    @Override
+    public void onClose() {
+        ModuleManager.INSTANCE.save();
+
+        if (MOVED) {
+            Config.INSTANCE.save();
+            MOVED = false;
+        }
+
+        super.onClose();
+    }
+
     private static class WWindowController extends WWidget {
         public WWindowController() {
             for (Category category : ModuleManager.CATEGORIES) {
@@ -72,11 +84,15 @@ public class TopBarModules extends TopBarScreen {
 
                 if (cellX > screenWidth) {
                     cellX = screenWidth / 2.0 - cell.width / 2.0;
-                    if (cellX < 0) cellX = 0;
+                    if (cellX < 0) {
+                        cellX = 0;
+                    }
                 }
                 if (cellY > screenHeight) {
                     cellY = screenHeight / 2.0 - cell.height / 2.0;
-                    if (cellY < 0) cellY = 0;
+                    if (cellY < 0) {
+                        cellY = 0;
+                    }
                 }
 
                 cell.x = cellX;
@@ -86,17 +102,5 @@ public class TopBarModules extends TopBarScreen {
                 cell.alignWidget();
             }
         }
-    }
-
-    @Override
-    public void onClose() {
-        ModuleManager.INSTANCE.save();
-
-        if (MOVED) {
-            Config.INSTANCE.save();
-            MOVED = false;
-        }
-
-        super.onClose();
     }
 }

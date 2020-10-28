@@ -16,37 +16,17 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 public class AntiHunger extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Boolean> sprint = sgGeneral.add(new BoolSetting.Builder()
-            .name("sprint")
-            .description("Spoof's sprinting packets.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> sprint = sgGeneral.add(new BoolSetting.Builder().name("sprint").description("Spoof's sprinting packets.").defaultValue(true).build());
 
-    private final Setting<Boolean> onGround = sgGeneral.add(new BoolSetting.Builder()
-            .name("on-ground")
-            .description("Spoof's onGround flag.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> onGround = sgGeneral.add(new BoolSetting.Builder().name("on-ground").description("Spoof's onGround flag.").defaultValue(true).build());
 
     private boolean lastOnGround;
     private boolean sendOnGroundTruePacket;
     private boolean ignorePacket;
-
-    public AntiHunger() {
-        super(Category.Player, "anti-hunger", "Reduces hunger consumption.");
-    }
-
-    @Override
-    public void onActivate() {
-        lastOnGround = mc.player.isOnGround();
-        sendOnGroundTruePacket = true;
-    }
-
-    @EventHandler
-    private final Listener<SendPacketEvent> onSendPacket = new Listener<>(event -> {
-        if (ignorePacket) return;
+    @EventHandler private final Listener<SendPacketEvent> onSendPacket = new Listener<>(event -> {
+        if (ignorePacket) {
+            return;
+        }
 
         if (event.packet instanceof ClientCommandC2SPacket && sprint.get()) {
             ClientCommandC2SPacket.Mode mode = ((ClientCommandC2SPacket) event.packet).getMode();
@@ -60,10 +40,10 @@ public class AntiHunger extends ToggleModule {
             ((IPlayerMoveC2SPacket) event.packet).setOnGround(false);
         }
     });
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (mc.player.isOnGround() && !lastOnGround && !sendOnGroundTruePacket) sendOnGroundTruePacket = true;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (mc.player.isOnGround() && !lastOnGround && !sendOnGroundTruePacket) {
+            sendOnGroundTruePacket = true;
+        }
 
         if (mc.player.isOnGround() && sendOnGroundTruePacket && onGround.get()) {
             ignorePacket = true;
@@ -75,4 +55,14 @@ public class AntiHunger extends ToggleModule {
 
         lastOnGround = mc.player.isOnGround();
     });
+
+    public AntiHunger() {
+        super(Category.Player, "anti-hunger", "Reduces hunger consumption.");
+    }
+
+    @Override
+    public void onActivate() {
+        lastOnGround = mc.player.isOnGround();
+        sendOnGroundTruePacket = true;
+    }
 }

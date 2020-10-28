@@ -16,19 +16,8 @@ public class XpBottleThrower extends ToggleModule {
 
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Boolean> lookDown = sgGeneral.add(new BoolSetting.Builder()
-            .name("look-down")
-            .description("Makes you look down when throwing bottles")
-            .defaultValue(true)
-            .build()
-    );
-
-    public XpBottleThrower() {
-        super(Category.Player, "xp-bottle-thrower", "Automatically throws xp bottles in your hotbar.");
-    }
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
+    private final Setting<Boolean> lookDown = sgGeneral.add(new BoolSetting.Builder().name("look-down").description("Makes you look down when throwing bottles").defaultValue(true).build());
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         int slot = -1;
 
         for (int i = 0; i < 9; i++) {
@@ -48,4 +37,8 @@ public class XpBottleThrower extends ToggleModule {
             mc.player.inventory.selectedSlot = preSelectedSlot;
         }
     });
+
+    public XpBottleThrower() {
+        super(Category.Player, "xp-bottle-thrower", "Automatically throws xp bottles in your hotbar.");
+    }
 }

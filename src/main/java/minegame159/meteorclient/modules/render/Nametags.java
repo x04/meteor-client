@@ -6,8 +6,8 @@ package minegame159.meteorclient.modules.render;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import minegame159.meteorclient.Meteor;
-import minegame159.meteorclient.friends.FriendManager;
 import minegame159.meteorclient.events.RenderEvent;
+import minegame159.meteorclient.friends.FriendManager;
 import minegame159.meteorclient.mixininterface.IBakedQuad;
 import minegame159.meteorclient.modules.Category;
 import minegame159.meteorclient.modules.ModuleManager;
@@ -39,134 +39,41 @@ import java.util.List;
 import java.util.Map;
 
 public class Nametags extends ToggleModule {
-    public enum Position {
-        ABOVE,
-        ON_TOP
-    }
-
     private static final Color BACKGROUND = new Color(0, 0, 0, 75);
     private static final Color WHITE = new Color(255, 255, 255);
-
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
     private final SettingGroup sgColors = settings.createGroup("Colors");
-
-    private final Setting<Boolean> displayArmor = sgGeneral.add(new BoolSetting.Builder()
-            .name("display-armor")
-            .description("Display armor.")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Boolean> displayArmorEnchants = sgGeneral.add(new BoolSetting.Builder()
-            .name("display-armor-enchants")
-            .description("Display armor enchantments.")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Position> displayOnItem = sgGeneral.add(new EnumSetting.Builder<Position>()
-            .name("enchantment-position")
-            .description("Where enchantments are rendered.")
-            .defaultValue(Position.ON_TOP)
-            .build()
-    );
-
-    private final Setting<List<Enchantment>> displayedEnchantments = sgGeneral.add(new EnchListSetting.Builder()
-            .name("displayed-enchantments")
-            .description("The enchantments that are shown on nametags")
-            .defaultValue(setDefualtList())
-            .build()
-    );
-
-    private final Setting<Boolean> displayPing = sgGeneral.add(new BoolSetting.Builder()
-            .name("ping")
-            .description("Shows players ping")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Double> scale = sgGeneral.add(new DoubleSetting.Builder()
-            .name("scale")
-            .description("Scale.")
-            .defaultValue(1)
-            .min(0.1)
-            .build()
-    );
-
-    private final Setting<Double> enchantTextScale = sgGeneral.add(new DoubleSetting.Builder()
-            .name("enchant-text-scale")
-            .description("Enchantment text scale.")
-            .defaultValue(0.6)
-            .min(0.1)
-            .max(1)
-            .sliderMin(0.1)
-            .sliderMax(1)
-            .build()
-    );
-
-    private final Setting<Boolean> yourself = sgGeneral.add(new BoolSetting.Builder()
-            .name("yourself")
-            .description("Displays nametag above your player in Freecam.")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Color> normalName = sgColors.add(new ColorSetting.Builder()
-            .name("normal-color")
-            .description("The color of non-friends")
-            .defaultValue(new Color(255, 255, 255))
-            .build()
-    );
-
-    private final Setting<Color> pingColor = sgColors.add(new ColorSetting.Builder()
-            .name("ping-color")
-            .description("The color of ping.")
-            .defaultValue(new Color(150, 150, 150))
-            .build()
-    );
-
-    private final Setting<Color> healthStage1 = sgColors.add(new ColorSetting.Builder()
-            .name("health-stage-1")
-            .description("The color of full health")
-            .defaultValue(new Color(25, 252, 25))
-            .build()
-    );
-
-    private final Setting<Color> healthStage2 = sgColors.add(new ColorSetting.Builder()
-            .name("health-stage-2")
-            .description("The color of 2/3 health")
-            .defaultValue(new Color(255, 105, 25))
-            .build()
-    );
-
-    private final Setting<Color> healthStage3 = sgColors.add(new ColorSetting.Builder()
-            .name("health-stage-3")
-            .description("The color of 1/3 health")
-            .defaultValue(new Color(255, 25, 25))
-            .build()
-    );
-
-    private final Setting<Color> enchantmentTextColor = sgColors.add(new ColorSetting.Builder()
-            .name("enchantment-text-color")
-            .description("The color of enchantment text.")
-            .defaultValue(new Color(255, 255, 255))
-            .build()
-    );
-
-    public Nametags() {
-        super(Category.Render, "nametags", "Displays nametags above players.");
-    }
-
-    @EventHandler
-    private final Listener<RenderEvent> onRender = new Listener<>(event -> {
+    private final Setting<Boolean> displayArmor = sgGeneral.add(new BoolSetting.Builder().name("display-armor").description("Display armor.").defaultValue(true).build());
+    private final Setting<Boolean> displayArmorEnchants = sgGeneral.add(new BoolSetting.Builder().name("display-armor-enchants").description("Display armor enchantments.").defaultValue(true).build());
+    private final Setting<Position> displayOnItem = sgGeneral.add(new EnumSetting.Builder<Position>().name("enchantment-position").description("Where enchantments are rendered.").defaultValue(Position.ON_TOP).build());
+    private final Setting<List<Enchantment>> displayedEnchantments = sgGeneral.add(new EnchListSetting.Builder().name("displayed-enchantments").description("The enchantments that are shown on nametags").defaultValue(setDefualtList()).build());
+    private final Setting<Boolean> displayPing = sgGeneral.add(new BoolSetting.Builder().name("ping").description("Shows players ping").defaultValue(true).build());
+    private final Setting<Double> scale = sgGeneral.add(new DoubleSetting.Builder().name("scale").description("Scale.").defaultValue(1).min(0.1).build());
+    private final Setting<Double> enchantTextScale = sgGeneral.add(new DoubleSetting.Builder().name("enchant-text-scale").description("Enchantment text scale.").defaultValue(0.6).min(0.1).max(1).sliderMin(0.1).sliderMax(1).build());
+    private final Setting<Boolean> yourself = sgGeneral.add(new BoolSetting.Builder().name("yourself").description("Displays nametag above your player in Freecam.").defaultValue(true).build());
+    private final Setting<Color> normalName = sgColors.add(new ColorSetting.Builder().name("normal-color").description("The color of non-friends").defaultValue(new Color(255, 255, 255)).build());
+    private final Setting<Color> pingColor = sgColors.add(new ColorSetting.Builder().name("ping-color").description("The color of ping.").defaultValue(new Color(150, 150, 150)).build());
+    private final Setting<Color> healthStage1 = sgColors.add(new ColorSetting.Builder().name("health-stage-1").description("The color of full health").defaultValue(new Color(25, 252, 25)).build());
+    private final Setting<Color> healthStage2 = sgColors.add(new ColorSetting.Builder().name("health-stage-2").description("The color of 2/3 health").defaultValue(new Color(255, 105, 25)).build());
+    private final Setting<Color> healthStage3 = sgColors.add(new ColorSetting.Builder().name("health-stage-3").description("The color of 1/3 health").defaultValue(new Color(255, 25, 25)).build());
+    private final Setting<Color> enchantmentTextColor = sgColors.add(new ColorSetting.Builder().name("enchantment-text-color").description("The color of enchantment text.").defaultValue(new Color(255, 255, 255)).build());
+    @EventHandler private final Listener<RenderEvent> onRender = new Listener<>(event -> {
         for (Entity entity : mc.world.getEntities()) {
             boolean a = !ModuleManager.INSTANCE.isActive(Freecam.class);
-            if (!(entity instanceof PlayerEntity) || (a && entity == mc.player) || (a && entity == mc.cameraEntity)) continue;
-            if (!yourself.get() && entity.getUuid().equals(mc.player.getUuid())) continue;
+            if (!(entity instanceof PlayerEntity) || (a && entity == mc.player) || (a && entity == mc.cameraEntity)) {
+                continue;
+            }
+            if (!yourself.get() && entity.getUuid().equals(mc.player.getUuid())) {
+                continue;
+            }
 
             renderNametag(event, (PlayerEntity) entity);
         }
     });
+
+    public Nametags() {
+        super(Category.Render, "nametags", "Displays nametags above players.");
+    }
 
     private void renderNametag(RenderEvent event, PlayerEntity entity) {
         Camera camera = mc.gameRenderer.getCamera();
@@ -174,8 +81,8 @@ public class Nametags extends ToggleModule {
         // Compute scale
         double dist = Utils.distanceToCamera(entity);
         double scale = 0.04 * this.scale.get();
-        if(dist > 15){
-            scale *= dist/15;
+        if (dist > 15) {
+            scale *= dist / 15;
         }
 
         int ping;
@@ -183,7 +90,7 @@ public class Nametags extends ToggleModule {
             // Get ping
             PlayerListEntry playerListEntry = mc.getNetworkHandler().getPlayerListEntry(entity.getUuid());
             ping = playerListEntry.getLatency();
-        }catch(NullPointerException ignored){
+        } catch (NullPointerException ignored) {
             ping = 0;
         }
 
@@ -222,8 +129,12 @@ public class Nametags extends ToggleModule {
                     }
                 }
 
-                if (armorWidths[i] == 0) armorWidths[i] = 16;
-                if (!itemStack.isEmpty() && displayArmor.get()) hasArmor = true;
+                if (armorWidths[i] == 0) {
+                    armorWidths[i] = 16;
+                }
+                if (!itemStack.isEmpty() && displayArmor.get()) {
+                    hasArmor = true;
+                }
 
                 if (displayArmorEnchants.get()) {
                     for (Enchantment enchantment : enchantmentsToShowScale.keySet()) {
@@ -242,11 +153,12 @@ public class Nametags extends ToggleModule {
         double healthWidth = Meteor.INSTANCE.getFont2x().getStringWidth(healthText);
         double pingWidth = Meteor.INSTANCE.getFont2x().getStringWidth(pingText);
         double width = nameWidth + healthWidth;
-        if(displayPing.get()){
+        if (displayPing.get()) {
             width += pingWidth;
         }
         double armorWidth = 0;
-        for (double v : armorWidths) armorWidth += v;
+        for (double v : armorWidths)
+            armorWidth += v;
         width = Math.max(width, armorWidth);
         double widthHalf = width / 2;
 
@@ -271,7 +183,9 @@ public class Nametags extends ToggleModule {
             for (int i = 0; i < 4; i++) {
                 ItemStack itemStack = entity.inventory.armor.get(i);
 
-                if (itemStack.isDamaged()) isDamaged = true;
+                if (itemStack.isDamaged()) {
+                    isDamaged = true;
+                }
 
                 for (BakedQuad quad : mc.getItemRenderer().getModels().getModel(itemStack).getQuads(null, null, null)) {
                     Sprite sprite = ((IBakedQuad) quad).getSprite();
@@ -338,9 +252,13 @@ public class Nametags extends ToggleModule {
 
         // Get health color
         Color healthColor;
-        if (healthPercentage <= 0.333) healthColor = healthStage3.get();
-        else if (healthPercentage <= 0.666) healthColor = healthStage2.get();
-        else healthColor = healthStage1.get();
+        if (healthPercentage <= 0.333) {
+            healthColor = healthStage3.get();
+        } else if (healthPercentage <= 0.666) {
+            healthColor = healthStage2.get();
+        } else {
+            healthColor = healthStage1.get();
+        }
 
         // Render name, health enchant and texts
         Meteor.INSTANCE.getFont2x().begin();
@@ -386,11 +304,15 @@ public class Nametags extends ToggleModule {
         Matrices.pop();
     }
 
-    private List<Enchantment> setDefualtList(){
+    private List<Enchantment> setDefualtList() {
         List<Enchantment> ench = new ArrayList<>();
         for (Enchantment enchantment : Registry.ENCHANTMENT) {
             ench.add(enchantment);
         }
         return ench;
+    }
+
+    public enum Position {
+        ABOVE, ON_TOP
     }
 }

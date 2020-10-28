@@ -12,17 +12,17 @@ import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 
 public class MountBypass extends ToggleModule {
     private boolean dontCancel;
+    @EventHandler private final Listener<SendPacketEvent> onSendPacket = new Listener<>(event -> {
+        if (ModuleManager.INSTANCE.isActive(AutoMountBypassDupe.class)) {
+            return;
+        }
+
+        onSendPacket(event);
+    });
 
     public MountBypass() {
         super(Category.Player, "mount-bypass", "Allows you to bypass illegal stacks and put chests on donkeys.");
     }
-
-    @EventHandler
-    private final Listener<SendPacketEvent> onSendPacket = new Listener<>(event -> {
-        if (ModuleManager.INSTANCE.isActive(AutoMountBypassDupe.class)) return;
-
-        onSendPacket(event);
-    });
 
     public void onSendPacket(SendPacketEvent event) {
         if (dontCancel) {
@@ -30,7 +30,9 @@ public class MountBypass extends ToggleModule {
             return;
         }
 
-        if (!(event.packet instanceof PlayerInteractEntityC2SPacket)) return;
+        if (!(event.packet instanceof PlayerInteractEntityC2SPacket)) {
+            return;
+        }
         PlayerInteractEntityC2SPacket packet = (PlayerInteractEntityC2SPacket) event.packet;
 
         if (packet.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT && packet.getEntity(mc.world) instanceof AbstractDonkeyEntity) {
@@ -39,6 +41,8 @@ public class MountBypass extends ToggleModule {
     }
 
     public void dontCancel() {
-        if (isActive()) dontCancel = true;
+        if (isActive()) {
+            dontCancel = true;
+        }
     }
 }

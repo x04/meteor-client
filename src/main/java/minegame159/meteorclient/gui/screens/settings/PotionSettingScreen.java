@@ -42,7 +42,9 @@ public class PotionSettingScreen extends WindowScreen {
         for (MyPotion potion : MyPotion.values()) {
             WItemWithLabel item = new WItemWithLabel(potion.potion);
             if (!filterText.isEmpty()) {
-                if (!StringUtils.containsIgnoreCase(item.getLabelText(), filterText)) continue;
+                if (!StringUtils.containsIgnoreCase(item.getLabelText(), filterText)) {
+                    continue;
+                }
             }
             table.add(item);
 

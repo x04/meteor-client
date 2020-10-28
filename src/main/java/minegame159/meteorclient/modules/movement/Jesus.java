@@ -20,21 +20,15 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class Jesus extends ToggleModule {
+    private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
     private int tickTimer = 10;
-    private int packetTimer = 0;
-
-    private BlockPos.Mutable blockPos = new BlockPos.Mutable();
-
-    public Jesus() {
-        super(Category.Movement, "jesus", "Walk on water, be like jesus.");
-    }
-
-    @EventHandler
-    private Listener<TickEvent> onTick = new Listener<>(event -> {
-        if(mc.options.keySneak.isPressed()) return;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (mc.options.keySneak.isPressed()) {
+            return;
+        }
 
         // Move up in water
-        if(mc.player.isTouchingWater()) {
+        if (mc.player.isTouchingWater()) {
             Vec3d velocity = mc.player.getVelocity();
             ((IVec3d) velocity).set(velocity.x, 0.11, velocity.z);
             tickTimer = 0;
@@ -43,32 +37,42 @@ public class Jesus extends ToggleModule {
 
         // Simulate jumping out of water
         Vec3d velocity = mc.player.getVelocity();
-        if(tickTimer == 0) ((IVec3d) velocity).set(velocity.x, 0.30, velocity.z);
-        else if(tickTimer == 1) ((IVec3d) velocity).set(velocity.x, 0, velocity.z);
+        if (tickTimer == 0) {
+            ((IVec3d) velocity).set(velocity.x, 0.30, velocity.z);
+        } else if (tickTimer == 1) {
+            ((IVec3d) velocity).set(velocity.x, 0, velocity.z);
+        }
 
         tickTimer++;
     });
-
-    @EventHandler
-    private Listener<SendPacketEvent> onSendPacket = new Listener<>(event -> {
-        if(!(event.packet instanceof PlayerMoveC2SPacket)) return;
+    private int packetTimer = 0;
+    @EventHandler private final Listener<SendPacketEvent> onSendPacket = new Listener<>(event -> {
+        if (!(event.packet instanceof PlayerMoveC2SPacket)) {
+            return;
+        }
         PlayerMoveC2SPacket packet = (PlayerMoveC2SPacket) event.packet;
 
         // Check if packet contains a position
-        if(!(packet instanceof PlayerMoveC2SPacket.PositionOnly || packet instanceof PlayerMoveC2SPacket.Both)) return;
+        if (!(packet instanceof PlayerMoveC2SPacket.PositionOnly || packet instanceof PlayerMoveC2SPacket.Both)) {
+            return;
+        }
 
         // Check inWater, fallDistance and if over liquid
-        if(mc.player.isTouchingWater() || mc.player.fallDistance > 3f || !isOverLiquid()) return;
+        if (mc.player.isTouchingWater() || mc.player.fallDistance > 3f || !isOverLiquid()) {
+            return;
+        }
 
         // If not actually moving, cancel packet
-        if(mc.player.input.movementForward == 0 && mc.player.input.movementSideways == 0) {
+        if (mc.player.input.movementForward == 0 && mc.player.input.movementSideways == 0) {
             event.cancel();
             return;
         }
 
         // Wait for timer
         packetTimer++;
-        if(packetTimer < 4) return;
+        if (packetTimer < 4) {
+            return;
+        }
 
         // Cancel old packet
         event.cancel();
@@ -80,28 +84,35 @@ public class Jesus extends ToggleModule {
 
         // Create new packet
         Packet<?> newPacket;
-        if(packet instanceof PlayerMoveC2SPacket.PositionOnly) newPacket = new PlayerMoveC2SPacket.PositionOnly(x, y, z, true);
-        else newPacket = new PlayerMoveC2SPacket.Both(x, y, z, packet.getYaw(0), packet.getPitch(0), true);
+        if (packet instanceof PlayerMoveC2SPacket.PositionOnly) {
+            newPacket = new PlayerMoveC2SPacket.PositionOnly(x, y, z, true);
+        } else {
+            newPacket = new PlayerMoveC2SPacket.Both(x, y, z, packet.getYaw(0), packet.getPitch(0), true);
+        }
 
         // Send new packet
         mc.getNetworkHandler().getConnection().send(newPacket);
     });
 
+    public Jesus() {
+        super(Category.Movement, "jesus", "Walk on water, be like jesus.");
+    }
+
     public boolean isOverLiquid() {
         boolean foundLiquid = false;
         boolean foundSolid = false;
 
-        ArrayList<Box> blockCollisions = mc.world
-                .getBlockCollisions(mc.player, mc.player.getBoundingBox().offset(0, -0.5, 0))
-                .map(VoxelShape::getBoundingBox)
-                .collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<Box> blockCollisions = mc.world.getBlockCollisions(mc.player, mc.player.getBoundingBox().offset(0, -0.5, 0)).map(VoxelShape::getBoundingBox).collect(Collectors.toCollection(ArrayList::new));
 
-        for(Box bb : blockCollisions) {
+        for (Box bb : blockCollisions) {
             blockPos.set(MathHelper.lerp(0.5D, bb.minX, bb.maxX), MathHelper.lerp(0.5D, bb.minY, bb.maxY), MathHelper.lerp(0.5D, bb.minZ, bb.maxZ));
             Material material = mc.world.getBlockState(blockPos).getMaterial();
 
-            if(material == Material.WATER || material == Material.LAVA) foundLiquid = true;
-            else if(material != Material.AIR) foundSolid = true;
+            if (material == Material.WATER || material == Material.LAVA) {
+                foundLiquid = true;
+            } else if (material != Material.AIR) {
+                foundSolid = true;
+            }
         }
 
         return foundLiquid && !foundSolid;

@@ -8,14 +8,8 @@ import minegame159.meteorclient.settings.SettingGroup;
 
 public class ShulkerTooltip extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    
-    private final Setting<Integer> lines = sgGeneral.add(new IntSetting.Builder()
-            .name("lines")
-            .description("Number of lines.")
-            .defaultValue(8)
-            .min(0)
-            .build()
-    );
+
+    private final Setting<Integer> lines = sgGeneral.add(new IntSetting.Builder().name("lines").description("Number of lines.").defaultValue(8).min(0).build());
 
     public ShulkerTooltip() {
         super(Category.Misc, "shulker-tooltip", "Better shulker item tooltip.");

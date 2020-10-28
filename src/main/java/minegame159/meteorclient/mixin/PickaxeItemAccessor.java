@@ -10,5 +10,7 @@ import java.util.Set;
 @Mixin(PickaxeItem.class)
 public interface PickaxeItemAccessor {
     @Accessor("EFFECTIVE_BLOCKS")
-    static Set<Block> getEffectiveBlocks() { return null; }
+    static Set<Block> getEffectiveBlocks() {
+        return null;
+    }
 }

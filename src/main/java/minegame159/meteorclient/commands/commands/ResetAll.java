@@ -15,7 +15,8 @@ public class ResetAll extends Command {
     public void run(String[] args) {
         for (Module module : ModuleManager.INSTANCE.getAll()) {
             for (SettingGroup sg : module.settings) {
-                for (Setting<?> setting : sg) setting.reset();
+                for (Setting<?> setting : sg)
+                    setting.reset();
             }
         }
     }

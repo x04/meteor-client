@@ -11,11 +11,17 @@ import minegame159.meteorclient.gui.widgets.*;
 import org.lwjgl.glfw.GLFW;
 
 public class EditMacroScreen extends WindowScreen {
-    private Macro macro;
     private final boolean newMacro;
-
+    private Macro macro;
     private WLabel keyLabel;
     private boolean waitingForKey;
+    @EventHandler private final Listener<KeyEvent> onKey = new Listener<>(event -> {
+        if (waitingForKey) {
+            waitingForKey = false;
+            macro.key = event.key;
+            keyLabel.setText(getKeyLabelText());
+        }
+    }, EventPriority.HIGHEST);
 
     public EditMacroScreen(Macro m) {
         super(m == null ? "Create Macro" : "Edit Macro", true);
@@ -91,16 +97,9 @@ public class EditMacroScreen extends WindowScreen {
     }
 
     private String getKeyLabelText() {
-        if (waitingForKey) return "Press any key";
+        if (waitingForKey) {
+            return "Press any key";
+        }
         return "Key: " + (macro.key == -1 ? "none" : GLFW.glfwGetKeyName(macro.key, 0));
     }
-
-    @EventHandler
-    private final Listener<KeyEvent> onKey = new Listener<>(event -> {
-        if (waitingForKey) {
-            waitingForKey = false;
-            macro.key = event.key;
-            keyLabel.setText(getKeyLabelText());
-        }
-    }, EventPriority.HIGHEST);
 }

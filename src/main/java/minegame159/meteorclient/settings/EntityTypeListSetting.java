@@ -24,7 +24,7 @@ public class EntityTypeListSetting extends Setting<List<EntityType<?>>> {
 
         this.onlyAttackable = onlyAttackable;
         value = new ArrayList<>(defaultValue);
-        
+
         widget = new WButton("Select");
         ((WButton) widget).action = () -> Meteor.INSTANCE.getMinecraft().openScreen(new EntityTypeListSettingScreen(this));
     }
@@ -47,11 +47,17 @@ public class EntityTypeListSetting extends Setting<List<EntityType<?>>> {
             for (String value : values) {
                 String val = value.trim();
                 Identifier id;
-                if (val.contains(":")) id = new Identifier(val);
-                else id = new Identifier("minecraft", val);
-                if (Registry.ENTITY_TYPE.containsId(id)) entities.add(Registry.ENTITY_TYPE.get(id));
+                if (val.contains(":")) {
+                    id = new Identifier(val);
+                } else {
+                    id = new Identifier("minecraft", val);
+                }
+                if (Registry.ENTITY_TYPE.containsId(id)) {
+                    entities.add(Registry.ENTITY_TYPE.get(id));
+                }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         return entities;
     }
@@ -92,7 +98,9 @@ public class EntityTypeListSetting extends Setting<List<EntityType<?>>> {
         ListTag valueTag = tag.getList("value", 8);
         for (Tag tagI : valueTag) {
             EntityType<?> type = Registry.ENTITY_TYPE.get(new Identifier(tagI.asString()));
-            if (!onlyAttackable || EntityUtils.isAttackable(type)) get().add(type);
+            if (!onlyAttackable || EntityUtils.isAttackable(type)) {
+                get().add(type);
+            }
         }
 
         changed();

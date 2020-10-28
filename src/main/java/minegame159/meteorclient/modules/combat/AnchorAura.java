@@ -4,8 +4,8 @@ package minegame159.meteorclient.modules.combat;
 
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import minegame159.meteorclient.friends.FriendManager;
 import minegame159.meteorclient.events.TickEvent;
+import minegame159.meteorclient.friends.FriendManager;
 import minegame159.meteorclient.mixininterface.IKeyBinding;
 import minegame159.meteorclient.modules.Category;
 import minegame159.meteorclient.modules.ToggleModule;
@@ -24,126 +24,26 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
-import java.util.*;
+import java.util.Iterator;
 import java.util.stream.Collectors;
 
 public class AnchorAura extends ToggleModule {
-    public enum Mode{
-        safe,
-        suicide
-    }
-
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
     private final SettingGroup sgPlace = settings.createGroup("Place");
-
-    private final Setting<Double> placeRange = sgGeneral.add(new DoubleSetting.Builder()
-            .name("place-range")
-            .description("The distance in a single direction the anchors get placed.")
-            .defaultValue(3)
-            .min(0)
-            .sliderMax(5)
-            .build()
-    );
-
-    private final Setting<Double> breakRange = sgGeneral.add(new DoubleSetting.Builder()
-            .name("break-range")
-            .description("The distance in a single direction the anchors get set off.")
-            .defaultValue(3)
-            .min(0)
-            .sliderMax(5)
-            .build()
-    );
-
-    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>()
-            .name("place-mode")
-            .description("The way anchors are placed")
-            .defaultValue(Mode.safe)
-            .build()
-    );
-    
-    private final Setting<Boolean> airPlace = sgGeneral.add(new BoolSetting.Builder()
-            .name("air-place")
-            .description("Places anchors in the air.")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Mode> breakMode = sgGeneral.add(new EnumSetting.Builder<Mode>()
-            .name("break-mode")
-            .description("The way anchors are set off.")
-            .defaultValue(Mode.safe)
-            .build()
-    );
-
-    private final Setting<Boolean> autoSwitch = sgGeneral.add(new BoolSetting.Builder()
-            .name("auto-switch")
-            .description("Switches to anchors for you.")
-            .defaultValue(false)
-            .build()
-    );
-
-    private final Setting<Boolean> spoofChange = sgGeneral.add(new BoolSetting.Builder()
-            .name("spoof-change")
-            .description("Spoofs item change to anchor.")
-            .defaultValue(false)
-            .build()
-    );
-
-    private final Setting<Double> minDamage = sgPlace.add(new DoubleSetting.Builder()
-            .name("min-damage")
-            .description("The minimum damage the anchor will place")
-            .defaultValue(5.5)
-            .build()
-    );
-
-    private final Setting<Double> maxDamage = sgPlace.add(new DoubleSetting.Builder()
-            .name("max-damage")
-            .description("The maximum self-damage allowed")
-            .defaultValue(3)
-            .build()
-    );
-
-    private final Setting<Double> minHealth = sgPlace.add(new DoubleSetting.Builder()
-            .name("min-health")
-            .description("The minimum health you have to be for it to place")
-            .defaultValue(15)
-            .build()
-    );
-
-    private final Setting<Boolean> place = sgGeneral.add(new BoolSetting.Builder()
-            .name("place")
-            .description("Allow it to place anchors")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
-            .name("delay")
-            .description("Delay ticks between placements.")
-            .defaultValue(2)
-            .min(0)
-            .max(10)
-            .build()
-    );
-
-    private final Setting<Boolean> smartDelay = sgGeneral.add(new BoolSetting.Builder()
-            .name("smart-delay")
-            .description("Ensures optimal damage per anchor.")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Double> healthDifference = sgGeneral.add(new DoubleSetting.Builder()
-            .name("damage-increase")
-            .description("The damage increase for smart delay to work.")
-            .defaultValue(5)
-            .min(0)
-            .max(20)
-            .build()
-    );
-
-    public AnchorAura() {super(Category.Combat, "anchor-aura", "Places and explodes respawn anchors for you,");}
-
+    private final Setting<Double> placeRange = sgGeneral.add(new DoubleSetting.Builder().name("place-range").description("The distance in a single direction the anchors get placed.").defaultValue(3).min(0).sliderMax(5).build());
+    private final Setting<Double> breakRange = sgGeneral.add(new DoubleSetting.Builder().name("break-range").description("The distance in a single direction the anchors get set off.").defaultValue(3).min(0).sliderMax(5).build());
+    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("place-mode").description("The way anchors are placed").defaultValue(Mode.safe).build());
+    private final Setting<Boolean> airPlace = sgGeneral.add(new BoolSetting.Builder().name("air-place").description("Places anchors in the air.").defaultValue(true).build());
+    private final Setting<Mode> breakMode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("break-mode").description("The way anchors are set off.").defaultValue(Mode.safe).build());
+    private final Setting<Boolean> autoSwitch = sgGeneral.add(new BoolSetting.Builder().name("auto-switch").description("Switches to anchors for you.").defaultValue(false).build());
+    private final Setting<Boolean> spoofChange = sgGeneral.add(new BoolSetting.Builder().name("spoof-change").description("Spoofs item change to anchor.").defaultValue(false).build());
+    private final Setting<Double> minDamage = sgPlace.add(new DoubleSetting.Builder().name("min-damage").description("The minimum damage the anchor will place").defaultValue(5.5).build());
+    private final Setting<Double> maxDamage = sgPlace.add(new DoubleSetting.Builder().name("max-damage").description("The maximum self-damage allowed").defaultValue(3).build());
+    private final Setting<Double> minHealth = sgPlace.add(new DoubleSetting.Builder().name("min-health").description("The minimum health you have to be for it to place").defaultValue(15).build());
+    private final Setting<Boolean> place = sgGeneral.add(new BoolSetting.Builder().name("place").description("Allow it to place anchors").defaultValue(true).build());
+    private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder().name("delay").description("Delay ticks between placements.").defaultValue(2).min(0).max(10).build());
+    private final Setting<Boolean> smartDelay = sgGeneral.add(new BoolSetting.Builder().name("smart-delay").description("Ensures optimal damage per anchor.").defaultValue(true).build());
+    private final Setting<Double> healthDifference = sgGeneral.add(new DoubleSetting.Builder().name("damage-increase").description("The damage increase for smart delay to work.").defaultValue(5).min(0).max(20).build());
     private int delayLeft = delay.get();
     private int preSlot;
     private BlockPos bestBlock;
@@ -153,25 +53,20 @@ public class AnchorAura extends ToggleModule {
     private double lastDamage = 0;
     private Vec3d vecPos;
     private Vec3d bestBlockPos;
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         assert mc.player != null;
         assert mc.world != null;
-        delayLeft --;
+        delayLeft--;
         if (mc.world.getDimension().isRespawnAnchorWorking()) {
             Chat.info(this, "You are not in the Overworld. (highlight)Disabling(default)!");
             this.toggle();
             return;
         }
-        if (getTotalHealth(mc.player) <= minHealth.get() && mode.get() != Mode.suicide) return;
+        if (getTotalHealth(mc.player) <= minHealth.get() && mode.get() != Mode.suicide) {
+            return;
+        }
 
-        Iterator<AbstractClientPlayerEntity> validEntities = mc.world.getPlayers().stream()
-                .filter(FriendManager.INSTANCE::attack)
-                .filter(entityPlayer -> !entityPlayer.getDisplayName().equals(mc.player.getDisplayName()))
-                .filter(entityPlayer -> mc.player.distanceTo(entityPlayer) <= 10)
-                .collect(Collectors.toList())
-                .iterator();
+        Iterator<AbstractClientPlayerEntity> validEntities = mc.world.getPlayers().stream().filter(FriendManager.INSTANCE::attack).filter(entityPlayer -> !entityPlayer.getDisplayName().equals(mc.player.getDisplayName())).filter(entityPlayer -> mc.player.distanceTo(entityPlayer) <= 10).collect(Collectors.toList()).iterator();
         PlayerEntity target;
         if (validEntities.hasNext()) {
             target = validEntities.next();
@@ -179,7 +74,9 @@ public class AnchorAura extends ToggleModule {
             return;
         }
         for (PlayerEntity i = null; validEntities.hasNext(); i = validEntities.next()) {
-            if (i == null) continue;
+            if (i == null) {
+                continue;
+            }
             if (mc.player.distanceTo(i) < mc.player.distanceTo(target)) {
                 target = i;
             }
@@ -201,8 +98,7 @@ public class AnchorAura extends ToggleModule {
             if (bestBlock != null) {
                 Vec3d pos = new Vec3d(bestBlock.getX() + 0.5D, bestBlock.getY(), bestBlock.getZ() + 0.5D);
                 //mc.player.world.removeBlock(bestBlock, false);
-                if ((DamageCalcUtils.bedDamage(mc.player, pos) < maxDamage.get() || breakMode.get() == Mode.suicide)
-                        && DamageCalcUtils.bedDamage(target, pos) > minDamage.get()) {
+                if ((DamageCalcUtils.bedDamage(mc.player, pos) < maxDamage.get() || breakMode.get() == Mode.suicide) && DamageCalcUtils.bedDamage(target, pos) > minDamage.get()) {
                     int preSlot = mc.player.inventory.selectedSlot;
                     mc.player.inventory.selectedSlot = glowSlot;
                     mc.player.setSneaking(false);
@@ -215,7 +111,9 @@ public class AnchorAura extends ToggleModule {
                 }
             }
         }
-        if (!smartDelay.get() && delayLeft > 0) return;
+        if (!smartDelay.get() && delayLeft > 0) {
+            return;
+        }
         if (place.get()) {
             findValidBlocks(target);
             if (bestBlock != null) {
@@ -224,18 +122,24 @@ public class AnchorAura extends ToggleModule {
                     if (autoSwitch.get() && mc.player.getMainHandStack().getItem() != Items.RESPAWN_ANCHOR) {
                         int slot = InvUtils.findItemWithCount(Items.RESPAWN_ANCHOR).slot;
                         if (slot != -1 && slot < 9) {
-                            if (spoofChange.get()) preSlot = mc.player.inventory.selectedSlot;
+                            if (spoofChange.get()) {
+                                preSlot = mc.player.inventory.selectedSlot;
+                            }
                             mc.player.inventory.selectedSlot = slot;
                         }
                     }
-                    if (mc.player.getMainHandStack().getItem() != Items.RESPAWN_ANCHOR && mc.player.getOffHandStack().getItem() != Items.RESPAWN_ANCHOR) return;
+                    if (mc.player.getMainHandStack().getItem() != Items.RESPAWN_ANCHOR && mc.player.getOffHandStack().getItem() != Items.RESPAWN_ANCHOR) {
+                        return;
+                    }
                     if (!smartDelay.get()) {
                         delayLeft = delay.get();
                         mc.interactionManager.interactBlock(mc.player, mc.world, Hand.MAIN_HAND, new BlockHitResult(pos, Direction.UP, bestBlock, false));
-                    } else if (smartDelay.get() && (delayLeft <= 0 || bestDamage - lastDamage > healthDifference.get())){
+                    } else if (smartDelay.get() && (delayLeft <= 0 || bestDamage - lastDamage > healthDifference.get())) {
                         lastDamage = bestDamage;
                         mc.interactionManager.interactBlock(mc.player, mc.world, Hand.MAIN_HAND, new BlockHitResult(pos, Direction.UP, bestBlock, false));
-                        if (delayLeft <= 0) delayLeft = 10;
+                        if (delayLeft <= 0) {
+                            delayLeft = 10;
+                        }
                     }
                 }
                 if (spoofChange.get() && preSlot != mc.player.inventory.selectedSlot) {
@@ -244,6 +148,10 @@ public class AnchorAura extends ToggleModule {
             }
         }
     });
+
+    public AnchorAura() {
+        super(Category.Combat, "anchor-aura", "Places and explodes respawn anchors for you,");
+    }
 
     private void findValidBlocks(PlayerEntity target) {
         assert mc.world != null;
@@ -262,9 +170,7 @@ public class AnchorAura extends ToggleModule {
                                 bestBlockPos = vecPos;
                                 bestDamage = DamageCalcUtils.bedDamage(target, bestBlockPos.add(0.5, 0.5, 0.5));
                             }
-                            if (bestDamage < DamageCalcUtils.bedDamage(target, vecPos.add(0.5, 0.5, 0.5))
-                                    &&(mode.get() == Mode.suicide ||
-                                    DamageCalcUtils.bedDamage(mc.player, vecPos.add(0.5, 0.5, 0.5)) < maxDamage.get())) {
+                            if (bestDamage < DamageCalcUtils.bedDamage(target, vecPos.add(0.5, 0.5, 0.5)) && (mode.get() == Mode.suicide || DamageCalcUtils.bedDamage(mc.player, vecPos.add(0.5, 0.5, 0.5)) < maxDamage.get())) {
                                 bestBlock = pos;
                                 bestBlockPos = vecPos;
                                 bestDamage = DamageCalcUtils.bedDamage(target, bestBlockPos.add(0.5, 0.5, 0.5));
@@ -275,9 +181,7 @@ public class AnchorAura extends ToggleModule {
                                 bestBlockPos = vecPos;
                                 bestDamage = DamageCalcUtils.bedDamage(target, bestBlockPos.add(0.5, 0.5, 0.5));
                             }
-                            if (bestDamage < DamageCalcUtils.bedDamage(target, vecPos.add(0.5, 0.5, 0.5))
-                                    && (mode.get() == Mode.suicide ||
-                                    DamageCalcUtils.bedDamage(mc.player, vecPos.add(0.5, 0.5, 0.5)) < maxDamage.get())) {
+                            if (bestDamage < DamageCalcUtils.bedDamage(target, vecPos.add(0.5, 0.5, 0.5)) && (mode.get() == Mode.suicide || DamageCalcUtils.bedDamage(mc.player, vecPos.add(0.5, 0.5, 0.5)) < maxDamage.get())) {
                                 bestBlock = pos;
                                 bestBlockPos = vecPos;
                                 bestDamage = DamageCalcUtils.bedDamage(target, bestBlockPos.add(0.5, 0.5, 0.5));
@@ -304,8 +208,7 @@ public class AnchorAura extends ToggleModule {
                             bestBlockPos = vecPos;
                             bestDamage = DamageCalcUtils.bedDamage(target, bestBlockPos.add(0.5, 0.5, 0.5));
                         }
-                        if (bestDamage < DamageCalcUtils.bedDamage(target, vecPos.add(0.5, 0.5, 0.5))
-                                && (mode.get() == Mode.suicide || DamageCalcUtils.bedDamage(mc.player, vecPos.add(0.5, 0.5, 0.5)) < maxDamage.get())){
+                        if (bestDamage < DamageCalcUtils.bedDamage(target, vecPos.add(0.5, 0.5, 0.5)) && (mode.get() == Mode.suicide || DamageCalcUtils.bedDamage(mc.player, vecPos.add(0.5, 0.5, 0.5)) < maxDamage.get())) {
                             bestBlock = pos;
                             bestBlockPos = vecPos;
                             bestDamage = DamageCalcUtils.bedDamage(target, bestBlockPos.add(0.5, 0.5, 0.5));
@@ -318,5 +221,9 @@ public class AnchorAura extends ToggleModule {
 
     private float getTotalHealth(PlayerEntity target) {
         return target.getHealth() + target.getAbsorptionAmount();
+    }
+
+    public enum Mode {
+        safe, suicide
     }
 }

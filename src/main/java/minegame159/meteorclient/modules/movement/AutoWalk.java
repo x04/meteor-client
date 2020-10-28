@@ -13,53 +13,21 @@ import minegame159.meteorclient.settings.SettingGroup;
 import minegame159.meteorclient.utils.GoalDirection;
 
 public class AutoWalk extends ToggleModule {
-    public enum Mode {
-        Simple,
-        Smart
-    }
-    
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
-    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>()
-            .name("mode")
-            .description("Walking mode.")
-            .defaultValue(Mode.Smart)
-            .onChanged(mode1 -> {
-                if (isActive()) {
-                    if (mode1 == Mode.Simple) {
-                        BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
-                        goal = null;
-                    } else {
-                        timer = 0;
-                        createGoal();
-                    }
-                }
-            })
-            .build()
-    );
-
     private int timer = 0;
     private GoalDirection goal;
-
-    public AutoWalk() {
-        super(Category.Movement, "auto-walk", "Automatically walks forward.");
-    }
-
-    @Override
-    public void onActivate() {
-        if (mode.get() == Mode.Smart) createGoal();
-    }
-
-    @Override
-    public void onDeactivate() {
-        if (mode.get() == Mode.Simple) ((IKeyBinding) mc.options.keyForward).setPressed(false);
-        else BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
-
-        goal = null;
-    }
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
+    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("mode").description("Walking mode.").defaultValue(Mode.Smart).onChanged(mode1 -> {
+        if (isActive()) {
+            if (mode1 == Mode.Simple) {
+                BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
+                goal = null;
+            } else {
+                timer = 0;
+                createGoal();
+            }
+        }
+    }).build());
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         if (mode.get() == Mode.Simple) {
             ((IKeyBinding) mc.options.keyForward).setPressed(true);
         } else {
@@ -72,9 +40,35 @@ public class AutoWalk extends ToggleModule {
         }
     });
 
+    public AutoWalk() {
+        super(Category.Movement, "auto-walk", "Automatically walks forward.");
+    }
+
+    @Override
+    public void onActivate() {
+        if (mode.get() == Mode.Smart) {
+            createGoal();
+        }
+    }
+
+    @Override
+    public void onDeactivate() {
+        if (mode.get() == Mode.Simple) {
+            ((IKeyBinding) mc.options.keyForward).setPressed(false);
+        } else {
+            BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
+        }
+
+        goal = null;
+    }
+
     private void createGoal() {
         timer = 0;
         goal = new GoalDirection(mc.player.getPos(), mc.player.yaw);
         BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().setGoalAndPath(goal);
+    }
+
+    public enum Mode {
+        Simple, Smart
     }
 }

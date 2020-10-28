@@ -72,7 +72,9 @@ public class PacketBoolSetting extends Setting<Object2BooleanMap<Class<? extends
         CompoundTag valueTag = tag.getCompound("value");
         for (String key : valueTag.getKeys()) {
             Class<? extends Packet<?>> packet = PacketUtils.getPacket(key);
-            if (packet != null) get().put(packet, valueTag.getBoolean(key));
+            if (packet != null) {
+                get().put(packet, valueTag.getBoolean(key));
+            }
         }
 
         changed();

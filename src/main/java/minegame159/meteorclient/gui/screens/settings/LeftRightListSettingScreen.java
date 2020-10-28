@@ -43,10 +43,14 @@ public abstract class LeftRightListSettingScreen<T> extends WindowScreen {
 
         // Left (all)
         WTable left = abc(registry, pairs -> registry.forEach(t -> {
-            if (setting.get().contains(t)) return;
+            if (setting.get().contains(t)) {
+                return;
+            }
 
             int words = Utils.search(getValueName(t), filterText);
-            if (words > 0) pairs.add(new Pair<>(t, words));
+            if (words > 0) {
+                pairs.add(new Pair<>(t, words));
+            }
         }), true, t -> {
             if (!setting.get().contains(t)) {
                 setting.get().add(t);
@@ -57,13 +61,17 @@ public abstract class LeftRightListSettingScreen<T> extends WindowScreen {
             }
         });
 
-        if (left.getCells().size() > 0) add(new WVerticalSeparator());
+        if (left.getCells().size() > 0) {
+            add(new WVerticalSeparator());
+        }
 
         // Right (selected)
         abc(registry, pairs -> {
             for (T value : setting.get()) {
                 int words = Utils.search(getValueName(value), filterText);
-                if (words > 0) pairs.add(new Pair<>(value, words));
+                if (words > 0) {
+                    pairs.add(new Pair<>(value, words));
+                }
             }
         }, false, t -> {
             if (setting.get().remove(t)) {
@@ -78,7 +86,9 @@ public abstract class LeftRightListSettingScreen<T> extends WindowScreen {
         // Create
         WTable table = add(new WTable()).top().getWidget();
         Consumer<T> forEach = t -> {
-            if (!includeValue(t)) return;
+            if (!includeValue(t)) {
+                return;
+            }
 
             table.add(getValueWidget(t));
 
@@ -91,8 +101,11 @@ public abstract class LeftRightListSettingScreen<T> extends WindowScreen {
         // Sort
         List<Pair<T, Integer>> values = new ArrayList<>();
         addValues.accept(values);
-        if (!filterText.isEmpty()) values.sort(Comparator.comparingInt(value -> -value.getRight()));
-        for (Pair<T, Integer> pair : values) forEach.accept(pair.getLeft());
+        if (!filterText.isEmpty()) {
+            values.sort(Comparator.comparingInt(value -> -value.getRight()));
+        }
+        for (Pair<T, Integer> pair : values)
+            forEach.accept(pair.getLeft());
 
         return table;
     }

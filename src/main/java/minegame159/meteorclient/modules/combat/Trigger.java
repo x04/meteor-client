@@ -13,30 +13,31 @@ import net.minecraft.util.Hand;
 
 public class Trigger extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    
-    private final Setting<Boolean> onlyWhenHoldingAttack = sgGeneral.add(new BoolSetting.Builder()
-            .name("only-when-holding-attack")
-            .description("Attacks only when you are holding left click.")
-            .defaultValue(false)
-            .build()
-    );
 
-    public Trigger() {
-        super(Category.Combat, "trigger", "Automatically attacks when you look at entities.");
-    }
-
-    @EventHandler
-    private Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (mc.player.getHealth() <= 0 || mc.player.getAttackCooldownProgress(0.5f) < 1) return;
-        if (!(mc.targetedEntity instanceof LivingEntity)) return;
-        if (((LivingEntity) mc.targetedEntity).getHealth() <= 0) return;
+    private final Setting<Boolean> onlyWhenHoldingAttack = sgGeneral.add(new BoolSetting.Builder().name("only-when-holding-attack").description("Attacks only when you are holding left click.").defaultValue(false).build());
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (mc.player.getHealth() <= 0 || mc.player.getAttackCooldownProgress(0.5f) < 1) {
+            return;
+        }
+        if (!(mc.targetedEntity instanceof LivingEntity)) {
+            return;
+        }
+        if (((LivingEntity) mc.targetedEntity).getHealth() <= 0) {
+            return;
+        }
 
         if (onlyWhenHoldingAttack.get()) {
-            if (mc.options.keyAttack.isPressed()) attack();
+            if (mc.options.keyAttack.isPressed()) {
+                attack();
+            }
         } else {
             attack();
         }
     });
+
+    public Trigger() {
+        super(Category.Combat, "trigger", "Automatically attacks when you look at entities.");
+    }
 
     private void attack() {
         mc.interactionManager.attackEntity(mc.player, mc.targetedEntity);

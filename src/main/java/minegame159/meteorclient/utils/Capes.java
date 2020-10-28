@@ -1,7 +1,6 @@
 package minegame159.meteorclient.utils;
 
 import minegame159.meteorclient.Meteor;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,7 +29,9 @@ public enum Capes {
             String[] split = s.split(" ");
             if (split.length >= 2) {
                 OWNERS.put(UUID.fromString(split[0]), split[1]);
-                if (!TEXTURES.containsKey(split[1])) TEXTURES.put(split[1], new Cape(split[1]));
+                if (!TEXTURES.containsKey(split[1])) {
+                    TEXTURES.put(split[1], new Cape(split[1]));
+                }
             }
         }));
     }
@@ -39,7 +40,9 @@ public enum Capes {
         String capeName = OWNERS.get(player.getUuid());
         if (capeName != null) {
             Cape cape = TEXTURES.get(capeName);
-            if (cape.isDownloaded()) return cape;
+            if (cape.isDownloaded()) {
+                return cape;
+            }
 
             cape.download();
             return EMPTY_CAPE;
@@ -50,7 +53,8 @@ public enum Capes {
 
     public void tick() {
         synchronized (TO_REGISTER) {
-            for (Cape cape : TO_REGISTER) cape.register();
+            for (Cape cape : TO_REGISTER)
+                cape.register();
             TO_REGISTER.clear();
         }
 
@@ -72,7 +76,9 @@ public enum Capes {
         }
 
         public void download() {
-            if (downloaded || downloading || retryTimer > 0) return;
+            if (downloaded || downloading || retryTimer > 0) {
+                return;
+            }
             downloading = true;
 
             MeteorExecutor.INSTANCE.execute(() -> {

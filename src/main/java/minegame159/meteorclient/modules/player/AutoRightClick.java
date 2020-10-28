@@ -10,36 +10,36 @@ import minegame159.meteorclient.settings.*;
 import minegame159.meteorclient.utils.Utils;
 
 public class AutoRightClick extends ToggleModule {
-    public enum Mode{
-        Hold,
-        Press
-    }
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
-    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>()
-            .name("mode")
-            .description("How it right clicks.")
-            .defaultValue(Mode.Press)
-            .build()
-    );
-    
-    private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
-            .name("delay")
-            .description("Delay between clicks in ticks.")
-            .defaultValue(2)
-            .min(0)
-            .sliderMax(60)
-            .build()
-    );
-
-    private final Setting<Boolean> onlyWhenHoldingUse = sgGeneral.add(new BoolSetting.Builder()
-            .name("only-when-holding-use")
-            .description("Only when holding right click.")
-            .defaultValue(false)
-            .build()
-    );
-
+    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("mode").description("How it right clicks.").defaultValue(Mode.Press).build());
+    private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder().name("delay").description("Delay between clicks in ticks.").defaultValue(2).min(0).sliderMax(60).build());
+    private final Setting<Boolean> onlyWhenHoldingUse = sgGeneral.add(new BoolSetting.Builder().name("only-when-holding-use").description("Only when holding right click.").defaultValue(false).build());
     private int timer;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (mc.player.getHealth() <= 0) {
+            return;
+        }
+        if (mode.get() == Mode.Hold && !mc.options.keyUse.isPressed()) {
+            ((IKeyBinding) mc.options.keyUse).setPressed(true);
+            return;
+        } else if (mode.get() == Mode.Hold) {
+            return;
+        }
+
+        timer++;
+
+        if (timer > delay.get()) {
+            if (onlyWhenHoldingUse.get()) {
+                if (mc.options.keyAttack.isPressed()) {
+                    Utils.rightClick();
+                }
+            } else {
+                Utils.rightClick();
+            }
+
+            timer = 0;
+        }
+    });
 
     public AutoRightClick() {
         super(Category.Player, "auto-right-click", "Automatically right clicks.");
@@ -53,28 +53,11 @@ public class AutoRightClick extends ToggleModule {
     @Override
     public void onDeactivate() {
         if (mode.get() == Mode.Hold && mc.options.keyUse.isPressed()) {
-            ((IKeyBinding)mc.options.keyUse).setPressed(false);
+            ((IKeyBinding) mc.options.keyUse).setPressed(false);
         }
     }
 
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (mc.player.getHealth() <= 0) return;
-        if (mode.get() == Mode.Hold && !mc.options.keyUse.isPressed()) {
-            ((IKeyBinding)mc.options.keyUse).setPressed(true);
-            return;
-        } else if (mode.get() == Mode.Hold) return;
-
-        timer++;
-
-        if (timer > delay.get()) {
-            if (onlyWhenHoldingUse.get()) {
-                if (mc.options.keyAttack.isPressed()) Utils.rightClick();
-            } else {
-                Utils.rightClick();
-            }
-
-            timer = 0;
-        }
-    });
+    public enum Mode {
+        Hold, Press
+    }
 }

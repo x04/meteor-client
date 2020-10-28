@@ -74,8 +74,11 @@ public class FriendManager extends Savable<FriendManager> implements Iterable<Fr
     }
 
     public void addOrRemove(Friend friend) {
-        if (friends.contains(friend)) remove(friend);
-        else add(friend);
+        if (friends.contains(friend)) {
+            remove(friend);
+        } else {
+            add(friend);
+        }
     }
 
     public boolean remove(Friend friend) {
@@ -102,7 +105,8 @@ public class FriendManager extends Savable<FriendManager> implements Iterable<Fr
         CompoundTag tag = new CompoundTag();
 
         ListTag friendsTag = new ListTag();
-        for (Friend friend : friends) friendsTag.add(friend.toTag());
+        for (Friend friend : friends)
+            friendsTag.add(friend.toTag());
         tag.put("friends", friendsTag);
 
         return tag;

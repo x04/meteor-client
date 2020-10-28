@@ -10,9 +10,13 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(DisconnectedScreen.class)
 public class DisconnectedScreenMixin implements IDisconnectedScreen {
-    @Shadow @Final private Screen parent;
+    @Shadow
+    @Final
+    private Screen parent;
 
-    @Shadow @Final private Text reason;
+    @Shadow
+    @Final
+    private Text reason;
 
     @Shadow private int reasonHeight;
 

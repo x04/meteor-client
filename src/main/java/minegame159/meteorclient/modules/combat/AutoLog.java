@@ -28,60 +28,19 @@ import net.minecraft.util.math.Vec3d;
 
 public class AutoLog extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    
-    private final Setting<Integer> health = sgGeneral.add(new IntSetting.Builder()
-            .name("health")
-            .description("Disconnects when health is lower or equal to this value.")
-            .defaultValue(6)
-            .min(0)
-            .max(20)
-            .sliderMax(20)
-            .build()
-    );
 
-    private final Setting<Boolean> smart = sgGeneral.add(new BoolSetting.Builder()
-            .name("smart")
-            .description("Disconnects when you are about to take too much damage.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Integer> health = sgGeneral.add(new IntSetting.Builder().name("health").description("Disconnects when health is lower or equal to this value.").defaultValue(6).min(0).max(20).sliderMax(20).build());
 
-    private final Setting<Boolean> onlyTrusted = sgGeneral.add(new BoolSetting.Builder()
-            .name("only-trusted")
-            .description("Disconnects when non-trusted player appears in your render distance.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> smart = sgGeneral.add(new BoolSetting.Builder().name("smart").description("Disconnects when you are about to take too much damage.").defaultValue(true).build());
 
-    private final Setting<Boolean> instantDeath = sgGeneral.add(new BoolSetting.Builder()
-            .name("32k")
-            .description("Logs out out if someone near you can insta kill you")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> onlyTrusted = sgGeneral.add(new BoolSetting.Builder().name("only-trusted").description("Disconnects when non-trusted player appears in your render distance.").defaultValue(false).build());
 
-    private final Setting<Boolean> crystalLog = sgGeneral.add(new BoolSetting.Builder()
-            .name("crystal-log")
-            .description("Log you out when there is a crystal nearby.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> instantDeath = sgGeneral.add(new BoolSetting.Builder().name("32k").description("Logs out out if someone near you can insta kill you").defaultValue(false).build());
 
-    private final Setting<Integer> range = sgGeneral.add(new IntSetting.Builder()
-            .name("range").description("How close a crystal has to be to log.")
-            .defaultValue(4)
-            .min(1)
-            .max(10)
-            .sliderMax(5)
-            .build()
-    );
+    private final Setting<Boolean> crystalLog = sgGeneral.add(new BoolSetting.Builder().name("crystal-log").description("Log you out when there is a crystal nearby.").defaultValue(false).build());
 
-    public AutoLog() {
-        super(Category.Combat, "auto-log", "Automatically disconnects when low on health.");
-    }
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
+    private final Setting<Integer> range = sgGeneral.add(new IntSetting.Builder().name("range").description("How close a crystal has to be to log.").defaultValue(4).min(1).max(10).sliderMax(5).build());
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         if (mc.player.getHealth() <= 0) {
             this.toggle();
             return;
@@ -90,18 +49,17 @@ public class AutoLog extends ToggleModule {
             mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(new LiteralText("Health was lower than " + health.get())));
         }
 
-        if(smart.get() && mc.player.getHealth() + mc.player.getAbsorptionAmount() - getHealthReduction() < health.get()){
+        if (smart.get() && mc.player.getHealth() + mc.player.getAbsorptionAmount() - getHealthReduction() < health.get()) {
             mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(new LiteralText("Health was going to be lower than " + health.get())));
         }
 
         for (Entity entity : mc.world.getEntities()) {
-            if(entity instanceof PlayerEntity && entity.getUuid() != mc.player.getUuid()) {
+            if (entity instanceof PlayerEntity && entity.getUuid() != mc.player.getUuid()) {
                 if (onlyTrusted.get() && entity != mc.player && !FriendManager.INSTANCE.isTrusted((PlayerEntity) entity)) {
-                        mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(new LiteralText("Non-trusted player appeared in your render distance")));
-                        break;
+                    mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(new LiteralText("Non-trusted player appeared in your render distance")));
+                    break;
                 }
-                if (mc.player.distanceTo(entity) < 8 && instantDeath.get() && DamageCalcUtils.getSwordDamage((PlayerEntity) entity, true)
-                        > mc.player.getHealth() + mc.player.getAbsorptionAmount()) {
+                if (mc.player.distanceTo(entity) < 8 && instantDeath.get() && DamageCalcUtils.getSwordDamage((PlayerEntity) entity, true) > mc.player.getHealth() + mc.player.getAbsorptionAmount()) {
                     mc.player.networkHandler.onDisconnect(new DisconnectS2CPacket(new LiteralText("Anti-32k measures.")));
                     break;
                 }
@@ -112,22 +70,26 @@ public class AutoLog extends ToggleModule {
         }
     });
 
-    private double getHealthReduction(){
+    public AutoLog() {
+        super(Category.Combat, "auto-log", "Automatically disconnects when low on health.");
+    }
+
+    private double getHealthReduction() {
         double damageTaken = 0;
-        for(Entity entity : mc.world.getEntities()){
-            if(entity instanceof EndCrystalEntity && damageTaken < DamageCalcUtils.crystalDamage(mc.player, entity.getPos())){
+        for (Entity entity : mc.world.getEntities()) {
+            if (entity instanceof EndCrystalEntity && damageTaken < DamageCalcUtils.crystalDamage(mc.player, entity.getPos())) {
                 damageTaken = DamageCalcUtils.crystalDamage(mc.player, entity.getPos());
-            }else if(entity instanceof PlayerEntity && damageTaken < DamageCalcUtils.getSwordDamage((PlayerEntity) entity, true)){
-                if(!FriendManager.INSTANCE.isTrusted((PlayerEntity) entity) && mc.player.getPos().distanceTo(entity.getPos()) < 5){
-                    if(((PlayerEntity) entity).getActiveItem().getItem() instanceof SwordItem){
+            } else if (entity instanceof PlayerEntity && damageTaken < DamageCalcUtils.getSwordDamage((PlayerEntity) entity, true)) {
+                if (!FriendManager.INSTANCE.isTrusted((PlayerEntity) entity) && mc.player.getPos().distanceTo(entity.getPos()) < 5) {
+                    if (((PlayerEntity) entity).getActiveItem().getItem() instanceof SwordItem) {
                         damageTaken = DamageCalcUtils.getSwordDamage((PlayerEntity) entity, true);
                     }
                 }
             }
         }
-        if(!ModuleManager.INSTANCE.get(NoFall.class).isActive() && mc.player.fallDistance > 3){
-            double damage =mc.player.fallDistance * 0.5;
-            if(damage > damageTaken){
+        if (!ModuleManager.INSTANCE.get(NoFall.class).isActive() && mc.player.fallDistance > 3) {
+            double damage = mc.player.fallDistance * 0.5;
+            if (damage > damageTaken) {
                 damageTaken = damage;
             }
         }

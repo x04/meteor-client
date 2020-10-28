@@ -10,20 +10,15 @@ import minegame159.meteorclient.utils.Color;
 import minegame159.meteorclient.utils.Utils;
 
 public class ColorSettingScreen extends WindowScreen {
-    private static final Color[] HUE_COLORS = { new Color(255, 0, 0), new Color(255, 255, 0), new Color(0, 255, 0), new Color(0, 255, 255), new Color(0, 0, 255), new Color(255, 0, 255), new Color(255, 0, 0) };
+    private static final Color[] HUE_COLORS = {new Color(255, 0, 0), new Color(255, 255, 0), new Color(0, 255, 0), new Color(0, 255, 255), new Color(0, 0, 255), new Color(255, 0, 255), new Color(255, 0, 0)};
     private static final Color WHITE = new Color(255, 255, 255);
     private static final Color BLACK = new Color(0, 0, 0);
-
-    public Runnable action;
-
     private final Setting<Color> setting;
-
     private final WQuad displayQuad;
-
     private final WBrightnessQuad brightnessQuad;
     private final WHueQuad hueQuad;
-
     private final WIntEdit rItb, gItb, bItb, aItb;
+    public Runnable action;
 
     public ColorSettingScreen(Setting<Color> setting) {
         super("Select Color", true);
@@ -86,7 +81,9 @@ public class ColorSettingScreen extends WindowScreen {
     }
 
     private void callAction() {
-        if (action != null) action.run();
+        if (action != null) {
+            action.run();
+        }
     }
 
     private void rgbaChanged() {
@@ -99,10 +96,18 @@ public class ColorSettingScreen extends WindowScreen {
 
         c.validate();
 
-        if (c.r != rItb.get()) rItb.set(c.r);
-        if (c.g != gItb.get()) gItb.set(c.g);
-        if (c.b != bItb.get()) bItb.set(c.b);
-        if (c.a != aItb.get()) aItb.set(c.a);
+        if (c.r != rItb.get()) {
+            rItb.set(c.r);
+        }
+        if (c.g != gItb.get()) {
+            gItb.set(c.g);
+        }
+        if (c.b != bItb.get()) {
+            bItb.set(c.b);
+        }
+        if (c.a != aItb.get()) {
+            aItb.set(c.a);
+        }
 
         displayQuad.color.set(c);
         hueQuad.calculateFromSetting(true);
@@ -121,7 +126,7 @@ public class ColorSettingScreen extends WindowScreen {
         double b = 0;
         boolean calculated = false;
 
-        if(brightnessQuad.saturation <= 0.0) {
+        if (brightnessQuad.saturation <= 0.0) {
             r = brightnessQuad.value;
             g = brightnessQuad.value;
             b = brightnessQuad.value;
@@ -130,7 +135,9 @@ public class ColorSettingScreen extends WindowScreen {
 
         if (!calculated) {
             hh = hueQuad.hueAngle;
-            if (hh >= 360.0) hh = 0.0;
+            if (hh >= 360.0) {
+                hh = 0.0;
+            }
             hh /= 60.0;
             i = (int) hh;
             ff = hh - i;
@@ -221,9 +228,9 @@ public class ColorSettingScreen extends WindowScreen {
             double delta = max - min;
 
             value = max / 255;
-            if(delta == 0){
+            if (delta == 0) {
                 saturation = 0;
-            }else {
+            } else {
                 saturation = delta / max;
             }
 
@@ -249,7 +256,9 @@ public class ColorSettingScreen extends WindowScreen {
 
         @Override
         protected boolean onMouseClicked(boolean used, int button) {
-            if (used) return false;
+            if (used) {
+                return false;
+            }
 
             if (mouseOver) {
                 dragging = true;
@@ -279,15 +288,21 @@ public class ColorSettingScreen extends WindowScreen {
                 if (x >= this.x && x <= this.x + width) {
                     handleX += x - lastMouseX;
                 } else {
-                    if (handleX > 0 && x < this.x) handleX = 0;
-                    else if (handleX < width && x > this.x + width) handleX = width;
+                    if (handleX > 0 && x < this.x) {
+                        handleX = 0;
+                    } else if (handleX < width && x > this.x + width) {
+                        handleX = width;
+                    }
                 }
 
                 if (y >= this.y && y <= this.y + height) {
                     handleY += y - lastMouseY;
                 } else {
-                    if (handleY > 0 && y < this.y) handleY = 0;
-                    else if (handleY < height && y > this.y + height) handleY = height;
+                    if (handleY > 0 && y < this.y) {
+                        handleY = 0;
+                    } else if (handleY < height && y > this.y + height) {
+                        handleY = height;
+                    }
                 }
 
                 handleMoved();
@@ -319,19 +334,20 @@ public class ColorSettingScreen extends WindowScreen {
             renderer.quad(Region.FULL, x, y, width, height, WHITE, hueQuad.color, BLACK, BLACK);
 
             Color color = GuiConfig.INSTANCE.colorEditHandle;
-            if (dragging) color = GuiConfig.INSTANCE.colorEditHandlePressed;
-            else if (mouseX >= x + handleX - 1 && mouseX <= x + handleX + 1 && mouseY >= y + handleY - 1 && mouseY <= y + handleY + 1) color = GuiConfig.INSTANCE.colorEditHandleHovered;
+            if (dragging) {
+                color = GuiConfig.INSTANCE.colorEditHandlePressed;
+            } else if (mouseX >= x + handleX - 1 && mouseX <= x + handleX + 1 && mouseY >= y + handleY - 1 && mouseY <= y + handleY + 1) {
+                color = GuiConfig.INSTANCE.colorEditHandleHovered;
+            }
 
             renderer.quad(Region.FULL, x + handleX - 1, y + handleY - 1, 2, 2, color);
         }
     }
 
     private class WHueQuad extends WWidget {
+        private final Color color = new Color();
         private double hueAngle;
         private double handleX;
-
-        private final Color color = new Color();
-
         private boolean dragging;
         private double lastMouseX;
 
@@ -350,10 +366,10 @@ public class ColorSettingScreen extends WindowScreen {
             double min, max, delta;
 
             min = Math.min(c.r, c.g);
-            min = min  < c.b ? min  : c.b;
+            min = min < c.b ? min : c.b;
 
             max = Math.max(c.r, c.g);
-            max = max  > c.b ? max  : c.b;
+            max = max > c.b ? max : c.b;
 
             delta = max - min;
             if (delta < 0.00001) {
@@ -370,13 +386,19 @@ public class ColorSettingScreen extends WindowScreen {
                 }
 
                 if (!calculated) {
-                    if (c.r >= max) hueAngle = (c.g - c.b) / delta; // between yellow & magenta
-                    else if (c.g >= max) hueAngle = 2.0 + (c.b - c.r) / delta; // between cyan & yellow
-                    else hueAngle = 4.0 + (c.r - c.g) / delta; // between magenta & cyan
+                    if (c.r >= max) {
+                        hueAngle = (c.g - c.b) / delta; // between yellow & magenta
+                    } else if (c.g >= max) {
+                        hueAngle = 2.0 + (c.b - c.r) / delta; // between cyan & yellow
+                    } else {
+                        hueAngle = 4.0 + (c.r - c.g) / delta; // between magenta & cyan
+                    }
 
                     hueAngle *= 60.0; // degrees
 
-                    if (hueAngle < 0.0) hueAngle += 360.0;
+                    if (hueAngle < 0.0) {
+                        hueAngle += 360.0;
+                    }
                 }
             }
 
@@ -405,7 +427,9 @@ public class ColorSettingScreen extends WindowScreen {
             int i;
 
             hh = hueAngle;
-            if(hh >= 360.0) hh = 0.0;
+            if (hh >= 360.0) {
+                hh = 0.0;
+            }
             hh /= 60.0;
             i = (int) hh;
             ff = hh - i;
@@ -417,7 +441,7 @@ public class ColorSettingScreen extends WindowScreen {
             double g = 0;
             double b = 0;
 
-            switch(i) {
+            switch (i) {
                 case 0:
                     r = 1;
                     g = t;
@@ -459,7 +483,9 @@ public class ColorSettingScreen extends WindowScreen {
 
         @Override
         protected boolean onMouseClicked(boolean used, int button) {
-            if (used) return false;
+            if (used) {
+                return false;
+            }
 
             if (mouseOver) {
                 dragging = true;
@@ -490,8 +516,11 @@ public class ColorSettingScreen extends WindowScreen {
                     handleX += x - lastMouseX;
                     handleX = Utils.clamp(handleX, 0, width);
                 } else {
-                    if (handleX > 0 && x < this.x) handleX = 0;
-                    else if (handleX < width && x > this.x + width) handleX = width;
+                    if (handleX > 0 && x < this.x) {
+                        handleX = 0;
+                    } else if (handleX < width && x > this.x + width) {
+                        handleX = width;
+                    }
                 }
 
                 calculateHueAngleFromHandleX();
@@ -517,8 +546,11 @@ public class ColorSettingScreen extends WindowScreen {
             }
 
             Color color = GuiConfig.INSTANCE.colorEditHandle;
-            if (dragging) color = GuiConfig.INSTANCE.colorEditHandlePressed;
-            else if (mouseX >= x + handleX - 1 && mouseX <= x + handleX + 1 && mouseY >= y && mouseY <= y + height) color = GuiConfig.INSTANCE.colorEditHandleHovered;
+            if (dragging) {
+                color = GuiConfig.INSTANCE.colorEditHandlePressed;
+            } else if (mouseX >= x + handleX - 1 && mouseX <= x + handleX + 1 && mouseY >= y && mouseY <= y + height) {
+                color = GuiConfig.INSTANCE.colorEditHandleHovered;
+            }
 
             renderer.quad(Region.FULL, x + handleX - 1, y, 2, height, color);
         }

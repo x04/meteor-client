@@ -9,7 +9,7 @@ public class BypassDeathScreen extends ToggleModule {
 
     public boolean shouldBypass = false;
 
-    public BypassDeathScreen(){
+    public BypassDeathScreen() {
         super(Category.Misc, "bypass-death-screen", "Let's you spy on people");
     }
 

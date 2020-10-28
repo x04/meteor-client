@@ -35,19 +35,31 @@ import java.io.*;
 public enum Meteor implements Listenable {
     INSTANCE;
 
-    Meteor() { }
-
-    private MinecraftClient minecraft;
-
     private final EventBus eventBus = new EventManager();
     private final Logger logger = LogManager.getLogger();
     private final File folder = new File(FabricLoader.getInstance().getGameDir().toString(), "meteor-client");
-
+    private MinecraftClient minecraft;
     private MFont font, font2x;
     private MyFont guiFont, guiTitleFont;
-
     @Setter private boolean inGame;
     @Setter private Screen screenToOpen;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        Capes.INSTANCE.tick();
+
+        if (screenToOpen != null && minecraft.currentScreen == null) {
+            minecraft.openScreen(screenToOpen);
+            screenToOpen = null;
+        }
+
+        if (KeyBinds.OPEN_CLICK_GUI.isPressed() && minecraft.currentScreen == null && GuiKeyEvents.postKeyEvents()) {
+            openClickGui();
+        }
+
+        minecraft.player.getActiveStatusEffects().values().removeIf(statusEffectInstance -> statusEffectInstance.getDuration() <= 0);
+    });
+
+    Meteor() {
+    }
 
     public void init() {
         logger.info("Initializing Meteor.");
@@ -69,7 +81,9 @@ public enum Meteor implements Listenable {
 
     private void initManagers() {
         ModuleManager.INSTANCE.init();
-        if (!ModuleManager.INSTANCE.load()) ModuleManager.INSTANCE.get(DiscordPresence.class).toggle(false);
+        if (!ModuleManager.INSTANCE.load()) {
+            ModuleManager.INSTANCE.get(DiscordPresence.class).toggle(false);
+        }
         FriendManager.INSTANCE.load();
         MacroManager.INSTANCE.load();
         AccountManager.INSTANCE.load();
@@ -88,22 +102,6 @@ public enum Meteor implements Listenable {
     private void openClickGui() {
         minecraft.openScreen(new TopBarModules());
     }
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        Capes.INSTANCE.tick();
-
-        if (screenToOpen != null && minecraft.currentScreen == null) {
-            minecraft.openScreen(screenToOpen);
-            screenToOpen = null;
-        }
-
-        if (KeyBinds.OPEN_CLICK_GUI.isPressed() && minecraft.currentScreen == null && GuiKeyEvents.postKeyEvents()) {
-            openClickGui();
-        }
-
-        minecraft.player.getActiveStatusEffects().values().removeIf(statusEffectInstance -> statusEffectInstance.getDuration() <= 0);
-    });
 
     private void loadFont() {
         File[] files = folder.exists() ? folder.listFiles() : new File[0];
@@ -127,7 +125,8 @@ public enum Meteor implements Listenable {
 
                 byte[] bytes = new byte[255];
                 int read;
-                while ((read = in.read(bytes)) > 0) out.write(bytes, 0, read);
+                while ((read = in.read(bytes)) > 0)
+                    out.write(bytes, 0, read);
 
                 in.close();
                 out.close();

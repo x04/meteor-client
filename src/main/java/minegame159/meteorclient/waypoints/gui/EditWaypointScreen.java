@@ -28,9 +28,15 @@ public class EditWaypointScreen extends WindowScreen {
             this.waypoint.z = (int) mc.player.getZ();
 
             switch (Utils.getDimension()) {
-                case Overworld: this.waypoint.overworld = true; break;
-                case Nether:    this.waypoint.nether = true; break;
-                case End:       this.waypoint.end = true; break;
+                case Overworld:
+                    this.waypoint.overworld = true;
+                    break;
+                case Nether:
+                    this.waypoint.nether = true;
+                    break;
+                case End:
+                    this.waypoint.end = true;
+                    break;
             }
         }
 
@@ -71,8 +77,11 @@ public class EditWaypointScreen extends WindowScreen {
         add(new WLabel("Y:"));
         WIntTextBox y = add(new WIntTextBox(waypoint.y, 100)).getWidget();
         y.action = () -> {
-            if (y.getValue() < 0) y.setValue(0);
-            else if (y.getValue() > 255) y.setValue(255);
+            if (y.getValue() < 0) {
+                y.setValue(0);
+            } else if (y.getValue() > 255) {
+                y.setValue(255);
+            }
 
             waypoint.y = y.getValue();
         };
@@ -125,8 +134,11 @@ public class EditWaypointScreen extends WindowScreen {
 
         // Save
         add(new WButton("Save")).fillX().expandX().getWidget().action = () -> {
-            if (newWaypoint) Waypoints.INSTANCE.add(waypoint);
-            else Waypoints.INSTANCE.save();
+            if (newWaypoint) {
+                Waypoints.INSTANCE.add(waypoint);
+            } else {
+                Waypoints.INSTANCE.save();
+            }
 
             onClose();
         };

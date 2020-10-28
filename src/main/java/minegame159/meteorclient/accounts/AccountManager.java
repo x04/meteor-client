@@ -60,7 +60,9 @@ public class AccountManager extends Savable<AccountManager> implements Iterable<
     public AccountManager fromTag(CompoundTag tag) {
         MeteorExecutor.INSTANCE.execute(() -> accounts = NbtUtils.listFromTag(tag.getList("accounts", 10), tag1 -> {
             CompoundTag t = (CompoundTag) tag1;
-            if (!t.contains("type")) return null;
+            if (!t.contains("type")) {
+                return null;
+            }
 
             AccountType type = AccountType.valueOf(t.getString("type"));
 
@@ -74,7 +76,9 @@ public class AccountManager extends Savable<AccountManager> implements Iterable<
                     account = new TheAlteningAccount(null).fromTag(t);
                 }
 
-                if (account.fetchHead()) return account;
+                if (account.fetchHead()) {
+                    return account;
+                }
             } catch (NbtException e) {
                 return null;
             }

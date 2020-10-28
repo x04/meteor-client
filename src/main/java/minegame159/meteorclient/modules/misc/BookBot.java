@@ -34,69 +34,23 @@ import java.util.stream.IntStream;
 
 public class BookBot extends ToggleModule {
     private static final int LINE_WIDTH = 113;
-
-    public enum Mode{ //Edna Mode
-        File,
-        Random,
-        Ascii
-    }
-    //Didn't add it to the module list cuz I didn't know if it was gonna work.
-    public BookBot(){
-        super(Category.Misc, "book-bot", "Writes books full of characters or from a file."); //Grammar who?
-    }
-
-    private final SettingGroup sgGeneral = settings.getDefaultGroup();//Obligatory comment.
-
-    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>() //WEEEEEEEEEEEEEEEEEEEE (Wanted to add a comment on everything but nothing to say so fuck you.)
-            .name("mode")
-            .description("The mode of the book bot.")
-            .defaultValue(Mode.Ascii)
-            .build()
-    );
-    //Idk how to add the name into the book so you're gonna have to do it or tell me.
-    private final Setting<String> name = sgGeneral.add(new StringSetting.Builder()
-            .name("name")
-            .description("The name you want to give the books")
-            .defaultValue("Meteor on Crack!") //METEOR ON CRACK!!!
-            .build()
-    );
-
-    private final Setting<String> fileName = sgGeneral.add(new StringSetting.Builder()
-            .name("file-name")
-            .description("The name of the text file (.txt included)") //Some retard will do it without and complain like a tard.
-            .defaultValue("book.txt")
-            .build()
-    );
-
-    private final Setting<Integer> noOfPages = sgGeneral.add(new IntSetting.Builder()
-            .name("no-of-pages")
-            .description("The number of pages to write per book.") //Fuck making it individual per book.
-            .defaultValue(100)
-            .min(1)
-            .max(100)
-            .sliderMax(100) //Max number of pages possible.
-            .build()
-    );
-
-    private final Setting<Integer> noOfBooks = sgGeneral.add(new IntSetting.Builder()
-            .name("no-of-books")
-            .description("The number of books to make(or until the file runs out)")
-            .defaultValue(1)
-            .build()
-    );
-
-    private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
-            .name("delay")
-            .description("The delay between writing books(in ms)")
-            .defaultValue(300)
-            .min(75)
-            .sliderMin(75)
-            .sliderMax(600)
-            .build()
-    );
-
     //Please don't ask my why they are global. I have no answer for you.
     private static final Random RANDOM = new Random();
+    private final SettingGroup sgGeneral = settings.getDefaultGroup();//Obligatory comment.
+    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>() //WEEEEEEEEEEEEEEEEEEEE (Wanted to add a comment on everything but nothing to say so fuck you.)
+            .name("mode").description("The mode of the book bot.").defaultValue(Mode.Ascii).build());
+    //Idk how to add the name into the book so you're gonna have to do it or tell me.
+    private final Setting<String> name = sgGeneral.add(new StringSetting.Builder().name("name").description("The name you want to give the books").defaultValue("Meteor on Crack!") //METEOR ON CRACK!!!
+            .build());
+    private final Setting<String> fileName = sgGeneral.add(new StringSetting.Builder().name("file-name").description("The name of the text file (.txt included)") //Some retard will do it without and complain like a tard.
+            .defaultValue("book.txt").build());
+    private final Setting<Integer> noOfPages = sgGeneral.add(new IntSetting.Builder().name("no-of-pages").description("The number of pages to write per book.") //Fuck making it individual per book.
+            .defaultValue(100).min(1).max(100).sliderMax(100) //Max number of pages possible.
+            .build());
+    private final Setting<Integer> noOfBooks = sgGeneral.add(new IntSetting.Builder().name("no-of-books").description("The number of books to make(or until the file runs out)").defaultValue(1).build());
+    private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder().name("delay").description("The delay between writing books(in ms)").defaultValue(300).min(75).sliderMin(75).sliderMax(600).build());
+    private final StringBuilder pageSb = new StringBuilder();
+    private final StringBuilder lineSb = new StringBuilder();
     private ListTag pages = new ListTag();
     private int booksLeft;
     private int ticksLeft = 0;
@@ -105,42 +59,26 @@ public class BookBot extends ToggleModule {
     private PrimitiveIterator.OfInt stream;
     private boolean firstChar;
     private int nextChar;
-    private final StringBuilder pageSb = new StringBuilder();
-    private final StringBuilder lineSb = new StringBuilder();
     private String fileString;
-
-    @Override
-    public void onActivate() { //WHY THE FUCK DOES OnActivate NOT CORRECT TO onActivate? Fucking retard.
-        //We need to enter the loop somehow. ;)
-        booksLeft = noOfBooks.get();
-        firstTime = true;
-    }
-
-    @Override
-    public void onDeactivate() {
-        //Reset everything for next time. Don't know if it's needed but we're gonna do it anyway.
-        booksLeft = 0;
-        pages = new ListTag();
-    }
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         //Make sure we aren't in the inventory.
-        if(mc.currentScreen instanceof HandledScreen<?>) return;
+        if (mc.currentScreen instanceof HandledScreen<?>) {
+            return;
+        }
         //If there are no books left to write we are done.
-        if(booksLeft <= 0){
+        if (booksLeft <= 0) {
             toggle();
             return;
         }
         //If the player isn't holding a book
-        if(mc.player.getMainHandStack().getItem() != Items.WRITABLE_BOOK){
+        if (mc.player.getMainHandStack().getItem() != Items.WRITABLE_BOOK) {
             //Find one
             InvUtils.FindItemResult itemResult = InvUtils.findItemWithCount(Items.WRITABLE_BOOK);
             //If it's in their hotbar then just switch to it (no need to switch back later)
             if (itemResult.slot <= 8 && itemResult.slot != -1) {
                 mc.player.inventory.selectedSlot = itemResult.slot;
                 ((IClientPlayerInteractionManager) mc.interactionManager).syncSelectedSlot2();
-            } else if (itemResult.slot > 8){ //Else if it's in their inventory then swap their current item with the writable book
+            } else if (itemResult.slot > 8) { //Else if it's in their inventory then swap their current item with the writable book
                 InvUtils.clickSlot(InvUtils.invIndexToSlotId(itemResult.slot), 0, SlotActionType.PICKUP);
                 InvUtils.clickSlot(InvUtils.invIndexToSlotId(mc.player.inventory.selectedSlot), 0, SlotActionType.PICKUP);
                 InvUtils.clickSlot(InvUtils.invIndexToSlotId(itemResult.slot), 0, SlotActionType.PICKUP);
@@ -149,25 +87,25 @@ public class BookBot extends ToggleModule {
                 return;
             }
         }
-        if(ticksLeft <= 0){
+        if (ticksLeft <= 0) {
             ticksLeft = delay.get();
-        }else{
+        } else {
             ticksLeft -= 50;
             return;
         }
-        if(mode.get() == Mode.Random){
+        if (mode.get() == Mode.Random) {
             //Generates a random stream of integers??
             IntStream charGenerator = RANDOM.ints(0x80, 0x10ffff - 0x800).map(i -> i < 0xd800 ? i : i + 0x800);
             stream = charGenerator.limit(23000).iterator();
             firstChar = true;
             writeBook();
-        }else if(mode.get() == Mode.Ascii){
+        } else if (mode.get() == Mode.Ascii) {
             //Generates a random stream of integers??
             IntStream charGenerator = RANDOM.ints(0x20, 0x7f);
             stream = charGenerator.limit(35000).iterator();
             firstChar = true;
             writeBook();
-        }else if(mode.get() == Mode.File){
+        } else if (mode.get() == Mode.File) {
             if (firstTime) {
                 //Fetch the file and initialise the IntList
                 File file = new File(Meteor.INSTANCE.getFolder(), fileName.get());
@@ -186,7 +124,8 @@ public class BookBot extends ToggleModule {
                     // Read all the text into a string
                     StringBuilder sb = new StringBuilder();
                     String line;
-                    while ((line = reader.readLine()) != null) sb.append(line).append('\n');
+                    while ((line = reader.readLine()) != null)
+                        sb.append(line).append('\n');
 
                     // Write it to the book
                     reader.close();
@@ -211,6 +150,25 @@ public class BookBot extends ToggleModule {
         }
     });
 
+    //Didn't add it to the module list cuz I didn't know if it was gonna work.
+    public BookBot() {
+        super(Category.Misc, "book-bot", "Writes books full of characters or from a file."); //Grammar who?
+    }
+
+    @Override
+    public void onActivate() { //WHY THE FUCK DOES OnActivate NOT CORRECT TO onActivate? Fucking retard.
+        //We need to enter the loop somehow. ;)
+        booksLeft = noOfBooks.get();
+        firstTime = true;
+    }
+
+    @Override
+    public void onDeactivate() {
+        //Reset everything for next time. Don't know if it's needed but we're gonna do it anyway.
+        booksLeft = 0;
+        pages = new ListTag();
+    }
+
     private void writeBook() {
         pages.clear();
 
@@ -231,7 +189,9 @@ public class BookBot extends ToggleModule {
                 while (true) {
                     float charWidth = ((ITextHandler) mc.textRenderer.getTextHandler()).getWidthRetriever().getWidth(nextChar, Style.EMPTY);
                     if (nextChar == '\n') {
-                        if (!readChar()) endOfStream2 = true;
+                        if (!readChar()) {
+                            endOfStream2 = true;
+                        }
                         break;
                     }
                     if (width + charWidth < LINE_WIDTH) {
@@ -242,7 +202,9 @@ public class BookBot extends ToggleModule {
                             endOfStream2 = true;
                             break;
                         }
-                    } else break;
+                    } else {
+                        break;
+                    }
                 }
 
                 pageSb.append(lineSb).append('\n');
@@ -253,7 +215,9 @@ public class BookBot extends ToggleModule {
             }
 
             pages.add(StringTag.of(pageSb.toString()));
-            if (endOfStream) break;
+            if (endOfStream) {
+                break;
+            }
         }
 
         mc.player.getMainHandStack().putSubTag("pages", pages);
@@ -271,5 +235,9 @@ public class BookBot extends ToggleModule {
 
         nextChar = stream.nextInt();
         return true;
+    }
+
+    public enum Mode { //Edna Mode
+        File, Random, Ascii
     }
 } //IT TOOK ME 30 FUCKING MINUTES TO COMMENT THIS. I WANT TO DIE. SEND HELP. CODING METEOR IS BECOMING AN ADDICTION. PLEASE. CAN SOMEONE HEAR ME? ANYONE?

@@ -21,9 +21,8 @@ public class MFont {
     private final MeshBuilder mb = new MeshBuilder(16384);
     private final AbstractTexture texture;
     private final CharData[] charData = new CharData[256];
-    private int fontHeight = -1;
-
     public double scale = 1;
+    private int fontHeight = -1;
 
     public MFont(Font font, boolean antiAlias, boolean fractionalMetrics) {
         texture = setupTexture(font, antiAlias, fractionalMetrics, this.charData);
@@ -32,9 +31,9 @@ public class MFont {
     private AbstractTexture setupTexture(Font font, boolean antiAlias, boolean fractionalMetrics, CharData[] chars) {
         BufferedImage img = generateFontImage(font, antiAlias, fractionalMetrics, chars);
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(img, "png", baos);
-            byte[] bytes = baos.toByteArray();
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            ImageIO.write(img, "png", outStream);
+            byte[] bytes = outStream.toByteArray();
 
             ByteBuffer data = BufferUtils.createByteBuffer(bytes.length).put(bytes);
             data.flip();
@@ -111,7 +110,9 @@ public class MFont {
 
     public double renderString(String string, double x, double y, minegame159.meteorclient.utils.Color color) {
         boolean wasBuilding = isBuilding();
-        if (!isBuilding()) begin();
+        if (!isBuilding()) {
+            begin();
+        }
 
         x -= 1;
         y -= 1;
@@ -128,18 +129,24 @@ public class MFont {
             }
         }
 
-        if (!wasBuilding) end();
+        if (!wasBuilding) {
+            end();
+        }
         return x / 2;
     }
 
     public double renderStringWithShadow(String string, double x, double y, minegame159.meteorclient.utils.Color color) {
         boolean wasBuilding = isBuilding();
-        if (!isBuilding()) begin();
+        if (!isBuilding()) {
+            begin();
+        }
 
         double shadowWidth = renderString(string, x + 1 * scale, y + 1 * scale, SHADOW_COLOR);
         double width = Math.max(shadowWidth, renderString(string, x, y, color));
 
-        if (!wasBuilding) end();
+        if (!wasBuilding) {
+            end();
+        }
         return width;
     }
 
@@ -151,7 +158,9 @@ public class MFont {
         int width = 0;
 
         for (char c : text.toCharArray()) {
-            if (c < this.charData.length) width += this.charData[c].srcWidth - 8;
+            if (c < this.charData.length) {
+                width += this.charData[c].srcWidth - 8;
+            }
         }
 
         return Math.round(width / 2.0) * scale;

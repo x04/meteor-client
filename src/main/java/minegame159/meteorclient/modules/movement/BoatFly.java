@@ -16,35 +16,15 @@ import net.minecraft.util.math.Vec3d;
 public class BoatFly extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Boolean> autoSteer = sgGeneral.add(new BoolSetting.Builder()
-            .name("auto-steer")
-            .description("Automatically steer in the direction you are facing.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> autoSteer = sgGeneral.add(new BoolSetting.Builder().name("auto-steer").description("Automatically steer in the direction you are facing.").defaultValue(true).build());
 
-    private final Setting<Double> upwardsSpeed = sgGeneral.add(new DoubleSetting.Builder()
-            .name("upwards-speed")
-            .description("How fast you fly upwards.")
-            .defaultValue(0.3)
-            .min(0)
-            .build()
-    );
+    private final Setting<Double> upwardsSpeed = sgGeneral.add(new DoubleSetting.Builder().name("upwards-speed").description("How fast you fly upwards.").defaultValue(0.3).min(0).build());
 
-    private final Setting<Boolean> slowFalling = sgGeneral.add(new BoolSetting.Builder()
-            .name("slow-falling")
-            .description("Makes you fall slower.")
-            .defaultValue(true)
-            .build()
-    );
-
-    public BoatFly() {
-        super(Category.Movement, "boat-fly", "Transforms your boat into a plane.");
-    }
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (!(mc.player.getVehicle() instanceof BoatEntity)) return;
+    private final Setting<Boolean> slowFalling = sgGeneral.add(new BoolSetting.Builder().name("slow-falling").description("Makes you fall slower.").defaultValue(true).build());
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (!(mc.player.getVehicle() instanceof BoatEntity)) {
+            return;
+        }
 
         if (autoSteer.get()) {
             mc.player.getVehicle().yaw = mc.player.yaw;
@@ -59,4 +39,8 @@ public class BoatFly extends ToggleModule {
             }
         }
     });
+
+    public BoatFly() {
+        super(Category.Movement, "boat-fly", "Transforms your boat into a plane.");
+    }
 }

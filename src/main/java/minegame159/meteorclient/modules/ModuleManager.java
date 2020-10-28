@@ -30,16 +30,59 @@ import java.io.File;
 import java.util.*;
 
 public class ModuleManager extends Savable<ModuleManager> implements Listenable {
-    public static final Category[] CATEGORIES = { Category.Combat, Category.Player, Category.Movement, Category.Render, Category.Misc };
+    public static final Category[] CATEGORIES = {Category.Combat, Category.Player, Category.Movement, Category.Render, Category.Misc};
     public static ModuleManager INSTANCE = new ModuleManager();
 
     private final Map<Class<? extends Module>, Module> modules = new HashMap<>();
     private final Map<Category, List<Module>> groups = new HashMap<>();
 
     private final List<ToggleModule> active = new ArrayList<>();
-    private Module moduleToBind;
-
+    @EventHandler private final Listener<GameJoinedEvent> onGameJoined = new Listener<>(event -> {
+        synchronized (active) {
+            for (ToggleModule module : active) {
+                Meteor.INSTANCE.getEventBus().subscribe(module);
+                module.onActivate();
+            }
+        }
+    });
+    @EventHandler private final Listener<GameDisconnectedEvent> onGameDisconnected = new Listener<>(event -> {
+        synchronized (active) {
+            for (ToggleModule module : active) {
+                Meteor.INSTANCE.getEventBus().unsubscribe(module);
+                module.onDeactivate();
+            }
+        }
+    });
     public boolean onKeyOnlyBinding = false;
+    private Module moduleToBind;
+    @EventHandler public Listener<KeyEvent> onKey = new Listener<>(event -> {
+        if (event.action == KeyAction.Repeat) {
+            return;
+        }
+
+        // Check if binding module
+        if (event.action == KeyAction.Press && moduleToBind != null) {
+            moduleToBind.setKey(event.key);
+            Chat.info("Module (highlight)%s (default)bound to (highlight)%s(default).", moduleToBind.title, Utils.getKeyName(event.key));
+            moduleToBind = null;
+            event.cancel();
+            return;
+        }
+
+        // Find module bound to that key
+        if (!onKeyOnlyBinding && Meteor.INSTANCE.getMinecraft().currentScreen == null) {
+            for (Module module : modules.values()) {
+                if (module.getKey() == event.key && (event.action == KeyAction.Press || module.toggleOnKeyRelease)) {
+                    module.doAction();
+                    if (module instanceof ToggleModule) {
+                        ((ToggleModule) module).sendToggledMsg();
+                    }
+
+                    save();
+                }
+            }
+        }
+    }, EventPriority.HIGHEST + 1);
 
     public ModuleManager() {
         super(new File(Meteor.INSTANCE.getFolder(), "modules.nbt"));
@@ -65,7 +108,9 @@ public class ModuleManager extends Savable<ModuleManager> implements Listenable 
 
     public Module get(String name) {
         for (Module module : modules.values()) {
-            if (module.name.equalsIgnoreCase(name)) return module;
+            if (module.name.equalsIgnoreCase(name)) {
+                return module;
+            }
         }
 
         return null;
@@ -98,7 +143,9 @@ public class ModuleManager extends Savable<ModuleManager> implements Listenable 
 
         for (Module module : this.modules.values()) {
             int words = Utils.search(module.title, text);
-            if (words > 0) modules.add(new Pair<>(module, words));
+            if (words > 0) {
+                modules.add(new Pair<>(module, words));
+            }
         }
 
         modules.sort(Comparator.comparingInt(value -> -value.getRight()));
@@ -141,52 +188,6 @@ public class ModuleManager extends Savable<ModuleManager> implements Listenable 
         }
     }
 
-    @EventHandler
-    public Listener<KeyEvent> onKey = new Listener<>(event -> {
-        if (event.action == KeyAction.Repeat) return;
-
-        // Check if binding module
-        if (event.action == KeyAction.Press && moduleToBind != null) {
-            moduleToBind.setKey(event.key);
-            Chat.info("Module (highlight)%s (default)bound to (highlight)%s(default).", moduleToBind.title, Utils.getKeyName(event.key));
-            moduleToBind = null;
-            event.cancel();
-            return;
-        }
-
-        // Find module bound to that key
-        if (!onKeyOnlyBinding && Meteor.INSTANCE.getMinecraft().currentScreen == null) {
-            for (Module module : modules.values()) {
-                if (module.getKey() == event.key && (event.action == KeyAction.Press || module.toggleOnKeyRelease)) {
-                    module.doAction();
-                    if (module instanceof ToggleModule) ((ToggleModule) module).sendToggledMsg();
-
-                    save();
-                }
-            }
-        }
-    }, EventPriority.HIGHEST + 1);
-
-    @EventHandler
-    private final Listener<GameJoinedEvent> onGameJoined = new Listener<>(event -> {
-        synchronized (active) {
-            for (ToggleModule module : active) {
-                Meteor.INSTANCE.getEventBus().subscribe(module);
-                module.onActivate();
-            }
-        }
-    });
-
-    @EventHandler
-    private final Listener<GameDisconnectedEvent> onGameDisconnected = new Listener<>(event -> {
-        synchronized (active) {
-            for (ToggleModule module : active) {
-                Meteor.INSTANCE.getEventBus().unsubscribe(module);
-                module.onDeactivate();
-            }
-        }
-    });
-
     @Override
     public CompoundTag toTag() {
         CompoundTag tag = new CompoundTag();
@@ -194,7 +195,9 @@ public class ModuleManager extends Savable<ModuleManager> implements Listenable 
         ListTag modulesTag = new ListTag();
         for (Module module : getAll()) {
             CompoundTag moduleTag = module.toTag();
-            if (moduleTag != null) modulesTag.add(moduleTag);
+            if (moduleTag != null) {
+                modulesTag.add(moduleTag);
+            }
         }
         tag.put("modules", modulesTag);
 
@@ -207,7 +210,9 @@ public class ModuleManager extends Savable<ModuleManager> implements Listenable 
         for (Tag moduleTagI : modulesTag) {
             CompoundTag moduleTag = (CompoundTag) moduleTagI;
             Module module = get(moduleTag.getString("name"));
-            if (module != null) module.fromTag(moduleTag);
+            if (module != null) {
+                module.fromTag(moduleTag);
+            }
         }
 
         return this;

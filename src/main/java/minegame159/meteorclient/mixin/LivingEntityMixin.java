@@ -27,12 +27,16 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "damage", at = @At("HEAD"))
     private void onDamageHead(DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
-        if (Utils.canUpdate()) Meteor.INSTANCE.getEventBus().post(EventStore.damageEvent((LivingEntity) (Object) this, source));
+        if (Utils.canUpdate()) {
+            Meteor.INSTANCE.getEventBus().post(EventStore.damageEvent((LivingEntity) (Object) this, source));
+        }
     }
 
     @Inject(method = "damage", at = @At("TAIL"))
     private void onDamageTail(DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
-        if (Utils.canUpdate()) Meteor.INSTANCE.getEventBus().post(EventStore.tookDamageEvent((LivingEntity) (Object) this, source));
+        if (Utils.canUpdate()) {
+            Meteor.INSTANCE.getEventBus().post(EventStore.tookDamageEvent((LivingEntity) (Object) this, source));
+        }
     }
 
     @Inject(method = "getJumpVelocity", at = @At("HEAD"), cancellable = true)
@@ -44,7 +48,9 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;hasStatusEffect(Lnet/minecraft/entity/effect/StatusEffect;)Z"))
     private boolean travelHasStatusEffectProxy(LivingEntity self, StatusEffect statusEffect) {
-        if (statusEffect == StatusEffects.LEVITATION && ModuleManager.INSTANCE.isActive(AntiLevitation.class)) return false;
+        if (statusEffect == StatusEffects.LEVITATION && ModuleManager.INSTANCE.isActive(AntiLevitation.class)) {
+            return false;
+        }
         return self.hasStatusEffect(statusEffect);
     }
 

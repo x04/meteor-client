@@ -45,7 +45,9 @@ public class WTopBar extends WTable {
                 double mouseX = mc.mouse.getX();
                 double mouseY = mc.mouse.getY();
 
-                if (screen != null) screen.onClose();
+                if (screen != null) {
+                    screen.onClose();
+                }
                 mc.openScreen(type.createScreen());
 
                 GLFW.glfwSetCursorPos(mc.getWindow().getHandle(), mouseX, mouseY);
@@ -55,11 +57,16 @@ public class WTopBar extends WTable {
         @Override
         protected void onRender(GuiRenderer renderer, double mouseX, double mouseY, double delta) {
             Color color = GuiConfig.INSTANCE.background;
-            if (pressed) color = GuiConfig.INSTANCE.backgroundPressed;
-            else if (mouseOver) color = GuiConfig.INSTANCE.backgroundHovered;
+            if (pressed) {
+                color = GuiConfig.INSTANCE.backgroundPressed;
+            } else if (mouseOver) {
+                color = GuiConfig.INSTANCE.backgroundHovered;
+            }
 
             Screen screen = Meteor.INSTANCE.getMinecraft().currentScreen;
-            if (screen instanceof TopBarScreen && ((TopBarScreen) screen).type == type) color = GuiConfig.INSTANCE.backgroundPressed;
+            if (screen instanceof TopBarScreen && ((TopBarScreen) screen).type == type) {
+                color = GuiConfig.INSTANCE.backgroundPressed;
+            }
 
             renderer.quad(Region.FULL, x, y, width, height, color);
             renderer.text(name, x + 4, y + 4, false, GuiConfig.INSTANCE.text);

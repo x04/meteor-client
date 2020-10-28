@@ -12,30 +12,19 @@ import minegame159.meteorclient.settings.Setting;
 import minegame159.meteorclient.settings.SettingGroup;
 
 public class Step extends ToggleModule {
-    public enum ActiveWhen {
-        Always,
-        Sneaking,
-        NotSneaking
-    }
-
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    
-    private final Setting<Double> height = sgGeneral.add(new DoubleSetting.Builder()
-            .name("height")
-            .description("Step height.")
-            .defaultValue(1)
-            .min(0)
-            .build()
-    );
-
-    private final Setting<ActiveWhen> activeWhen = sgGeneral.add(new EnumSetting.Builder<ActiveWhen>()
-            .name("active-when")
-            .description("Step active when.")
-            .defaultValue(ActiveWhen.Always)
-            .build()
-    );
-
+    private final Setting<Double> height = sgGeneral.add(new DoubleSetting.Builder().name("height").description("Step height.").defaultValue(1).min(0).build());
+    private final Setting<ActiveWhen> activeWhen = sgGeneral.add(new EnumSetting.Builder<ActiveWhen>().name("active-when").description("Step active when.").defaultValue(ActiveWhen.Always).build());
     private float prevStepHeight;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        boolean work = (activeWhen.get() == ActiveWhen.Always) || (activeWhen.get() == ActiveWhen.Sneaking && mc.player.isSneaking()) || (activeWhen.get() == ActiveWhen.NotSneaking && !mc.player.isSneaking());
+
+        if (work) {
+            mc.player.stepHeight = height.get().floatValue();
+        } else {
+            mc.player.stepHeight = prevStepHeight;
+        }
+    });
     private boolean prevBaritoneAssumeStep;
 
     public Step() {
@@ -50,18 +39,14 @@ public class Step extends ToggleModule {
         BaritoneAPI.getSettings().assumeStep.value = true;
     }
 
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        boolean work = (activeWhen.get() == ActiveWhen.Always) || (activeWhen.get() == ActiveWhen.Sneaking && mc.player.isSneaking()) || (activeWhen.get() == ActiveWhen.NotSneaking && !mc.player.isSneaking());
-
-        if (work) mc.player.stepHeight = height.get().floatValue();
-        else mc.player.stepHeight = prevStepHeight;
-    });
-
     @Override
     public void onDeactivate() {
         mc.player.stepHeight = prevStepHeight;
 
         BaritoneAPI.getSettings().assumeStep.value = prevBaritoneAssumeStep;
+    }
+
+    public enum ActiveWhen {
+        Always, Sneaking, NotSneaking
     }
 }

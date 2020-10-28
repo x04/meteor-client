@@ -22,88 +22,20 @@ import java.util.Comparator;
 import java.util.List;
 
 public class Nuker extends ToggleModule {
-    public enum Mode {
-        All,
-        Flatten,
-        Smash
-    }
-
-    public enum SortMode {
-        None,
-        Closest,
-        Furthest
-    }
-
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
-    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>()
-            .name("mode")
-            .description("Which blocks to break.")
-            .defaultValue(Mode.All)
-            .build()
-    );
-
-    private final Setting<Boolean> packetMine = sgGeneral.add(new BoolSetting.Builder()
-            .name("packet-mine")
-            .description("Mines blocks using packet spamming.")
-            .defaultValue(false)
-            .build()
-    );
-
-    private final Setting<List<Block>> selectedBlocks = sgGeneral.add(new BlockListSetting.Builder()
-            .name("selected-blocks")
-            .description("Which blocks to mine when only selected is true.")
-            .defaultValue(new ArrayList<>(0))
-            .build()
-    );
-
-    private final Setting<Boolean> onlySelected = sgGeneral.add(new BoolSetting.Builder()
-            .name("only-selected")
-            .description("Only mines selected blocks.")
-            .defaultValue(false)
-            .build()
-    );
-
-    private final Setting<Double> range = sgGeneral.add(new DoubleSetting.Builder()
-            .name("range")
-            .description("Break range.")
-            .defaultValue(5)
-            .min(0)
-            .build()
-    );
-
-    private final Setting<SortMode> sortMode = sgGeneral.add(new EnumSetting.Builder<SortMode>()
-            .name("sort-mode")
-            .description("Which blocks to mine first.")
-            .defaultValue(SortMode.Closest)
-            .build()
-    );
-
-    private final Setting<Boolean> noParticles = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-particles")
-            .description("Disables block break particles.")
-            .defaultValue(false)
-            .build()
-    );
-
+    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("mode").description("Which blocks to break.").defaultValue(Mode.All).build());
+    private final Setting<Boolean> packetMine = sgGeneral.add(new BoolSetting.Builder().name("packet-mine").description("Mines blocks using packet spamming.").defaultValue(false).build());
+    private final Setting<List<Block>> selectedBlocks = sgGeneral.add(new BlockListSetting.Builder().name("selected-blocks").description("Which blocks to mine when only selected is true.").defaultValue(new ArrayList<>(0)).build());
+    private final Setting<Boolean> onlySelected = sgGeneral.add(new BoolSetting.Builder().name("only-selected").description("Only mines selected blocks.").defaultValue(false).build());
+    private final Setting<Double> range = sgGeneral.add(new DoubleSetting.Builder().name("range").description("Break range.").defaultValue(5).min(0).build());
+    private final Setting<SortMode> sortMode = sgGeneral.add(new EnumSetting.Builder<SortMode>().name("sort-mode").description("Which blocks to mine first.").defaultValue(SortMode.Closest).build());
+    private final Setting<Boolean> noParticles = sgGeneral.add(new BoolSetting.Builder().name("no-particles").description("Disables block break particles.").defaultValue(false).build());
     private final Pool<BlockPos.Mutable> blockPool = new Pool<>(BlockPos.Mutable::new);
     private final List<BlockPos.Mutable> blocks = new ArrayList<>();
     private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
     private final BlockPos.Mutable lastBlockPos = new BlockPos.Mutable();
     private boolean hasLastBlockPos;
-
-    public Nuker() {
-        super(Category.Misc, "nuker", "Breaks blocks around you.");
-    }
-
-    @Override
-    public void onDeactivate() {
-        mc.interactionManager.cancelBlockBreaking();
-        hasLastBlockPos = false;
-    }
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         if (hasLastBlockPos && mc.world.getBlockState(lastBlockPos).getBlock() != Blocks.AIR) {
             mc.interactionManager.updateBlockBreakingProgress(lastBlockPos, Direction.UP);
             return;
@@ -132,10 +64,14 @@ public class Nuker extends ToggleModule {
 
             for (int x = minX; x <= maxX; x++) {
                 for (int z = minZ; z <= maxZ; z++) {
-                    if (Utils.squaredDistance(pX, pY, pZ, x, y, z) > rangeSq) continue;
+                    if (Utils.squaredDistance(pX, pY, pZ, x, y, z) > rangeSq) {
+                        continue;
+                    }
                     blockPos.set(x, y, z);
                     BlockState state = mc.world.getBlockState(blockPos);
-                    if (state.getOutlineShape(mc.world, blockPos) == VoxelShapes.empty()) continue;
+                    if (state.getOutlineShape(mc.world, blockPos) == VoxelShapes.empty()) {
+                        continue;
+                    }
 
                     // Flatten
                     if (mode.get() == Mode.Flatten && y < mc.player.getY()) {
@@ -144,17 +80,23 @@ public class Nuker extends ToggleModule {
                     }
 
                     // Smash
-                    if (mode.get() == Mode.Smash && state.getHardness(mc.world, blockPos) != 0) continue;
+                    if (mode.get() == Mode.Smash && state.getHardness(mc.world, blockPos) != 0) {
+                        continue;
+                    }
 
                     // Only selected
-                    if (onlySelected.get() && !selectedBlocks.get().contains(state.getBlock())) continue;
+                    if (onlySelected.get() && !selectedBlocks.get().contains(state.getBlock())) {
+                        continue;
+                    }
 
                     BlockPos.Mutable pos = blockPool.get();
                     pos.set(x, y, z);
                     blocks.add(pos);
                 }
 
-                if (skipThisYLevel) break;
+                if (skipThisYLevel) {
+                    break;
+                }
             }
         }
 
@@ -190,14 +132,35 @@ public class Nuker extends ToggleModule {
             }
         }
 
-        if (!breaking) mc.interactionManager.cancelBlockBreaking();
+        if (!breaking) {
+            mc.interactionManager.cancelBlockBreaking();
+        }
 
         // Empty blocks list
-        for (BlockPos.Mutable pos : blocks) blockPool.free(pos);
+        for (BlockPos.Mutable pos : blocks)
+            blockPool.free(pos);
         blocks.clear();
     });
 
+    public Nuker() {
+        super(Category.Misc, "nuker", "Breaks blocks around you.");
+    }
+
+    @Override
+    public void onDeactivate() {
+        mc.interactionManager.cancelBlockBreaking();
+        hasLastBlockPos = false;
+    }
+
     public boolean noParticles() {
         return isActive() && noParticles.get();
+    }
+
+    public enum Mode {
+        All, Flatten, Smash
+    }
+
+    public enum SortMode {
+        None, Closest, Furthest
     }
 }

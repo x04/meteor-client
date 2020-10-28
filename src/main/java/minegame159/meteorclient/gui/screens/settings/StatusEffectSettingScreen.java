@@ -49,7 +49,9 @@ public class StatusEffectSettingScreen extends WindowScreen {
 
         for (StatusEffect statusEffect : statusEffects) {
             String name = statusEffect.getName().getString();
-            if (!StringUtils.containsIgnoreCase(name, filterText)) continue;
+            if (!StringUtils.containsIgnoreCase(name, filterText)) {
+                continue;
+            }
 
             table.add(new WLabel(name));
             WIntTextBox level = table.add(new WIntTextBox(setting.get().getInt(statusEffect), 50)).fillX().right().getWidget();

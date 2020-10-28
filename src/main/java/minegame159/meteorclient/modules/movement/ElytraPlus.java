@@ -24,149 +24,86 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.math.Vec3d;
 
 public class ElytraPlus extends ToggleModule {
-    public enum Mode {
-        Normal,
-        Packet
-    }
-
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
     private final SettingGroup sgAutopilot = settings.createGroup("Autopilot");
-
     // General
-    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>()
-            .name("mode")
-            .description("The mode used to make you fly.")
-            .defaultValue(Mode.Normal)
-            .build()
-    );
-    
-    private final Setting<Boolean> autoTakeOff = sgGeneral.add(new BoolSetting.Builder()
-            .name("auto-take-off")
-            .description("Automatically takes off when you hold jump without needing to double jump.")
-            .defaultValue(false)
-            .build()
-    );
-
-    private final Setting<Boolean> replace = sgGeneral.add(new BoolSetting.Builder()
-            .name("elytra-replace")
-            .description("Replaces your broken elytra with new ones")
-            .defaultValue(false)
-            .build()
-    );
-
-    private final Setting<Integer> replaceDurability = sgGeneral.add(new IntSetting.Builder()
-            .name("replace-durability")
-            .description("The durability to replace your elytra at")
-            .defaultValue(2)
-            .min(1)
-            .max(Items.ELYTRA.getMaxDamage() - 1)
-            .sliderMax(20)
-            .build()
-    );
-
-    private final Setting<Double> fallMultiplier = sgGeneral.add(new DoubleSetting.Builder()
-            .name("fall-multiplier")
-            .description("Controls how fast will you go down naturally.")
-            .defaultValue(0.01)
-            .min(0)
-            .build()
-    );
-
-    private final Setting<Double> horizontalSpeed = sgGeneral.add(new DoubleSetting.Builder()
-            .name("horizontal-speed")
-            .description("How fast will you go forward and backward.")
-            .defaultValue(1)
-            .min(0)
-            .build()
-    );
-
-    private final Setting<Double> verticalSpeed = sgGeneral.add(new DoubleSetting.Builder()
-            .name("vertical-speed")
-            .description("How fast will u go up and down.")
-            .defaultValue(1)
-            .min(0)
-            .build()
-    );
-
-    private final Setting<Boolean> stopInWater = sgGeneral.add(new BoolSetting.Builder()
-            .name("stop-in-water")
-            .description("Stops flying in water.")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Boolean> dontGoIntoUnloadedChunks = sgGeneral.add(new BoolSetting.Builder()
-            .name("don't-go-into-unloaded-chunks")
-            .description("Don't go into unloaded chunks.")
-            .defaultValue(true)
-            .build()
-    );
-
-    private final Setting<Boolean> chestSwap = sgGeneral.add(new BoolSetting.Builder()
-            .name("chest-swap")
-            .description("Enables ChestSwap when toggling this module.")
-            .defaultValue(true)
-            .build()
-    );
-
+    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("mode").description("The mode used to make you fly.").defaultValue(Mode.Normal).build());
+    private final Setting<Boolean> autoTakeOff = sgGeneral.add(new BoolSetting.Builder().name("auto-take-off").description("Automatically takes off when you hold jump without needing to double jump.").defaultValue(false).build());
+    private final Setting<Boolean> replace = sgGeneral.add(new BoolSetting.Builder().name("elytra-replace").description("Replaces your broken elytra with new ones").defaultValue(false).build());
+    private final Setting<Integer> replaceDurability = sgGeneral.add(new IntSetting.Builder().name("replace-durability").description("The durability to replace your elytra at").defaultValue(2).min(1).max(Items.ELYTRA.getMaxDamage() - 1).sliderMax(20).build());
+    private final Setting<Double> fallMultiplier = sgGeneral.add(new DoubleSetting.Builder().name("fall-multiplier").description("Controls how fast will you go down naturally.").defaultValue(0.01).min(0).build());
+    private final Setting<Double> horizontalSpeed = sgGeneral.add(new DoubleSetting.Builder().name("horizontal-speed").description("How fast will you go forward and backward.").defaultValue(1).min(0).build());
+    private final Setting<Double> verticalSpeed = sgGeneral.add(new DoubleSetting.Builder().name("vertical-speed").description("How fast will u go up and down.").defaultValue(1).min(0).build());
+    private final Setting<Boolean> stopInWater = sgGeneral.add(new BoolSetting.Builder().name("stop-in-water").description("Stops flying in water.").defaultValue(true).build());
+    private final Setting<Boolean> dontGoIntoUnloadedChunks = sgGeneral.add(new BoolSetting.Builder().name("don't-go-into-unloaded-chunks").description("Don't go into unloaded chunks.").defaultValue(true).build());
+    private final Setting<Boolean> chestSwap = sgGeneral.add(new BoolSetting.Builder().name("chest-swap").description("Enables ChestSwap when toggling this module.").defaultValue(true).build());
     // Autopilot
-    private final Setting<Boolean> autopilotEnabled = sgAutopilot.add(new BoolSetting.Builder()
-            .name("autopilot-enabled")
-            .description("Automatically flies forward maintaining minimum height.")
-            .defaultValue(false)
-            .onChanged(aBoolean -> {
-                if (isActive() && !aBoolean) ((IKeyBinding) mc.options.keyForward).setPressed(false);
-            })
-            .build()
-    );
-
-    private final Setting<Double> autopilotMinimumHeight = sgAutopilot.add(new DoubleSetting.Builder()
-            .name("minimum-height")
-            .description("Autopilot minimum height.")
-            .defaultValue(160)
-            .min(0)
-            .sliderMax(260)
-            .build()
-    );
-
+    private final Setting<Boolean> autopilotEnabled = sgAutopilot.add(new BoolSetting.Builder().name("autopilot-enabled").description("Automatically flies forward maintaining minimum height.").defaultValue(false).onChanged(aBoolean -> {
+        if (isActive() && !aBoolean) {
+            ((IKeyBinding) mc.options.keyForward).setPressed(false);
+        }
+    }).build());
+    private final Setting<Double> autopilotMinimumHeight = sgAutopilot.add(new DoubleSetting.Builder().name("minimum-height").description("Autopilot minimum height.").defaultValue(160).min(0).sliderMax(260).build());
     private boolean lastJumpPressed;
     private boolean incrementJumpTimer;
     private int jumpTimer;
-
     private double velX, velY, velZ;
     private Vec3d forward, right;
-
     private boolean decrementFireworkTimer;
     private int fireworkTimer;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (decrementFireworkTimer) {
+            if (fireworkTimer <= 0) {
+                decrementFireworkTimer = false;
+            }
 
+            fireworkTimer--;
+        }
+        if (replace.get()) {
+            if (mc.player.inventory.getArmorStack(2).getItem() == Items.ELYTRA) {
+                if (mc.player.inventory.getArmorStack(2).getMaxDamage() - mc.player.inventory.getArmorStack(2).getDamage() <= replaceDurability.get()) {
+                    int slot = -1;
+                    for (int i = 9; i < 45; i++) {
+                        ItemStack stack = mc.player.inventory.getStack(i);
+                        if (stack.getItem() == Items.ELYTRA && stack.getMaxDamage() - stack.getDamage() > replaceDurability.get()) {
+                            slot = i;
+                        }
+                    }
+                    if (slot != -1) {
+                        InvUtils.clickSlot(slot, 0, SlotActionType.PICKUP);
+                        InvUtils.clickSlot(6, 0, SlotActionType.PICKUP);
+                        InvUtils.clickSlot(slot, 0, SlotActionType.PICKUP);
+                    }
+                }
+            }
+        }
+        if (mode.get() == Mode.Packet && mc.player.inventory.getArmorStack(2).getItem() == Items.ELYTRA && mc.player.fallDistance > 0.2 && !mc.options.keySneak.isPressed()) {
+            Vec3d vec3d = new Vec3d(0, 0, 0);
+
+            if (mc.options.keyForward.isPressed()) {
+                vec3d.add(0, 0, horizontalSpeed.get());
+                vec3d.rotateY(-(float) Math.toRadians(mc.player.yaw));
+            } else if (mc.options.keyBack.isPressed()) {
+                vec3d.add(0, 0, horizontalSpeed.get());
+                vec3d.rotateY((float) Math.toRadians(mc.player.yaw));
+            }
+
+            if (mc.options.keyJump.isPressed()) {
+                vec3d.add(0, verticalSpeed.get(), 0);
+            } else if (!mc.options.keyJump.isPressed()) {
+                vec3d.add(0, -verticalSpeed.get(), 0);
+            }
+
+            mc.player.setVelocity(vec3d);
+            mc.player.networkHandler.sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
+            mc.player.networkHandler.sendPacket(new PlayerMoveC2SPacket(true));
+        }
+    });
     private boolean lastForwardPressed;
-
-    public ElytraPlus() {
-        super(Category.Movement, "Elytra+", "Makes elytra better.");
-    }
-
-    @Override
-    public void onActivate() {
-        lastJumpPressed = false;
-        jumpTimer = 0;
-
-        if (chestSwap.get() && mc.player.getEquippedStack(EquipmentSlot.CHEST).getItem() != Items.ELYTRA) {
-            ModuleManager.INSTANCE.get(ChestSwap.class).swap();
+    @EventHandler private final Listener<PlayerMoveEvent> onPlayerMove = new Listener<>(event -> {
+        if (!(mc.player.getEquippedStack(EquipmentSlot.CHEST).getItem() instanceof ElytraItem)) {
+            return;
         }
-    }
-
-    @Override
-    public void onDeactivate() {
-        if (autopilotEnabled.get()) ((IKeyBinding) mc.options.keyForward).setPressed(false);
-
-        if (chestSwap.get() && mc.player.getEquippedStack(EquipmentSlot.CHEST).getItem() == Items.ELYTRA) {
-            ModuleManager.INSTANCE.get(ChestSwap.class).swap();
-        }
-    }
-
-    @EventHandler
-    private final Listener<PlayerMoveEvent> onPlayerMove = new Listener<>(event -> {
-        if (!(mc.player.getEquippedStack(EquipmentSlot.CHEST).getItem() instanceof ElytraItem)) return;
 
         handleAutoTakeOff();
 
@@ -197,7 +134,9 @@ public class ElytraPlus extends ToggleModule {
                 } else {
                     ((IVec3d) event.movement).set(0, velY, 0);
                 }
-            } else ((IVec3d) event.movement).set(velX, velY, velZ);
+            } else {
+                ((IVec3d) event.movement).set(velX, velY, velZ);
+            }
         } else {
             if (lastForwardPressed) {
                 ((IKeyBinding) mc.options.keyForward).setPressed(false);
@@ -206,53 +145,30 @@ public class ElytraPlus extends ToggleModule {
         }
     });
 
-    @EventHandler
-    private Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (decrementFireworkTimer) {
-            if (fireworkTimer <= 0) decrementFireworkTimer = false;
+    public ElytraPlus() {
+        super(Category.Movement, "Elytra+", "Makes elytra better.");
+    }
 
-            fireworkTimer--;
+    @Override
+    public void onActivate() {
+        lastJumpPressed = false;
+        jumpTimer = 0;
+
+        if (chestSwap.get() && mc.player.getEquippedStack(EquipmentSlot.CHEST).getItem() != Items.ELYTRA) {
+            ModuleManager.INSTANCE.get(ChestSwap.class).swap();
         }
-        if(replace.get()){
-            if(mc.player.inventory.getArmorStack(2).getItem() == Items.ELYTRA){
-                if(mc.player.inventory.getArmorStack(2).getMaxDamage() - mc.player.inventory.getArmorStack(2).getDamage() <= replaceDurability.get()){
-                    int slot = -1;
-                    for (int i = 9; i < 45; i++) {
-                        ItemStack stack = mc.player.inventory.getStack(i);
-                        if (stack.getItem() == Items.ELYTRA && stack.getMaxDamage() - stack.getDamage() > replaceDurability.get()) {
-                            slot = i;
-                        }
-                    }
-                    if(slot != -1){
-                        InvUtils.clickSlot(slot, 0, SlotActionType.PICKUP);
-                        InvUtils.clickSlot(6, 0, SlotActionType.PICKUP);
-                        InvUtils.clickSlot(slot, 0, SlotActionType.PICKUP);
-                    }
-                }
-            }
+    }
+
+    @Override
+    public void onDeactivate() {
+        if (autopilotEnabled.get()) {
+            ((IKeyBinding) mc.options.keyForward).setPressed(false);
         }
-        if (mode.get() == Mode.Packet && mc.player.inventory.getArmorStack(2).getItem() == Items.ELYTRA && mc.player.fallDistance > 0.2 && !mc.options.keySneak.isPressed()) {
-            Vec3d vec3d = new Vec3d(0, 0, 0);
 
-            if (mc.options.keyForward.isPressed()) {
-                vec3d.add(0, 0, horizontalSpeed.get());
-                vec3d.rotateY(-(float)Math.toRadians(mc.player.yaw));
-            } else if (mc.options.keyBack.isPressed()) {
-                vec3d.add( 0, 0, horizontalSpeed.get());
-                vec3d.rotateY((float)Math.toRadians(mc.player.yaw));
-            }
-
-            if (mc.options.keyJump.isPressed()) {
-                vec3d.add(0, verticalSpeed.get(), 0);
-            } else if (!mc.options.keyJump.isPressed()) {
-                vec3d.add(0, -verticalSpeed.get(), 0);
-            }
-
-            mc.player.setVelocity(vec3d);
-            mc.player.networkHandler.sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
-            mc.player.networkHandler.sendPacket(new PlayerMoveC2SPacket(true));
+        if (chestSwap.get() && mc.player.getEquippedStack(EquipmentSlot.CHEST).getItem() == Items.ELYTRA) {
+            ModuleManager.INSTANCE.get(ChestSwap.class).swap();
         }
-    });
+    }
 
     private void handleAutopilot() {
         if (autopilotEnabled.get()) {
@@ -320,12 +236,17 @@ public class ElytraPlus extends ToggleModule {
     }
 
     private void handleFallMultiplier() {
-        if (velY < 0) velY *= fallMultiplier.get();
-        else if (velY > 0) velY = 0;
+        if (velY < 0) {
+            velY *= fallMultiplier.get();
+        } else if (velY > 0) {
+            velY = 0;
+        }
     }
 
     private void handleAutoTakeOff() {
-        if (incrementJumpTimer) jumpTimer++;
+        if (incrementJumpTimer) {
+            jumpTimer++;
+        }
 
         boolean jumpPressed = mc.options.keyJump.isPressed();
 
@@ -346,5 +267,9 @@ public class ElytraPlus extends ToggleModule {
         }
 
         lastJumpPressed = jumpPressed;
+    }
+
+    public enum Mode {
+        Normal, Packet
     }
 }

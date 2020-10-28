@@ -38,36 +38,80 @@ public class LogoutSpots extends ToggleModule {
     private static final Color RED = new Color(225, 25, 25);
 
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    
+
     private final Color sideColor = new Color();
 
-    private final Setting<Double> scale = sgGeneral.add(new DoubleSetting.Builder()
-            .name("scale")
-            .description("Scale.")
-            .defaultValue(1)
-            .min(0)
-            .build()
-    );
+    private final Setting<Double> scale = sgGeneral.add(new DoubleSetting.Builder().name("scale").description("Scale.").defaultValue(1).min(0).build());
 
-    private final Setting<Color> lineColor = sgGeneral.add(new ColorSetting.Builder()
-            .name("color")
-            .description("Color.")
-            .defaultValue(new Color(255, 0, 255))
-            .onChanged(color1 -> {
-                sideColor.set(color1);
-                sideColor.a -= 200;
-                sideColor.validate();
-            })
-            .build()
-    );
+    private final Setting<Color> lineColor = sgGeneral.add(new ColorSetting.Builder().name("color").description("Color.").defaultValue(new Color(255, 0, 255)).onChanged(color1 -> {
+        sideColor.set(color1);
+        sideColor.a -= 200;
+        sideColor.validate();
+    }).build());
 
     private final List<Entry> players = new ArrayList<>();
 
     private final List<PlayerListEntry> lastPlayerList = new ArrayList<>();
     private final List<PlayerEntity> lastPlayers = new ArrayList<>();
+    @EventHandler private final Listener<EntityAddedEvent> onEntityAdded = new Listener<>(event -> {
+        if (event.entity instanceof PlayerEntity) {
+            int toRemove = -1;
 
+            for (int i = 0; i < players.size(); i++) {
+                if (players.get(i).uuid.equals(event.entity.getUuid())) {
+                    toRemove = i;
+                    break;
+                }
+            }
+
+            if (toRemove != -1) {
+                players.remove(toRemove);
+            }
+        }
+    });
+    @EventHandler private final Listener<RenderEvent> onRender = new Listener<>(event -> {
+        for (Entry player : players)
+            player.render(event);
+
+        RenderSystem.disableDepthTest();
+        RenderSystem.disableTexture();
+        DiffuseLighting.disable();
+        RenderSystem.enableBlend();
+    });
     private int timer;
     private Dimension lastDimension;
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (mc.getNetworkHandler().getPlayerList().size() != lastPlayerList.size()) {
+            for (PlayerListEntry entry : lastPlayerList) {
+                if (mc.getNetworkHandler().getPlayerList().stream().anyMatch(playerListEntry -> playerListEntry.getProfile().equals(entry.getProfile()))) {
+                    continue;
+                }
+
+                for (PlayerEntity player : lastPlayers) {
+                    if (player.getUuid().equals(entry.getProfile().getId())) {
+                        add(new Entry(player));
+                    }
+                }
+            }
+
+            lastPlayerList.clear();
+            lastPlayerList.addAll(mc.getNetworkHandler().getPlayerList());
+            updateLastPlayers();
+        }
+
+        if (timer <= 0) {
+            updateLastPlayers();
+            timer = 10;
+        } else {
+            timer--;
+        }
+
+        Dimension dimension = Utils.getDimension();
+        if (dimension != lastDimension) {
+            players.clear();
+        }
+        lastDimension = dimension;
+    });
 
     public LogoutSpots() {
         super(Category.Render, "logout-spots", "Displays players logout position.");
@@ -92,72 +136,16 @@ public class LogoutSpots extends ToggleModule {
     private void updateLastPlayers() {
         lastPlayers.clear();
         for (Entity entity : mc.world.getEntities()) {
-            if (entity instanceof PlayerEntity) lastPlayers.add((PlayerEntity) entity);
+            if (entity instanceof PlayerEntity) {
+                lastPlayers.add((PlayerEntity) entity);
+            }
         }
     }
-
-    @EventHandler
-    private final Listener<EntityAddedEvent> onEntityAdded = new Listener<>(event -> {
-        if (event.entity instanceof PlayerEntity) {
-            int toRemove = -1;
-
-            for (int i = 0; i < players.size(); i++) {
-                if (players.get(i).uuid.equals(event.entity.getUuid())) {
-                    toRemove = i;
-                    break;
-                }
-            }
-
-            if (toRemove != -1) {
-                players.remove(toRemove);
-            }
-        }
-    });
-
-    @EventHandler
-    private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (mc.getNetworkHandler().getPlayerList().size() != lastPlayerList.size()) {
-            for (PlayerListEntry entry : lastPlayerList) {
-                if (mc.getNetworkHandler().getPlayerList().stream().anyMatch(playerListEntry -> playerListEntry.getProfile().equals(entry.getProfile()))) continue;
-
-                for (PlayerEntity player : lastPlayers) {
-                    if (player.getUuid().equals(entry.getProfile().getId())) {
-                        add(new Entry(player));
-                    }
-                }
-            }
-
-            lastPlayerList.clear();
-            lastPlayerList.addAll(mc.getNetworkHandler().getPlayerList());
-            updateLastPlayers();
-        }
-
-        if (timer <= 0) {
-            updateLastPlayers();
-            timer = 10;
-        } else {
-            timer--;
-        }
-
-        Dimension dimension = Utils.getDimension();
-        if (dimension != lastDimension) players.clear();
-        lastDimension = dimension;
-    });
 
     private void add(Entry entry) {
         players.removeIf(player -> player.uuid.equals(entry.uuid));
         players.add(entry);
     }
-
-    @EventHandler
-    private final Listener<RenderEvent> onRender = new Listener<>(event -> {
-        for (Entry player : players) player.render(event);
-
-        RenderSystem.disableDepthTest();
-        RenderSystem.disableTexture();
-        DiffuseLighting.disable();
-        RenderSystem.enableBlend();
-    });
 
     @Override
     public String getInfoString() {
@@ -195,9 +183,13 @@ public class LogoutSpots extends ToggleModule {
             // Compute scale
             double scale = 0.025;
             double dist = Utils.distanceToCamera(x, y, z);
-            if (dist > 10) scale *= dist / 10 * LogoutSpots.this.scale.get();
+            if (dist > 10) {
+                scale *= dist / 10 * LogoutSpots.this.scale.get();
+            }
 
-            if (dist > mc.options.viewDistance * 16) return;
+            if (dist > mc.options.viewDistance * 16) {
+                return;
+            }
 
             // Compute health things
             double healthPercentage = (double) health / maxHealth;
@@ -207,9 +199,13 @@ public class LogoutSpots extends ToggleModule {
 
             // Get health color
             Color healthColor;
-            if (healthPercentage <= 0.333) healthColor = RED;
-            else if (healthPercentage <= 0.666) healthColor = ORANGE;
-            else healthColor = GREEN;
+            if (healthPercentage <= 0.333) {
+                healthColor = RED;
+            } else if (healthPercentage <= 0.666) {
+                healthColor = ORANGE;
+            } else {
+                healthColor = GREEN;
+            }
 
             // Setup the rotation
             Matrices.push();

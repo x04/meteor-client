@@ -23,12 +23,17 @@ import java.util.zip.Inflater;
 public class PacketInflaterMixin {
     @Shadow private int compressionThreshold;
 
-    @Shadow @Final private Inflater inflater;
+    @Shadow
+    @Final
+    private Inflater inflater;
 
     @Inject(method = "decode", at = @At("HEAD"), cancellable = true)
     private void onDecode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list, CallbackInfo info) throws DataFormatException {
-        if (ModuleManager.INSTANCE.isActive(AntiChunkBan.class)) info.cancel();
-        else return;
+        if (ModuleManager.INSTANCE.isActive(AntiChunkBan.class)) {
+            info.cancel();
+        } else {
+            return;
+        }
 
         if (byteBuf.readableBytes() != 0) {
             PacketByteBuf packetByteBuf = new PacketByteBuf(byteBuf);

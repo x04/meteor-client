@@ -3,12 +3,12 @@ package minegame159.meteorclient.mixin;
 import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.events.OpenScreenEvent;
+import minegame159.meteorclient.gui.GuiKeyEvents;
+import minegame159.meteorclient.gui.WidgetScreen;
 import minegame159.meteorclient.mixininterface.IMinecraftClient;
 import minegame159.meteorclient.modules.ModuleManager;
 import minegame159.meteorclient.modules.player.AutoEat;
 import minegame159.meteorclient.modules.player.AutoGap;
-import minegame159.meteorclient.gui.GuiKeyEvents;
-import minegame159.meteorclient.gui.WidgetScreen;
 import minegame159.meteorclient.utils.Utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
@@ -30,25 +30,26 @@ import java.net.Proxy;
 
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin implements IMinecraftClient {
+    @Shadow private static int currentFps;
     @Shadow public ClientWorld world;
-
-    @Shadow private int itemUseCooldown;
-
-    @Shadow protected abstract void doItemUse();
-
-    @Shadow protected abstract void doAttack();
-
     @Shadow public Mouse mouse;
-
+    @Shadow
+    @Nullable
+    public Screen currentScreen;
+    @Shadow private int itemUseCooldown;
     @Shadow private Window window;
 
-    @Shadow @Final private Proxy netProxy;
+    @Shadow
+    @Final
+    private Proxy netProxy;
 
     @Shadow private Session session;
 
-    @Shadow private static int currentFps;
+    @Shadow
+    protected abstract void doItemUse();
 
-    @Shadow @Nullable public Screen currentScreen;
+    @Shadow
+    protected abstract void doAttack();
 
     @Inject(method = "<init>", at = @At("TAIL"))
     public void onInit(CallbackInfo info) {
@@ -65,7 +66,9 @@ public abstract class MinecraftClientMixin implements IMinecraftClient {
 
     @Inject(method = "openScreen", at = @At("HEAD"), cancellable = true)
     private void onOpenScreen(Screen screen, CallbackInfo info) {
-        if (screen instanceof WidgetScreen) screen.mouseMoved(mouse.getX() * window.getScaleFactor(), mouse.getY() * window.getScaleFactor());
+        if (screen instanceof WidgetScreen) {
+            screen.mouseMoved(mouse.getX() * window.getScaleFactor(), mouse.getY() * window.getScaleFactor());
+        }
 
         OpenScreenEvent event = EventStore.openScreenEvent(screen);
         Meteor.INSTANCE.getEventBus().post(event);
@@ -80,7 +83,9 @@ public abstract class MinecraftClientMixin implements IMinecraftClient {
 
     @Redirect(method = "doItemUse", at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;crosshairTarget:Lnet/minecraft/util/hit/HitResult;", ordinal = 1))
     private HitResult doItemUseMinecraftClientCrosshairTargetProxy(MinecraftClient client) {
-        if (ModuleManager.INSTANCE.get(AutoEat.class).rightClickThings() && ModuleManager.INSTANCE.get(AutoGap.class).rightClickThings()) return client.crosshairTarget;
+        if (ModuleManager.INSTANCE.get(AutoEat.class).rightClickThings() && ModuleManager.INSTANCE.get(AutoGap.class).rightClickThings()) {
+            return client.crosshairTarget;
+        }
         return null;
     }
 

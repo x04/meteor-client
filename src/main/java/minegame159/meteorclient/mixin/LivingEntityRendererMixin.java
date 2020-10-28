@@ -28,7 +28,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
     @Redirect(method = "hasLabel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;getCameraEntity()Lnet/minecraft/entity/Entity;"))
     private Entity hasLabelGetCameraEntityProxy(MinecraftClient mc) {
-        if (ModuleManager.INSTANCE.isActive(Freecam.class)) return null;
+        if (ModuleManager.INSTANCE.isActive(Freecam.class)) {
+            return null;
+        }
         return mc.getCameraEntity();
     }
 

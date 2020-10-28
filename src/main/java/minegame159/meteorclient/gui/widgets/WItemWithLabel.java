@@ -9,9 +9,9 @@ import net.minecraft.potion.PotionUtil;
 import java.util.List;
 
 public class WItemWithLabel extends WTable {
-    private ItemStack itemStack;
     private final WItem item;
     private final WLabel label;
+    private ItemStack itemStack;
 
     public WItemWithLabel(ItemStack itemStack, String name) {
         this.itemStack = itemStack;
@@ -30,7 +30,9 @@ public class WItemWithLabel extends WTable {
             if (effects.size() > 0) {
                 str += " ";
                 StatusEffectInstance effect = effects.get(0);
-                if (effect.getAmplifier() > 0) str += effect.getAmplifier() + 1 + " ";
+                if (effect.getAmplifier() > 0) {
+                    str += effect.getAmplifier() + 1 + " ";
+                }
                 str += "(" + StatusEffectUtil.durationToString(effect, 1) + ")";
             }
         }

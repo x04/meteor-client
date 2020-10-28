@@ -13,7 +13,9 @@ public class ResetBind extends Command {
     @Override
     public void run(String[] args) {
         Module module = Utils.tryToGetModule(args);
-        if (module == null) return;
+        if (module == null) {
+            return;
+        }
 
         Chat.info("Bind has been reset.");
         module.setKey(-1);

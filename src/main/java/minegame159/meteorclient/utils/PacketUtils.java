@@ -1,8 +1,9 @@
 package minegame159.meteorclient.utils;
 
 import net.minecraft.network.Packet;
-import java.util.Map;
+
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class PacketUtils {
@@ -315,13 +316,17 @@ public class PacketUtils {
 
     public static String getName(Class<? extends Packet<?>> packetClass) {
         String name = S2C_PACKETS.get(packetClass);
-        if (name != null) return name;
+        if (name != null) {
+            return name;
+        }
         return C2S_PACKETS.get(packetClass);
     }
 
     public static Class<? extends Packet<?>> getPacket(String name) {
         Class<? extends Packet<?>> packet = S2C_PACKETS_R.get(name);
-        if (packet != null) return packet;
+        if (packet != null) {
+            return packet;
+        }
         return C2S_PACKETS_R.get(name);
     }
 

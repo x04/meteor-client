@@ -15,7 +15,9 @@ public class Settings extends Command {
     @Override
     public void run(String[] args) {
         Module module = Utils.tryToGetModule(args);
-        if (module == null) return;
+        if (module == null) {
+            return;
+        }
 
         Chat.info("(highlight)%s(default):", module.title);
         for (SettingGroup sg : module.settings) {

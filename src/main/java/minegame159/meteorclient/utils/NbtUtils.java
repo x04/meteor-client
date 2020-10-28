@@ -12,7 +12,8 @@ import java.util.Map;
 public class NbtUtils {
     public static <T extends ISerializable<?>> ListTag listToTag(Iterable<T> list) {
         ListTag tag = new ListTag();
-        for (T item : list) tag.add(item.toTag());
+        for (T item : list)
+            tag.add(item.toTag());
         return tag;
     }
 
@@ -20,28 +21,32 @@ public class NbtUtils {
         List<T> list = new ArrayList<>(tag.size());
         for (Tag itemTag : tag) {
             T value = toItem.toValue(itemTag);
-            if (value != null) list.add(value);
+            if (value != null) {
+                list.add(value);
+            }
         }
         return list;
     }
 
     public static <K, V extends ISerializable<?>> CompoundTag mapToTag(Map<K, V> map) {
         CompoundTag tag = new CompoundTag();
-        for (K key : map.keySet()) tag.put(key.toString(), map.get(key).toTag());
+        for (K key : map.keySet())
+            tag.put(key.toString(), map.get(key).toTag());
         return tag;
     }
 
     public static <K, V> Map<K, V> mapFromTag(CompoundTag tag, ToKey<K> toKey, ToValue<V> toValue) {
         Map<K, V> map = new HashMap<>(tag.getSize());
-        for (String key : tag.getKeys()) map.put(toKey.toKey(key), toValue.toValue(tag.get(key)));
+        for (String key : tag.getKeys())
+            map.put(toKey.toKey(key), toValue.toValue(tag.get(key)));
         return map;
     }
 
     public interface ToKey<T> {
-        public T toKey(String string);
+        T toKey(String string);
     }
 
     public interface ToValue<T> {
-        public T toValue(Tag tag);
+        T toValue(Tag tag);
     }
 }

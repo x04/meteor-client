@@ -14,16 +14,12 @@ import java.util.List;
 
 public class XRay extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    
-    private final Setting<List<Block>> blocks = sgGeneral.add(new BlockListSetting.Builder()
-            .name("blocks")
-            .description("Blocks.")
-            .defaultValue(new ArrayList<>(0))
-            .onChanged(blocks1 -> {
-                if (isActive()) mc.worldRenderer.reload();
-            })
-            .build()
-    );
+
+    private final Setting<List<Block>> blocks = sgGeneral.add(new BlockListSetting.Builder().name("blocks").description("Blocks.").defaultValue(new ArrayList<>(0)).onChanged(blocks1 -> {
+        if (isActive()) {
+            mc.worldRenderer.reload();
+        }
+    }).build());
 
     private boolean fullBrightWasActive = false;
 
@@ -35,7 +31,9 @@ public class XRay extends ToggleModule {
     public void onActivate() {
         FullBright fullBright = ModuleManager.INSTANCE.get(FullBright.class);
         fullBrightWasActive = fullBright.isActive();
-        if (!fullBright.isActive()) fullBright.toggle();
+        if (!fullBright.isActive()) {
+            fullBright.toggle();
+        }
 
         mc.worldRenderer.reload();
     }
@@ -43,9 +41,13 @@ public class XRay extends ToggleModule {
     @Override
     public void onDeactivate() {
         FullBright fullBright = ModuleManager.INSTANCE.get(FullBright.class);
-        if (!fullBrightWasActive && fullBright.isActive()) fullBright.toggle();
+        if (!fullBrightWasActive && fullBright.isActive()) {
+            fullBright.toggle();
+        }
 
-        if (Meteor.INSTANCE.isInGame()) mc.worldRenderer.reload();
+        if (Meteor.INSTANCE.isInGame()) {
+            mc.worldRenderer.reload();
+        }
     }
 
     public boolean isBlocked(Block block) {
