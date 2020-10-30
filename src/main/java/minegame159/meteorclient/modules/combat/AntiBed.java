@@ -33,6 +33,7 @@ public class AntiBed extends ToggleModule {
     private final Setting<Boolean> onlyOnGround = sgGeneral.add(new BoolSetting.Builder().name("only-on-ground").description("Only works you are on the ground.").defaultValue(true).build());
     private int place = -1;
     private boolean closeScreen = false;
+
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         if (event.getType() != TickEvent.Type.POST) {
             return;
@@ -44,13 +45,12 @@ public class AntiBed extends ToggleModule {
             return;
         } else if (closeScreen) {
             return;
-        }
-        if (!mc.world.getBlockState(mc.player.getBlockPos().up()).isAir()) {
+        } else if (!mc.world.getBlockState(mc.player.getBlockPos().up()).isAir()) {
+            return;
+        } else if (onlyOnGround.get() && !mc.player.isOnGround()) {
             return;
         }
-        if (onlyOnGround.get() && !mc.player.isOnGround()) {
-            return;
-        }
+
         if (place == 0) {
             place--;
             mc.interactionManager.interactBlock(mc.player, mc.world, Hand.MAIN_HAND, new BlockHitResult(Utils.vec3d(mc.player.getBlockPos().up()), Direction.DOWN, mc.player.getBlockPos().up(), mc.player.isOnGround()));
@@ -61,6 +61,7 @@ public class AntiBed extends ToggleModule {
         } else if (place > 0) {
             place--;
         }
+
         for (int i = 0; i < 9; i++) {
             ItemStack itemStack = mc.player.inventory.getStack(i);
             Item item = itemStack.getItem();
@@ -98,8 +99,7 @@ public class AntiBed extends ToggleModule {
                     BlockPos blockPos = checkBlocks();
                     if (blockPos == null) {
                         return;
-                    }
-                    if (playerVec.subtract(Utils.vec3d(blockPos)).x > 0) {
+                    } else if (playerVec.subtract(Utils.vec3d(blockPos)).x > 0) {
                         playerVec = playerVec.add(0.7, 0, 0.5);
                     } else if (playerVec.subtract(Utils.vec3d(blockPos)).x < 0) {
                         playerVec = playerVec.add(0.3, 0, 0.5);
