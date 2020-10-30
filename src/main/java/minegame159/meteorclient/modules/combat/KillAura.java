@@ -87,36 +87,28 @@ public class KillAura extends ToggleModule {
         entity = null;
         didHit = false;
 
-        Streams.stream(mc.world.getEntities())
-                .filter(this::isInRange)
-                .filter(this::canAttackEntity)
-                .filter(this::canSeeEntity)
-                .filter(Entity::isAlive)
-                .filter(this::isPlayerOnGround)
-                .filter(this::checkName)
-                .min(this::sort)
-                .ifPresent(tempEntity -> {
-                    entity = tempEntity;
-                    if (random.nextInt(100) > hitChance.get()) {
-                        return;
+        Streams.stream(mc.world.getEntities()).filter(this::isInRange).filter(this::canAttackEntity).filter(this::canSeeEntity).filter(Entity::isAlive).filter(this::isPlayerOnGround).filter(this::checkName).min(this::sort).ifPresent(tempEntity -> {
+            entity = tempEntity;
+            if (random.nextInt(100) > hitChance.get()) {
+                return;
+            }
+            if (entity instanceof PlayerEntity && instaKill.get()) {
+                if (DamageCalcUtils.getSwordDamage((PlayerEntity) entity, false) >= ((PlayerEntity) entity).getHealth() + ((PlayerEntity) entity).getAbsorptionAmount()) {
+                    if (rotate.get()) {
+                        ((IVec3d) vec3d1).set(entity.getX(), entity.getY() + entity.getHeight() / 2, entity.getZ());
+                        mc.player.lookAt(EntityAnchorArgumentType.EntityAnchor.EYES, vec3d1);
                     }
-                    if (entity instanceof PlayerEntity && instaKill.get()) {
-                        if (DamageCalcUtils.getSwordDamage((PlayerEntity) entity, false) >= ((PlayerEntity) entity).getHealth() + ((PlayerEntity) entity).getAbsorptionAmount()) {
-                            if (rotate.get()) {
-                                ((IVec3d) vec3d1).set(entity.getX(), entity.getY() + entity.getHeight() / 2, entity.getZ());
-                                mc.player.lookAt(EntityAnchorArgumentType.EntityAnchor.EYES, vec3d1);
-                            }
 
-                            mc.interactionManager.attackEntity(mc.player, entity);
-                            mc.player.swingHand(Hand.MAIN_HAND);
-                            didHit = true;
-                        }
-                    }
-                    if (pauseOnCombat.get() && BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing() && !wasPathing) {
-                        BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("pause");
-                        wasPathing = true;
-                    }
-                });
+                    mc.interactionManager.attackEntity(mc.player, entity);
+                    mc.player.swingHand(Hand.MAIN_HAND);
+                    didHit = true;
+                }
+            }
+            if (pauseOnCombat.get() && BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing() && !wasPathing) {
+                BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("pause");
+                wasPathing = true;
+            }
+        });
 
         if (didHit) {
             return;

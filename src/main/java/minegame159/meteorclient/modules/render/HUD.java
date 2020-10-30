@@ -121,8 +121,6 @@ public class HUD extends ToggleModule {
     });
     private final Map<Integer, ItemStack> itemStackMap = new HashMap<>();
     private int maxLetterCount = 0;
-    private boolean updateEntities;
-    private final Setting<Boolean> entities = sgTopLeft.add(new BoolSetting.Builder().name("entities").description("Display number of entities.").defaultValue(false).onChanged(aBoolean -> updateEntities = true).build());
     @EventHandler private final Listener<Render2DEvent> onRender2D = new Listener<>(event -> {
         Meteor.INSTANCE.getFont().begin();
         renderPlayerModel(event);
@@ -191,6 +189,8 @@ public class HUD extends ToggleModule {
         }
 
     });
+    private boolean updateEntities;
+    private final Setting<Boolean> entities = sgTopLeft.add(new BoolSetting.Builder().name("entities").description("Display number of entities.").defaultValue(false).onChanged(aBoolean -> updateEntities = true).build());
     private final Setting<Boolean> entityCustomNames = sgTopLeft.add(new BoolSetting.Builder().name("entity-custom-names").description("Use custom names.").defaultValue(true).onChanged(aBoolean -> updateEntities = true).build());
     private final Setting<Boolean> separateSheepsByColor = sgTopLeft.add(new BoolSetting.Builder().name("separate-sheeps-by-color").description("Separates sheeps by color in entity list.").defaultValue(false).onChanged(aBoolean -> updateEntities = true).build());
     @EventHandler private final Listener<EntityAddedEvent> onEntityAdded = new Listener<>(event -> {

@@ -19,8 +19,8 @@ public class DiscordPresence extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
     private final DiscordRichPresence presence = new DiscordRichPresence();
     private boolean ready;
-    private final Setting<Boolean> displayName = sgGeneral.add(new BoolSetting.Builder().name("display-name").description("Displays your name in discord rpc.").defaultValue(true).onChanged(booleanSetting -> updateDetails()).build());
     private final Setting<Boolean> displayServer = sgGeneral.add(new BoolSetting.Builder().name("display-server").description("Displays the server you are in.").defaultValue(true).onChanged(booleanSetting -> updateDetails()).build());
+    private final Setting<Boolean> displayName = sgGeneral.add(new BoolSetting.Builder().name("display-name").description("Displays your name in discord rpc.").defaultValue(true).onChanged(booleanSetting -> updateDetails()).build());
     private int ticks;
     private SmallImage currentSmallImage;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {

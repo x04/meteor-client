@@ -41,7 +41,9 @@ public enum Capes {
             String[] split = s.split(" ");
 
             if (split.length >= 2) {
-                if (!URLS.containsKey(split[0])) URLS.put(split[0], split[1]);
+                if (!URLS.containsKey(split[0])) {
+                    URLS.put(split[0], split[1]);
+                }
             }
         }));
     }

@@ -16,7 +16,7 @@ public class AutoJump extends ToggleModule {
         if (event.getType() != TickEvent.Type.POST) {
             return;
         }
-        
+
         if (!mc.player.isOnGround() || mc.player.isSneaking()) {
             return;
         }

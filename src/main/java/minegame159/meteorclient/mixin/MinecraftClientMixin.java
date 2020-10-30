@@ -34,7 +34,9 @@ public abstract class MinecraftClientMixin implements IMinecraftClient {
     @Shadow private static int currentFps;
     @Shadow public ClientWorld world;
     @Shadow public Mouse mouse;
-    @Shadow @Nullable public Screen currentScreen;
+    @Shadow
+    @Nullable
+    public Screen currentScreen;
     @Shadow private int itemUseCooldown;
     @Shadow private Window window;
 

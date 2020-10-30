@@ -9,173 +9,53 @@ import minegame159.meteorclient.settings.SettingGroup;
 public class NoRender extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
-    private final Setting<Boolean> noBubbles = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-bubbles")
-            .description("Disables rendering of bubbles in water.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> noBubbles = sgGeneral.add(new BoolSetting.Builder().name("no-bubbles").description("Disables rendering of bubbles in water.").defaultValue(true).build());
 
-    private final Setting<Boolean> noHurtCam = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-hurt-cam")
-            .description("Disables hurt camera effect.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> noHurtCam = sgGeneral.add(new BoolSetting.Builder().name("no-hurt-cam").description("Disables hurt camera effect.").defaultValue(true).build());
 
-    private final Setting<Boolean> noWeather = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-weather")
-            .description("Disables weather.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> noWeather = sgGeneral.add(new BoolSetting.Builder().name("no-weather").description("Disables weather.").defaultValue(true).build());
 
-    private final Setting<Boolean> noPortalOverlay = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-portal-overlay")
-            .description("Disables portal overlay.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> noPortalOverlay = sgGeneral.add(new BoolSetting.Builder().name("no-portal-overlay").description("Disables portal overlay.").defaultValue(true).build());
 
-    private final Setting<Boolean> noPumpkinOverlay = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-pumpkin-overlay")
-            .description("Disables pumpkin overlay.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> noPumpkinOverlay = sgGeneral.add(new BoolSetting.Builder().name("no-pumpkin-overlay").description("Disables pumpkin overlay.").defaultValue(true).build());
 
-    private final Setting<Boolean> noFireOverlay = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-fire-overlay")
-            .description("Disables fire overlay.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> noFireOverlay = sgGeneral.add(new BoolSetting.Builder().name("no-fire-overlay").description("Disables fire overlay.").defaultValue(true).build());
 
-    private final Setting<Boolean> noWaterOverlay = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-water-overlay")
-            .description("Disables water overlay.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> noWaterOverlay = sgGeneral.add(new BoolSetting.Builder().name("no-water-overlay").description("Disables water overlay.").defaultValue(true).build());
 
-    private final Setting<Boolean> noVignette = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-vignette")
-            .description("Disables vignette effect.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> noVignette = sgGeneral.add(new BoolSetting.Builder().name("no-vignette").description("Disables vignette effect.").defaultValue(true).build());
 
-    private final Setting<Boolean> noBossBar = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-boss-bar")
-            .description("Disables boss bars.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> noBossBar = sgGeneral.add(new BoolSetting.Builder().name("no-boss-bar").description("Disables boss bars.").defaultValue(true).build());
 
-    private final Setting<Boolean> noScoreboard = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-scoreboard")
-            .description("Disable scoreboard.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> noScoreboard = sgGeneral.add(new BoolSetting.Builder().name("no-scoreboard").description("Disable scoreboard.").defaultValue(true).build());
 
-    private final Setting<Boolean> noFog = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-fog")
-            .description("Disables fog.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> noFog = sgGeneral.add(new BoolSetting.Builder().name("no-fog").description("Disables fog.").defaultValue(true).build());
 
-    private final Setting<Boolean> noExplosion = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-explosion")
-            .description("Disables explosion particles.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> noExplosion = sgGeneral.add(new BoolSetting.Builder().name("no-explosion").description("Disables explosion particles.").defaultValue(true).build());
 
-    private final Setting<Boolean> noTotemAnimation = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-totem-animation")
-            .description("Disables the totem animation on popping.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> noTotemAnimation = sgGeneral.add(new BoolSetting.Builder().name("no-totem-animation").description("Disables the totem animation on popping.").defaultValue(true).build());
 
-    private final Setting<Boolean> noTotemParitcles = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-totem-particles")
-            .description("Disables totem particles.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> noTotemParitcles = sgGeneral.add(new BoolSetting.Builder().name("no-totem-particles").description("Disables totem particles.").defaultValue(true).build());
 
-    private final Setting<Boolean> noArmor = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-armor")
-            .description("Disables player armor.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> noArmor = sgGeneral.add(new BoolSetting.Builder().name("no-armor").description("Disables player armor.").defaultValue(false).build());
 
-    private final Setting<Boolean> noNausea = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-nausea")
-            .description("Disables nausea effect.")
-            .defaultValue(true)
-            .build()
-    );
+    private final Setting<Boolean> noNausea = sgGeneral.add(new BoolSetting.Builder().name("no-nausea").description("Disables nausea effect.").defaultValue(true).build());
 
-    private final Setting<Boolean> noItems = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-item")
-            .description("Disables item entities.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> noItems = sgGeneral.add(new BoolSetting.Builder().name("no-item").description("Disables item entities.").defaultValue(false).build());
 
-    private final Setting<Boolean> noEnchTableBook = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-ench-table-book")
-            .description("Disables book above enchanting table.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> noEnchTableBook = sgGeneral.add(new BoolSetting.Builder().name("no-ench-table-book").description("Disables book above enchanting table.").defaultValue(false).build());
 
-    private final Setting<Boolean> noSignText = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-sign-text")
-            .description("Disables text on signs.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> noSignText = sgGeneral.add(new BoolSetting.Builder().name("no-sign-text").description("Disables text on signs.").defaultValue(false).build());
 
-    private final Setting<Boolean> noBlockBreakParticles = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-block-break-particles")
-            .description("Disables block break particles.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> noBlockBreakParticles = sgGeneral.add(new BoolSetting.Builder().name("no-block-break-particles").description("Disables block break particles.").defaultValue(false).build());
 
-    private final Setting<Boolean> noFallingBlocks = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-falling-blocks")
-            .description("Disables rendering of falling blocks.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> noFallingBlocks = sgGeneral.add(new BoolSetting.Builder().name("no-falling-blocks").description("Disables rendering of falling blocks.").defaultValue(false).build());
 
-    private final Setting<Boolean> noPotionIcons = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-potion-icons")
-            .description("Disables rendering of status effect icons.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> noPotionIcons = sgGeneral.add(new BoolSetting.Builder().name("no-potion-icons").description("Disables rendering of status effect icons.").defaultValue(false).build());
 
-    private final Setting<Boolean> noArmorStands = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-armor-stands")
-            .description("Disables rendering of armor stands.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> noArmorStands = sgGeneral.add(new BoolSetting.Builder().name("no-armor-stands").description("Disables rendering of armor stands.").defaultValue(false).build());
 
-    private final Setting<Boolean> noGuiBackground = sgGeneral.add(new BoolSetting.Builder()
-            .name("no-gui-background")
-            .description("Disables rendering of the gui background.")
-            .defaultValue(false)
-            .build()
-    );
+    private final Setting<Boolean> noGuiBackground = sgGeneral.add(new BoolSetting.Builder().name("no-gui-background").description("Disables rendering of the gui background.").defaultValue(false).build());
 
     public NoRender() {
         super(Category.Render, "no-render", "Disables some things from rendering.");
