@@ -57,7 +57,6 @@ public class Flight extends ToggleModule {
         double currentY = packet.getY(Double.MAX_VALUE);
         if (currentY != Double.MAX_VALUE) {
             // maximum time we can be "floating" is 80 ticks, so 4 seconds max
-            // we'll be safe and modify every second or what we can assume is 20 ticks
             if (currentTime - lastModifiedTime > 250 && lastY != Double.MAX_VALUE && mc.world.getBlockState(mc.player.getBlockPos().down()).isAir()) {
                 // actual check is for >= -0.03125D but we have to do a bit more than that
                 // probably due to compression or some shit idk
