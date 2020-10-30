@@ -50,6 +50,10 @@ public class Criticals extends ToggleModule {
         }
     });
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (sendPackets) {
             if (sendTimer <= 0) {
                 sendPackets = false;

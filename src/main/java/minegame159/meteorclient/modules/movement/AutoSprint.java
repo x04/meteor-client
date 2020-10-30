@@ -15,6 +15,10 @@ public class AutoSprint extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
     private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("mode").description("Mode.").defaultValue(Mode.Legit).build());
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         switch (mode.get()) {
             case Legit: {
                 if (mc.player.isSprinting()) {

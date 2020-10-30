@@ -24,6 +24,10 @@ public class DiscordPresence extends ToggleModule {
     private int ticks;
     private SmallImage currentSmallImage;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (ready) {
             ticks++;
 

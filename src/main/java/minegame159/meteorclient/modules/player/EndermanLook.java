@@ -20,6 +20,10 @@ public class EndermanLook extends ToggleModule {
     private final Setting<Mode> lookMode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("look-mode").description("How this module behaves.").defaultValue(Mode.LookAway).build());
     EndermanEntity enderman = null;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (lookMode.get() == Mode.LookAway) {
             if (mc.player.abilities.creativeMode || !shouldLook()) {
                 return;

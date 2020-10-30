@@ -41,6 +41,10 @@ public class AntiHunger extends ToggleModule {
         }
     });
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (mc.player.isOnGround() && !lastOnGround && !sendOnGroundTruePacket) {
             sendOnGroundTruePacket = true;
         }

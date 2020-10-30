@@ -42,6 +42,10 @@ public class Scaffold extends ToggleModule {
     private BlockState blockState, slotBlockState;
     private int slot, prevSelectedSlot;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (fastTower.get() && !mc.world.getBlockState(setPos(0, -1, 0)).getMaterial().isReplaceable() && mc.options.keyJump.isPressed() && findSlot(mc.world.getBlockState(setPos(0, -1, 0))) != -1 && mc.player.sidewaysSpeed == 0 && mc.player.forwardSpeed == 0) {
             mc.player.jump();
         }

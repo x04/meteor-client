@@ -3,6 +3,7 @@ package minegame159.meteorclient.mixin;
 import minegame159.meteorclient.Meteor;
 import minegame159.meteorclient.events.EventStore;
 import minegame159.meteorclient.events.OpenScreenEvent;
+import minegame159.meteorclient.events.TickEvent;
 import minegame159.meteorclient.gui.GuiKeyEvents;
 import minegame159.meteorclient.gui.WidgetScreen;
 import minegame159.meteorclient.mixininterface.IMinecraftClient;
@@ -33,9 +34,7 @@ public abstract class MinecraftClientMixin implements IMinecraftClient {
     @Shadow private static int currentFps;
     @Shadow public ClientWorld world;
     @Shadow public Mouse mouse;
-    @Shadow
-    @Nullable
-    public Screen currentScreen;
+    @Shadow @Nullable public Screen currentScreen;
     @Shadow private int itemUseCooldown;
     @Shadow private Window window;
 
@@ -56,11 +55,19 @@ public abstract class MinecraftClientMixin implements IMinecraftClient {
         Meteor.INSTANCE.reload();
     }
 
-    @Inject(at = @At("TAIL"), method = "tick")
-    private void onTick(CallbackInfo info) {
+    @Inject(at = @At("HEAD"), method = "tick")
+    private void onPreTick(CallbackInfo info) {
         if (Utils.canUpdate()) {
-            world.getProfiler().swap("meteor-client_update");
-            Meteor.INSTANCE.getEventBus().post(EventStore.tickEvent());
+            world.getProfiler().swap("meteor-client_pre_update");
+            Meteor.INSTANCE.getEventBus().post(EventStore.tickEvent(TickEvent.Type.PRE));
+        }
+    }
+
+    @Inject(at = @At("TAIL"), method = "tick")
+    private void onPostTick(CallbackInfo info) {
+        if (Utils.canUpdate()) {
+            world.getProfiler().swap("meteor-client_post_update");
+            Meteor.INSTANCE.getEventBus().post(EventStore.tickEvent(TickEvent.Type.POST));
         }
     }
 

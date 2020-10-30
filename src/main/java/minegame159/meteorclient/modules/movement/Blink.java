@@ -31,7 +31,13 @@ public class Blink extends ToggleModule {
         }
     });
     private int timer = 0;
-    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> timer++);
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
+        timer++;
+    });
 
     public Blink() {
         super(Category.Movement, "blink", "Suspends all motion updates while enabled.");

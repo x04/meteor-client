@@ -53,6 +53,10 @@ public class HoleESP extends ToggleModule {
         }
     });
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         for (Hole hole : holes)
             holePool.free(hole);
         holes.clear();

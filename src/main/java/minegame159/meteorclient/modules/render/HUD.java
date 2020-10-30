@@ -211,6 +211,10 @@ public class HUD extends ToggleModule {
     });
     private int updateEntitiesTimer = 2;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         updateEntitiesTimer--;
 
         if (entities.get()) {

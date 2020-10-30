@@ -90,6 +90,10 @@ public class CrystalAura extends ToggleModule {
     private EndCrystalEntity current = null;
     private boolean isThere = false;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         for (Iterator<RenderBlock> it = renderBlocks.iterator(); it.hasNext(); ) {
             RenderBlock renderBlock = it.next();
 

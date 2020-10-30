@@ -41,6 +41,10 @@ public class TotemPopNotifier extends ToggleModule {
         }
     });
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         synchronized (totemPops) {
             for (PlayerEntity player : mc.world.getPlayers()) {
                 if (!totemPops.containsKey(player.getUuid())) {

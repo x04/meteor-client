@@ -41,6 +41,10 @@ public class AutoLog extends ToggleModule {
 
     private final Setting<Integer> range = sgGeneral.add(new IntSetting.Builder().name("range").description("How close a crystal has to be to log.").defaultValue(4).min(1).max(10).sliderMax(5).build());
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (mc.player.getHealth() <= 0) {
             this.toggle();
             return;

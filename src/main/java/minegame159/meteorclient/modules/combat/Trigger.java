@@ -16,6 +16,10 @@ public class Trigger extends ToggleModule {
 
     private final Setting<Boolean> onlyWhenHoldingAttack = sgGeneral.add(new BoolSetting.Builder().name("only-when-holding-attack").description("Attacks only when you are holding left click.").defaultValue(false).build());
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (mc.player.getHealth() <= 0 || mc.player.getAttackCooldownProgress(0.5f) < 1) {
             return;
         }

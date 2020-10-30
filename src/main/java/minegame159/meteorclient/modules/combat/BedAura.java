@@ -62,6 +62,10 @@ public class BedAura extends ToggleModule {
     private double lastDamage = 0;
     private int direction = 0;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         delayLeft--;
         preSlot = -1;
         if (mc.player.getHealth() + mc.player.getAbsorptionAmount() <= minHealth.get() && mode.get() != Mode.suicide) {

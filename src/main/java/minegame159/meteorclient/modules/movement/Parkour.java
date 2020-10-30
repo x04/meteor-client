@@ -12,6 +12,10 @@ import java.util.stream.Stream;
 
 public class Parkour extends ToggleModule {
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (!mc.player.isOnGround() || mc.options.keyJump.isPressed()) {
             return;
         }

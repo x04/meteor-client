@@ -35,6 +35,10 @@ public class PacketMine extends ToggleModule {
         event.cancel();
     });
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (oneByOne.get()) {
             if (blocks.size() > 0 && blocks.get(blocks.size() - 1).sendPackets()) {
                 blocks.remove(blocks.size() - 1);

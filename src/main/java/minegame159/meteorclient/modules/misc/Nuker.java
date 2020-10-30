@@ -36,6 +36,10 @@ public class Nuker extends ToggleModule {
     private final BlockPos.Mutable lastBlockPos = new BlockPos.Mutable();
     private boolean hasLastBlockPos;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (hasLastBlockPos && mc.world.getBlockState(lastBlockPos).getBlock() != Blocks.AIR) {
             mc.interactionManager.updateBlockBreakingProgress(lastBlockPos, Direction.UP);
             return;

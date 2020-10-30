@@ -18,6 +18,10 @@ public class XpBottleThrower extends ToggleModule {
 
     private final Setting<Boolean> lookDown = sgGeneral.add(new BoolSetting.Builder().name("look-down").description("Makes you look down when throwing bottles").defaultValue(true).build());
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         int slot = -1;
 
         for (int i = 0; i < 9; i++) {

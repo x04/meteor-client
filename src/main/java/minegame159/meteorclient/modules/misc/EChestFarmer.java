@@ -34,6 +34,10 @@ public class EChestFarmer extends ToggleModule {
     private boolean stop = false;
     private int numLeft = Math.floorDiv(amount.get(), 8);
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (lowerAmount.get() < InvUtils.findItemWithCount(Items.OBSIDIAN).count) {
             stop = false;
         }

@@ -21,6 +21,10 @@ public class OffHandCrash extends ToggleModule {
     private final Setting<Integer> speed = sgGeneral.add(new IntSetting.Builder().name("speed").description("How many swaps per tick. 20 ticks = 1 second.").defaultValue(2000).min(1).sliderMax(10000).build());
     private final Setting<Boolean> antiCrash = sgGeneral.add(new BoolSetting.Builder().name("anti-crash").description("Prevents you from crashing as a result of offhand swapping.").defaultValue(true).build());
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (doCrash.get()) {
             for (int i = 0; i < speed.get(); ++i)
                 mc.player.networkHandler.sendPacket(PACKET);

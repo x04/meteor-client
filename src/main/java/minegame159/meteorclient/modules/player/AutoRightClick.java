@@ -16,7 +16,8 @@ public class AutoRightClick extends ToggleModule {
     private final Setting<Boolean> onlyWhenHoldingUse = sgGeneral.add(new BoolSetting.Builder().name("only-when-holding-use").description("Only when holding right click.").defaultValue(false).build());
     private int timer;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (mc.player.getHealth() <= 0) {
+
+        if (event.getType() != TickEvent.Type.POST || mc.player.getHealth() <= 0) {
             return;
         }
         if (mode.get() == Mode.Hold && !mc.options.keyUse.isPressed()) {

@@ -32,7 +32,7 @@ public class AutoMend extends ToggleModule {
 
     private final Setting<Boolean> removeFinished = sgGeneral.add(new BoolSetting.Builder().name("remove-finished").description("If there are no items to replace but space in your inventory, the items will be moved out of active slots").defaultValue(true).build());
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (mc.currentScreen instanceof HandledScreen<?>) {
+        if (event.getType() != TickEvent.Type.POST || mc.currentScreen instanceof HandledScreen<?>) {
             return;
         }
 

@@ -35,6 +35,10 @@ public class InvMove extends ToggleModule {
 
     private final Setting<Double> rotateSpeed = sgGeneral.add(new DoubleSetting.Builder().name("rotate-speed").description("Rotation speed.").defaultValue(4).min(0).build());
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (!skip()) {
             tickSneakJumpAndSprint();
         }

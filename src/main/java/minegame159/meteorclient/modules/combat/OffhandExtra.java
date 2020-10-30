@@ -57,6 +57,10 @@ public class OffhandExtra extends ToggleModule {
     });
     private boolean noTotems = false;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (!mc.player.isUsingItem()) {
             isClicking = false;
         }

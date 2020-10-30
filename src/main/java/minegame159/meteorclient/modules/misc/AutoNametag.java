@@ -26,6 +26,10 @@ public class AutoNametag extends ToggleModule {
     private final Setting<Double> distance = sgGeneral.add(new DoubleSetting.Builder().name("distance").description("Maximum distance.").min(0.0).defaultValue(5.0).build());
 
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         for (Entity entity : mc.world.getEntities()) {
             if (!entities.get().contains(entity.getType()) || entity.hasCustomName() || mc.player.distanceTo(entity) > distance.get()) {
                 continue;

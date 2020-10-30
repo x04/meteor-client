@@ -55,6 +55,10 @@ public class AutoFish extends ToggleModule {
     private boolean autoCastEnabled;
     private int autoCastCheckTimer;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         // Auto cast
         if (autoCastCheckTimer <= 0) {
             autoCastCheckTimer = 30;

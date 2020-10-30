@@ -7,7 +7,13 @@ import minegame159.meteorclient.modules.Category;
 import minegame159.meteorclient.modules.ToggleModule;
 
 public class AntiFire extends ToggleModule {
-    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> mc.player.extinguish());
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
+        mc.player.extinguish();
+    });
 
     public AntiFire() {
         super(Category.Player, "anti-fire", "Removes fire.");

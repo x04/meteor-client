@@ -31,7 +31,7 @@ public class AirJump extends ToggleModule {
         }
     });
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (ModuleManager.INSTANCE.isActive(Freecam.class)) {
+        if (event.getType() != TickEvent.Type.POST || ModuleManager.INSTANCE.isActive(Freecam.class)) {
             return;
         }
         if (maintainY.get() && mc.player.getBlockPos().getY() == level) {

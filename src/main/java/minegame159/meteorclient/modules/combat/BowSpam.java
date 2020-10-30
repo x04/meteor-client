@@ -22,6 +22,10 @@ public class BowSpam extends ToggleModule {
     private boolean wasBow = false;
     private boolean wasHoldingRightClick = false;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (!onlyWhenHoldingRightClick.get() || mc.options.keyUse.isPressed()) {
             boolean isBow = mc.player.getMainHandStack().getItem() == Items.BOW;
             if (!isBow && wasBow) {

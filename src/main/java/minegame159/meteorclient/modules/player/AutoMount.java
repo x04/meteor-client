@@ -30,7 +30,7 @@ public class AutoMount extends ToggleModule {
     private final Setting<Boolean> skeletons = sgGeneral.add(new BoolSetting.Builder().name("skeleton-horse").description("Skeleton Horse").defaultValue(false).build());
     private final Setting<Boolean> checkSaddle = sgGeneral.add(new BoolSetting.Builder().name("check-saddle").description("Check if the entity has a saddle before mounting").defaultValue(false).build());
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (mc.player.hasVehicle()) {
+        if (event.getType() != TickEvent.Type.POST || mc.player.hasVehicle()) {
             return;
         }
         for (Entity entity : mc.world.getEntities()) {

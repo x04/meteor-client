@@ -19,6 +19,10 @@ public class PotionSpoof extends ToggleModule {
 
     private final Setting<Object2IntMap<StatusEffect>> potions = sgGeneral.add(new StatusEffectSetting.Builder().name("potions").description("Potions to add.").defaultValue(Utils.createStatusEffectMap()).build());
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         for (StatusEffect statusEffect : potions.get().keySet()) {
             int level = potions.get().getInt(statusEffect);
             if (level <= 0) {

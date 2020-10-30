@@ -30,6 +30,10 @@ public class AutoAnvil extends ToggleModule {
     private final Setting<Boolean> placeButton = sgGeneral.add(new BoolSetting.Builder().name("place-button").description("Auto places a button beneath the target.").defaultValue(false).build());
     private PlayerEntity target = null;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         int anvilSlot = -1;
         for (int i = 0; i < 9; i++) {
             Item item = mc.player.inventory.getStack(i).getItem();

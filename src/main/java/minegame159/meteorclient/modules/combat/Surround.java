@@ -35,6 +35,10 @@ public class Surround extends ToggleModule {
     private int prevSlot;
     private boolean return_;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (disableOnJump.get() && mc.options.keyJump.isPressed()) {
             toggle();
             return;

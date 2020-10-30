@@ -28,6 +28,10 @@ public class AutoTrap extends ToggleModule {
     private int obsidianSlot;
     private int prevSlot;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         obsidianSlot = -1;
         target = null;
         for (int i = 0; i < 9; i++) {

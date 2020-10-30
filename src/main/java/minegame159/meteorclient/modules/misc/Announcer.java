@@ -17,6 +17,10 @@ public class Announcer extends ToggleModule {
 
     private final Feature[] features = {new Moving(), new Mining(), new Placing(), new DropItems(), new PickItems(), new OpenContainer()};
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         for (Feature feature : features) {
             if (feature.isEnabled()) {
                 feature.tick();

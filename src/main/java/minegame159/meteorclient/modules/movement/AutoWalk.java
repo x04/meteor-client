@@ -28,6 +28,10 @@ public class AutoWalk extends ToggleModule {
         }
     }).build());
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (mode.get() == Mode.Simple) {
             ((IKeyBinding) mc.options.keyForward).setPressed(true);
         } else {

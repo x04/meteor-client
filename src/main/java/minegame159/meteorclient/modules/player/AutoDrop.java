@@ -24,6 +24,10 @@ public class AutoDrop extends ToggleModule {
 
     private final Setting<Boolean> excludeHotbar = sgGeneral.add(new BoolSetting.Builder().name("exclude-hotbar").description("Doesn't drop items from hotbar.").defaultValue(false).build());
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (mc.currentScreen instanceof HandledScreen<?>) {
             return;
         }

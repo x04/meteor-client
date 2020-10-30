@@ -17,14 +17,29 @@ public class Flight extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
     private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("mode").description("Mode.").defaultValue(Mode.Vanilla).build());
     private final Setting<Double> speed = sgGeneral.add(new DoubleSetting.Builder().name("speed").description("Speed.").defaultValue(0.1).min(0.0).build());
+    private boolean flip;
+    private float lastYaw;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (mode.get() == Mode.Vanilla && !mc.player.isSpectator()) {
-            mc.player.abilities.setFlySpeed(speed.get().floatValue());
-            mc.player.abilities.flying = true;
-            if (mc.player.abilities.creativeMode) {
-                return;
+        if (event.getType() == TickEvent.Type.PRE) {
+            float currentYaw = mc.player.yaw;
+            if (mc.player.fallDistance >= 3f && currentYaw == lastYaw && mc.player.getVelocity().length() < 0.003d) {
+                mc.player.yaw += flip ? 1 : -1;
+                flip = !flip;
             }
-            mc.player.abilities.allowFlying = true;
+            lastYaw = currentYaw;
+        } else {
+            if (mc.player.yaw != lastYaw) {
+                mc.player.yaw = lastYaw;
+            }
+
+            if (mode.get() == Mode.Vanilla && !mc.player.isSpectator()) {
+                mc.player.abilities.setFlySpeed(speed.get().floatValue());
+                mc.player.abilities.flying = true;
+                if (mc.player.abilities.creativeMode) {
+                    return;
+                }
+                mc.player.abilities.allowFlying = true;
+            }
         }
     });
     private long lastModifiedTime = 0;
@@ -43,7 +58,7 @@ public class Flight extends ToggleModule {
         if (currentY != Double.MAX_VALUE) {
             // maximum time we can be "floating" is 80 ticks, so 4 seconds max
             // we'll be safe and modify every second or what we can assume is 20 ticks
-            if (currentTime - lastModifiedTime > 1000 && lastY != Double.MAX_VALUE) {
+            if (currentTime - lastModifiedTime > 250 && lastY != Double.MAX_VALUE && mc.world.getBlockState(mc.player.getBlockPos().down()).isAir()) {
                 // actual check is for >= -0.03125D but we have to do a bit more than that
                 // probably due to compression or some shit idk
                 ((IPlayerMoveC2SPacket) packet).setY(lastY - 0.03130D);

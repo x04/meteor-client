@@ -27,6 +27,10 @@ public class Rotation extends ToggleModule {
 
     private final Setting<Double> pitchAngle = sgPitch.add(new DoubleSetting.Builder().name("pitch-angle").description("Pitch angle in degrees.").defaultValue(0).min(-90).max(90).build());
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         // Yaw
         if (yawEnabled.get()) {
             if (yawAutoAngle.get()) {

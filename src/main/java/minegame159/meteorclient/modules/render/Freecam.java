@@ -30,6 +30,10 @@ public class Freecam extends ToggleModule {
     public float prevYaw, prevPitch;
     private boolean forward, backward, right, left, up, down;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         Vec3d forward = Vec3d.fromPolar(0, getYaw(1 / 20f));
         Vec3d right = Vec3d.fromPolar(0, getYaw(1 / 20f) + 90);
         double velX = 0;

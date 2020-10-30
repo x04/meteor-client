@@ -52,6 +52,10 @@ public class ElytraPlus extends ToggleModule {
     private boolean decrementFireworkTimer;
     private int fireworkTimer;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (decrementFireworkTimer) {
             if (fireworkTimer <= 0) {
                 decrementFireworkTimer = false;

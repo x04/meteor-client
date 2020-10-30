@@ -54,6 +54,10 @@ public class AnchorAura extends ToggleModule {
     private Vec3d vecPos;
     private Vec3d bestBlockPos;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         assert mc.player != null;
         assert mc.world != null;
         delayLeft--;

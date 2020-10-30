@@ -33,6 +33,10 @@ public class Breadcrumbs extends ToggleModule {
     private Section section;
     private DimensionType lastDimension;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (lastDimension != mc.world.getDimension()) {
             for (Section sec : sections)
                 sectionPool.free(sec);

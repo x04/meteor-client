@@ -34,6 +34,10 @@ public class AntiBed extends ToggleModule {
     private int place = -1;
     private boolean closeScreen = false;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (closeScreen && mc.currentScreen instanceof SignEditScreen) {
             closeScreen = false;
             mc.player.closeScreen();

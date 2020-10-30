@@ -28,6 +28,10 @@ public class Anchor extends ToggleModule {
     private boolean wasInHole;
     private int holeX, holeZ;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         controlMovement = false;
 
         int x = MathHelper.floor(mc.player.getX());

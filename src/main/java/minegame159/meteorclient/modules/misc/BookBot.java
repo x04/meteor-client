@@ -61,6 +61,10 @@ public class BookBot extends ToggleModule {
     private int nextChar;
     private String fileString;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         //Make sure we aren't in the inventory.
         if (mc.currentScreen instanceof HandledScreen<?>) {
             return;

@@ -26,6 +26,10 @@ public class SelfTrap extends ToggleModule {
     int prevSlot;
     boolean sentMessage = false;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         obsidianSlot = -1;
         for (int i = 0; i < 9; i++) {
             if (mc.player.inventory.getStack(i).getItem() == Blocks.OBSIDIAN.asItem()) {

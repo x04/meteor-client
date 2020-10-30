@@ -44,6 +44,10 @@ public class Auto32K extends ToggleModule {
     private int phase = 0;
     private BlockPos bestBlock;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (phase <= 7) {
             if (mode.get() == Mode.Hopper) {
                 int shulkerSlot = InvUtils.findItemWithCount(Items.SHULKER_BOX).slot;

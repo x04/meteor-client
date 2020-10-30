@@ -27,6 +27,10 @@ public class MiddleClickExtra extends ToggleModule {
     private int preSlot;
     private int preCount;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (!wasUsing) {
             return;
         }

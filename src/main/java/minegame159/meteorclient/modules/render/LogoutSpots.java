@@ -81,6 +81,10 @@ public class LogoutSpots extends ToggleModule {
     private int timer;
     private Dimension lastDimension;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (mc.getNetworkHandler().getPlayerList().size() != lastPlayerList.size()) {
             for (PlayerListEntry entry : lastPlayerList) {
                 if (mc.getNetworkHandler().getPlayerList().stream().anyMatch(playerListEntry -> playerListEntry.getProfile().equals(entry.getProfile()))) {

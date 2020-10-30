@@ -68,6 +68,10 @@ public class KillAura extends ToggleModule {
     private boolean didHit = false;
     private boolean wasPathing = false;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (mc.player.getHealth() <= 0) {
             return;
         }

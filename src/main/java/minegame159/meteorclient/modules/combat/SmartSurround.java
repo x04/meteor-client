@@ -70,6 +70,10 @@ public class SmartSurround extends ToggleModule {
         }
     });
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (slot != -1) {
             if ((rPosX >= 2) && (rPosZ == 0)) {
                 placeObi(rPosX - 1, 0, crystal);

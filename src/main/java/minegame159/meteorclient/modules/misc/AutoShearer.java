@@ -23,6 +23,10 @@ public class AutoShearer extends ToggleModule {
 
     private final Setting<Boolean> preserveBrokenShears = sgGeneral.add(new BoolSetting.Builder().name("preserve-broken-shears").description("Will not break shears.").defaultValue(false).build());
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         for (Entity entity : mc.world.getEntities()) {
             if (!(entity instanceof SheepEntity) || ((SheepEntity) entity).isSheared() || ((SheepEntity) entity).isBaby() || mc.player.distanceTo(entity) > distance.get()) {
                 continue;

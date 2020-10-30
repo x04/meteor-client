@@ -13,6 +13,10 @@ public class AutoJump extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
     private final Setting<JumpIf> jumpIf = sgGeneral.add(new EnumSetting.Builder<JumpIf>().name("jump-if").description("Jump if.").defaultValue(JumpIf.Always).build());
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+        
         if (!mc.player.isOnGround() || mc.player.isSneaking()) {
             return;
         }

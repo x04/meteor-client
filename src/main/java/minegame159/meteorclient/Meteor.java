@@ -44,6 +44,10 @@ public enum Meteor implements Listenable {
     @Setter private boolean inGame;
     @Setter private Screen screenToOpen;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         Capes.INSTANCE.tick();
 
         if (screenToOpen != null && minecraft.currentScreen == null) {
@@ -58,8 +62,7 @@ public enum Meteor implements Listenable {
         minecraft.player.getActiveStatusEffects().values().removeIf(statusEffectInstance -> statusEffectInstance.getDuration() <= 0);
     });
 
-    Meteor() {
-    }
+    Meteor() {}
 
     public void init() {
         logger.info("Initializing Meteor.");

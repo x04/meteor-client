@@ -53,6 +53,10 @@ public class AutoArmor extends ToggleModule {
     private int currentBest, currentProt, currentBlast, currentFire, currentProj, currentArmour, currentUnbreaking, currentMending = 0;
     private float currentToughness = 0;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (mc.player.abilities.creativeMode) {
             return;
         }

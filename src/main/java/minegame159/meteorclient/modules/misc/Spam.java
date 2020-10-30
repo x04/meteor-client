@@ -30,7 +30,7 @@ public class Spam extends ToggleModule {
     private int timer;
     private int messageI;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (messages.isEmpty()) {
+        if (messages.isEmpty() || event.getType() != TickEvent.Type.POST) {
             return;
         }
 

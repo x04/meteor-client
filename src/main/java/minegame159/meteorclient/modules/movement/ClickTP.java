@@ -21,6 +21,10 @@ public class ClickTP extends ToggleModule {
 
     private final Setting<Double> maxDistance = sgGeneral.add(new DoubleSetting.Builder().name("max-distance").description("Maximum distance.").defaultValue(5).build());
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (mc.player.isUsingItem()) {
             return;
         }

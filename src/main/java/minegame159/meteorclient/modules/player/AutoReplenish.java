@@ -56,7 +56,9 @@ public class AutoReplenish extends ToggleModule {
     });
     private int lastSlot;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (!workInCont.get() && !workInInv.get()) {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        } else if (!workInCont.get() && !workInInv.get()) {
             if (mc.currentScreen instanceof HandledScreen<?>) {
                 return;
             }

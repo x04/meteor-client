@@ -8,7 +8,13 @@ import minegame159.meteorclient.modules.Category;
 import minegame159.meteorclient.modules.ToggleModule;
 
 public class FastUse extends ToggleModule {
-    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> ((IMinecraftClient) mc).setItemUseCooldown(0));
+    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
+        ((IMinecraftClient) mc).setItemUseCooldown(0);
+    });
 
     public FastUse() {
         super(Category.Player, "fast-use", "Fast item use.");

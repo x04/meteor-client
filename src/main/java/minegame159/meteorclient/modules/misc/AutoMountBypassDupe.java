@@ -57,6 +57,10 @@ public class AutoMountBypassDupe extends ToggleModule {
     private boolean sneak = false;
     private int timer;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (GLFW.glfwGetKey(mc.getWindow().getHandle(), GLFW.GLFW_KEY_ESCAPE) == GLFW.GLFW_PRESS) {
             toggle();
             mc.player.closeHandledScreen();

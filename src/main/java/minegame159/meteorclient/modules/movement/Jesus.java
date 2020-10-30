@@ -23,6 +23,10 @@ public class Jesus extends ToggleModule {
     private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
     private int tickTimer = 10;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (mc.options.keySneak.isPressed()) {
             return;
         }

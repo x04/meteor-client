@@ -13,6 +13,10 @@ import net.minecraft.entity.passive.HorseBaseEntity;
 
 public class EntityControl extends ToggleModule {
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         mc.world.getEntities().forEach(entity -> {
             if (entity instanceof HorseBaseEntity) {
                 ((IHorseBaseEntity) entity).setSaddled(true);

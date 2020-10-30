@@ -14,6 +14,10 @@ public class CustomFOV extends ToggleModule {
 
     private final Setting<Integer> fov = sgGeneral.add(new IntSetting.Builder().name("fov").description("Custom FOV.").defaultValue(100).sliderMin(1).sliderMax(179).build());
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (fov.get() != mc.options.fov) {
             getFOV();
         }

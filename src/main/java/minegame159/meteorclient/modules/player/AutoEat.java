@@ -43,9 +43,12 @@ public class AutoEat extends ToggleModule {
     private boolean wasCrystalActive = false;
     private boolean isEating;
     private int preSelectedSlot, preFoodLevel;
-    private int slot;
     private boolean wasThis = false;
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+        if (event.getType() != TickEvent.Type.POST) {
+            return;
+        }
+
         if (mc.player.abilities.creativeMode) {
             return;
         }
@@ -53,7 +56,7 @@ public class AutoEat extends ToggleModule {
             ((IKeyBinding) mc.options.keyUse).setPressed(false);
         }
 
-        slot = -1;
+        int slot = -1;
         int bestHunger = -1;
 
         for (int i = 0; i < 9; i++) {
