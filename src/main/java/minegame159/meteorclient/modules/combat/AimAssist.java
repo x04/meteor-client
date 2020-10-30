@@ -38,14 +38,22 @@ public class AimAssist extends ToggleModule {
     private final Vec3d vec3d1 = new Vec3d(0, 0, 0);
     private final Vec3d vec3d2 = new Vec3d(0, 0, 0);
     private Entity entity;
+
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
-        if (event.getType() != TickEvent.Type.POST) {
+        if (event.getType() != TickEvent.Type.PRE) {
             return;
         }
 
         entity = null;
-        Streams.stream(mc.world.getEntities()).filter(entity -> mc.player.distanceTo(entity) <= range.get()).filter(this::canAttackEntity).filter(this::canSeeEntity).filter(Entity::isAlive).min(this::sort).ifPresent(entity -> this.entity = entity);
+        Streams.stream(mc.world.getEntities())
+                .filter(Entity::isAlive)
+                .filter(entity -> mc.player.distanceTo(entity) <= range.get())
+                .filter(this::canAttackEntity)
+                .filter(this::canSeeEntity)
+                .min(this::sort)
+                .ifPresent(entity -> this.entity = entity);
     });
+
     @EventHandler private final Listener<RenderEvent> onRender = new Listener<>(event -> {
         if (entity == null) {
             return;
