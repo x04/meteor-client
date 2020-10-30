@@ -44,6 +44,7 @@ public class AutoTotem extends ToggleModule {
     private int totemCount;
     private String totemCountString = "0";
     private boolean locked = false;
+
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         if (event.getType() != TickEvent.Type.POST) {
             return;

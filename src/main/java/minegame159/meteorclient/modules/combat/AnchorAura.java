@@ -24,17 +24,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
-import java.util.Iterator;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 public class AnchorAura extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
     private final SettingGroup sgPlace = settings.createGroup("Place");
     private final Setting<Double> placeRange = sgGeneral.add(new DoubleSetting.Builder().name("place-range").description("The distance in a single direction the anchors get placed.").defaultValue(3).min(0).sliderMax(5).build());
     private final Setting<Double> breakRange = sgGeneral.add(new DoubleSetting.Builder().name("break-range").description("The distance in a single direction the anchors get set off.").defaultValue(3).min(0).sliderMax(5).build());
-    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("place-mode").description("The way anchors are placed").defaultValue(Mode.safe).build());
+    private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("place-mode").description("The way anchors are placed").defaultValue(Mode.Safe).build());
     private final Setting<Boolean> airPlace = sgGeneral.add(new BoolSetting.Builder().name("air-place").description("Places anchors in the air.").defaultValue(true).build());
-    private final Setting<Mode> breakMode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("break-mode").description("The way anchors are set off.").defaultValue(Mode.safe).build());
+    private final Setting<Mode> breakMode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("break-mode").description("The way anchors are set off.").defaultValue(Mode.Safe).build());
     private final Setting<Boolean> autoSwitch = sgGeneral.add(new BoolSetting.Builder().name("auto-switch").description("Switches to anchors for you.").defaultValue(false).build());
     private final Setting<Boolean> spoofChange = sgGeneral.add(new BoolSetting.Builder().name("spoof-change").description("Spoofs item change to anchor.").defaultValue(false).build());
     private final Setting<Double> minDamage = sgPlace.add(new DoubleSetting.Builder().name("min-damage").description("The minimum damage the anchor will place").defaultValue(5.5).build());
@@ -53,6 +52,7 @@ public class AnchorAura extends ToggleModule {
     private double lastDamage = 0;
     private Vec3d vecPos;
     private Vec3d bestBlockPos;
+
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         if (event.getType() != TickEvent.Type.POST) {
             return;
@@ -65,25 +65,16 @@ public class AnchorAura extends ToggleModule {
             Chat.info(this, "You are not in the Overworld. (highlight)Disabling(default)!");
             this.toggle();
             return;
-        }
-        if (getTotalHealth(mc.player) <= minHealth.get() && mode.get() != Mode.suicide) {
+        } else if (getTotalHealth(mc.player) <= minHealth.get() && mode.get() != Mode.Suicide) {
             return;
         }
 
-        Iterator<AbstractClientPlayerEntity> validEntities = mc.world.getPlayers().stream().filter(FriendManager.INSTANCE::attack).filter(entityPlayer -> !entityPlayer.getDisplayName().equals(mc.player.getDisplayName())).filter(entityPlayer -> mc.player.distanceTo(entityPlayer) <= 10).collect(Collectors.toList()).iterator();
-        PlayerEntity target;
-        if (validEntities.hasNext()) {
-            target = validEntities.next();
-        } else {
+        Optional<AbstractClientPlayerEntity> target = mc.world.getPlayers().stream()
+                .filter(FriendManager.INSTANCE::attack)
+                .filter(entityPlayer -> entityPlayer != mc.player)
+                .min((e1, e2) -> Float.compare(mc.player.distanceTo(e1), mc.player.distanceTo(e2)));
+        if (!target.isPresent()) {
             return;
-        }
-        for (PlayerEntity i = null; validEntities.hasNext(); i = validEntities.next()) {
-            if (i == null) {
-                continue;
-            }
-            if (mc.player.distanceTo(i) < mc.player.distanceTo(target)) {
-                target = i;
-            }
         }
 
         assert mc.interactionManager != null;
@@ -98,11 +89,11 @@ public class AnchorAura extends ToggleModule {
         }
 
         if (glowSlot != -1 && nonGlowSlot != -1) {
-            findAnchors(target);
+            findAnchors(target.get());
             if (bestBlock != null) {
                 Vec3d pos = new Vec3d(bestBlock.getX() + 0.5D, bestBlock.getY(), bestBlock.getZ() + 0.5D);
                 //mc.player.world.removeBlock(bestBlock, false);
-                if ((DamageCalcUtils.bedDamage(mc.player, pos) < maxDamage.get() || breakMode.get() == Mode.suicide) && DamageCalcUtils.bedDamage(target, pos) > minDamage.get()) {
+                if ((DamageCalcUtils.bedDamage(mc.player, pos) < maxDamage.get() || breakMode.get() == Mode.Suicide) && DamageCalcUtils.bedDamage(target.get(), pos) > minDamage.get()) {
                     int preSlot = mc.player.inventory.selectedSlot;
                     mc.player.inventory.selectedSlot = glowSlot;
                     mc.player.setSneaking(false);
@@ -119,7 +110,7 @@ public class AnchorAura extends ToggleModule {
             return;
         }
         if (place.get()) {
-            findValidBlocks(target);
+            findValidBlocks(target.get());
             if (bestBlock != null) {
                 Vec3d pos = new Vec3d(bestBlock.getX() + 0.5D, bestBlock.getY() + 0.5D, bestBlock.getZ() + 0.5D);
                 if (bestDamage > minDamage.get()) {
@@ -174,7 +165,7 @@ public class AnchorAura extends ToggleModule {
                                 bestBlockPos = vecPos;
                                 bestDamage = DamageCalcUtils.bedDamage(target, bestBlockPos.add(0.5, 0.5, 0.5));
                             }
-                            if (bestDamage < DamageCalcUtils.bedDamage(target, vecPos.add(0.5, 0.5, 0.5)) && (mode.get() == Mode.suicide || DamageCalcUtils.bedDamage(mc.player, vecPos.add(0.5, 0.5, 0.5)) < maxDamage.get())) {
+                            if (bestDamage < DamageCalcUtils.bedDamage(target, vecPos.add(0.5, 0.5, 0.5)) && (mode.get() == Mode.Suicide || DamageCalcUtils.bedDamage(mc.player, vecPos.add(0.5, 0.5, 0.5)) < maxDamage.get())) {
                                 bestBlock = pos;
                                 bestBlockPos = vecPos;
                                 bestDamage = DamageCalcUtils.bedDamage(target, bestBlockPos.add(0.5, 0.5, 0.5));
@@ -185,7 +176,7 @@ public class AnchorAura extends ToggleModule {
                                 bestBlockPos = vecPos;
                                 bestDamage = DamageCalcUtils.bedDamage(target, bestBlockPos.add(0.5, 0.5, 0.5));
                             }
-                            if (bestDamage < DamageCalcUtils.bedDamage(target, vecPos.add(0.5, 0.5, 0.5)) && (mode.get() == Mode.suicide || DamageCalcUtils.bedDamage(mc.player, vecPos.add(0.5, 0.5, 0.5)) < maxDamage.get())) {
+                            if (bestDamage < DamageCalcUtils.bedDamage(target, vecPos.add(0.5, 0.5, 0.5)) && (mode.get() == Mode.Suicide || DamageCalcUtils.bedDamage(mc.player, vecPos.add(0.5, 0.5, 0.5)) < maxDamage.get())) {
                                 bestBlock = pos;
                                 bestBlockPos = vecPos;
                                 bestDamage = DamageCalcUtils.bedDamage(target, bestBlockPos.add(0.5, 0.5, 0.5));
@@ -212,7 +203,7 @@ public class AnchorAura extends ToggleModule {
                             bestBlockPos = vecPos;
                             bestDamage = DamageCalcUtils.bedDamage(target, bestBlockPos.add(0.5, 0.5, 0.5));
                         }
-                        if (bestDamage < DamageCalcUtils.bedDamage(target, vecPos.add(0.5, 0.5, 0.5)) && (mode.get() == Mode.suicide || DamageCalcUtils.bedDamage(mc.player, vecPos.add(0.5, 0.5, 0.5)) < maxDamage.get())) {
+                        if (bestDamage < DamageCalcUtils.bedDamage(target, vecPos.add(0.5, 0.5, 0.5)) && (mode.get() == Mode.Suicide || DamageCalcUtils.bedDamage(mc.player, vecPos.add(0.5, 0.5, 0.5)) < maxDamage.get())) {
                             bestBlock = pos;
                             bestBlockPos = vecPos;
                             bestDamage = DamageCalcUtils.bedDamage(target, bestBlockPos.add(0.5, 0.5, 0.5));
@@ -228,6 +219,6 @@ public class AnchorAura extends ToggleModule {
     }
 
     public enum Mode {
-        safe, suicide
+        Safe, Suicide
     }
 }
