@@ -56,17 +56,15 @@ public class OffhandExtra extends ToggleModule {
         }
     });
     private boolean noTotems = false;
-    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+    @EventHandler
+    private final Listener<TickEvent> onTick = new Listener<>(event -> {
         if (event.getType() != TickEvent.Type.POST) {
             return;
         }
 
-        if (!mc.player.isUsingItem()) {
-            isClicking = false;
-        }
-        if (ModuleManager.INSTANCE.get(AutoTotem.class).getLocked()) {
-            return;
-        }
+        if (mc.currentScreen != null && mc.player.inventory.size() < 44) return;
+        if (!mc.player.isUsingItem()) isClicking = false;
+        if (ModuleManager.INSTANCE.get(AutoTotem.class).getLocked()) return;
         if ((Asimov.get() || noTotems) && !(mc.currentScreen instanceof HandledScreen<?>)) {
             Item item = getItem();
             InvUtils.FindItemResult result = InvUtils.findItemWithCount(item);

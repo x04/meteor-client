@@ -52,17 +52,15 @@ public class AutoArmor extends ToggleModule {
     private boolean didSkip = false;
     private int currentBest, currentProt, currentBlast, currentFire, currentProj, currentArmour, currentUnbreaking, currentMending = 0;
     private float currentToughness = 0;
-    @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
+    @EventHandler
+    private final Listener<TickEvent> onTick = new Listener<>(event -> {
         if (event.getType() != TickEvent.Type.POST) {
             return;
         }
 
-        if (mc.player.abilities.creativeMode) {
-            return;
-        }
-        if (pauseInInventory.get() && mc.currentScreen instanceof InventoryScreen) {
-            return;
-        }
+        if (mc.currentScreen != null && mc.player.inventory.size() < 44) return;
+        if (mc.player.abilities.creativeMode) return;
+        if (pauseInInventory.get() && mc.currentScreen instanceof InventoryScreen) return;
         if (boomSwitch.get() && mode.get() != Prot.Blast_Protection && explosionNear()) {
             mode.set(Prot.Blast_Protection);
             delayLeft = 0;
