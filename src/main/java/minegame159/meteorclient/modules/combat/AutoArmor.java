@@ -59,13 +59,12 @@ public class AutoArmor extends ToggleModule {
 
         if (mc.currentScreen != null && mc.player.inventory.size() < 44) {
             return;
-        }
-        if (mc.player.abilities.creativeMode) {
+        } else if (mc.player.abilities.creativeMode) {
+            return;
+        } else if (pauseInInventory.get() && mc.currentScreen instanceof InventoryScreen) {
             return;
         }
-        if (pauseInInventory.get() && mc.currentScreen instanceof InventoryScreen) {
-            return;
-        }
+
         if (boomSwitch.get() && mode.get() != Prot.Blast_Protection && explosionNear()) {
             mode.set(Prot.Blast_Protection);
             delayLeft = 0;

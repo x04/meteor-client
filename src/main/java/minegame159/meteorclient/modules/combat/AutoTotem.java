@@ -51,8 +51,7 @@ public class AutoTotem extends ToggleModule {
 
         if (mc.currentScreen instanceof HandledScreen<?> && (!(mc.currentScreen instanceof InventoryScreen) || !inventorySwitch.get())) {
             return;
-        }
-        if (mc.currentScreen != null && mc.player.inventory.size() < 44) {
+        } else if (mc.currentScreen != null && mc.player.inventory.size() < 44) {
             return;
         }
 

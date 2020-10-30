@@ -63,13 +63,12 @@ public class OffhandExtra extends ToggleModule {
 
         if (mc.currentScreen != null && mc.player.inventory.size() < 44) {
             return;
-        }
-        if (!mc.player.isUsingItem()) {
+        } else if (!mc.player.isUsingItem()) {
             isClicking = false;
-        }
-        if (ModuleManager.INSTANCE.get(AutoTotem.class).getLocked()) {
+        } else if (ModuleManager.INSTANCE.get(AutoTotem.class).getLocked()) {
             return;
         }
+
         if ((Asimov.get() || noTotems) && !(mc.currentScreen instanceof HandledScreen<?>)) {
             Item item = getItem();
             InvUtils.FindItemResult result = InvUtils.findItemWithCount(item);
