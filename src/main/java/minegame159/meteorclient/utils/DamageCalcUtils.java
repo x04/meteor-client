@@ -22,9 +22,9 @@ public class DamageCalcUtils {
 
     public static MinecraftClient mc = Meteor.INSTANCE.getMinecraft();
 
-    //Always Calculate damage, then armour, then enchantments, then potion effect
+    // Always Calculate damage, then armour, then enchantments, then potion effect
     public static double crystalDamage(LivingEntity player, Vec3d crystal) {
-        //Calculate crystal damage
+        // Calculate crystal damage
         double modDistance = Math.sqrt(player.squaredDistanceTo(crystal));
         if (modDistance > 12) {
             return 0;
@@ -33,16 +33,16 @@ public class DamageCalcUtils {
         double impact = (1D - (modDistance / 12D)) * exposure;
         double damage = ((impact * impact + impact) / 2 * 7 * (6 * 2) + 1);
 
-        //Multiply damage by difficulty
+        // Multiply damage by difficulty
         damage = getDamageMultiplied(damage);
 
-        //Reduce by resistance
+        // Reduce by resistance
         damage = resistanceReduction(player, damage);
 
-        //Reduce my armour
+        // Reduce my armour
         damage = DamageUtil.getDamageLeft((float) damage, (float) player.getArmor(), (float) player.getAttributeInstance(EntityAttributes.GENERIC_ARMOR_TOUGHNESS).getValue());
 
-        //Reduce by enchants
+        // Reduce by enchants
         damage = blastProtReduction(player, damage, new Explosion(mc.world, null, crystal.x, crystal.y, crystal.z, 6f, false, Explosion.DestructionType.DESTROY));
 
 
@@ -52,7 +52,7 @@ public class DamageCalcUtils {
         return damage;
     }
 
-    //Always Calculate damage, then armour, then enchantments, then potion effect
+    // Always Calculate damage, then armour, then enchantments, then potion effect
     public static double bedDamage(LivingEntity player, Vec3d bed) {
         double modDistance = Math.sqrt(player.squaredDistanceTo(bed));
         if (modDistance > 10) {
@@ -62,16 +62,16 @@ public class DamageCalcUtils {
         double impact = (1D - (modDistance / 10D)) * exposure;
         double damage = ((impact * impact + impact) / 2 * 7 * (5 * 2) + 1);
 
-        //Multiply damage by difficulty
+        // Multiply damage by difficulty
         damage = getDamageMultiplied(damage);
 
-        //Reduce by resistance
+        // Reduce by resistance
         damage = resistanceReduction(player, damage);
 
-        //Reduce my armour
+        // Reduce my armour
         damage = DamageUtil.getDamageLeft((float) damage, (float) player.getArmor(), (float) player.getAttributeInstance(EntityAttributes.GENERIC_ARMOR_TOUGHNESS).getValue());
 
-        //Reduce by enchants
+        // Reduce by enchants
         damage = blastProtReduction(player, damage, new Explosion(mc.world, null, bed.x, bed.y, bed.z, 5f, true, Explosion.DestructionType.DESTROY));
 
         if (damage < 0) {
@@ -81,7 +81,7 @@ public class DamageCalcUtils {
     }
 
     public static double getSwordDamage(PlayerEntity entity, boolean charged) {
-        //Get sword damage
+        // Get sword damage
         double damage = 0;
         if (charged) {
             if (entity.getActiveItem().getItem() == Items.DIAMOND_SWORD) {
@@ -108,13 +108,13 @@ public class DamageCalcUtils {
             damage += 3 * strength;
         }
 
-        //Reduce by resistance
+        // Reduce by resistance
         damage = resistanceReduction(entity, damage);
 
-        //Reduce by armour
+        // Reduce by armour
         damage = DamageUtil.getDamageLeft((float) damage, (float) entity.getArmor(), (float) entity.getAttributeInstance(EntityAttributes.GENERIC_ARMOR_TOUGHNESS).getValue());
 
-        //Reduce by enchants
+        // Reduce by enchants
         damage = normalProtReduction(entity, damage);
 
         if (damage < 0) {

@@ -21,6 +21,7 @@ public class NoFall extends ToggleModule {
     private final Setting<Double> height = sgGeneral.add(new DoubleSetting.Builder().name("height").description("How high you have to be off the ground for this to toggle.").defaultValue(0.5).min(0.1).sliderMax(1).build());
     private final Setting<Mode> mode = sgGeneral.add(new EnumSetting.Builder<Mode>().name("mode").description("The way you are saved from fall damage.").defaultValue(Mode.Packet).build());
     private final Setting<PlaceMode> placeMode = sgGeneral.add(new EnumSetting.Builder<PlaceMode>().name("place-mode").description("Whether place mode places before you die or before you take damage").defaultValue(PlaceMode.BeforeDeath).build());
+
     @EventHandler private final Listener<SendPacketEvent> onSendPacket = new Listener<>(event -> {
         if (event.packet instanceof PlayerMoveC2SPacket) {
             if (elytra.get() && (mc.player.getEquippedStack(EquipmentSlot.CHEST).getItem() == Items.ELYTRA && mc.options.keyJump.isPressed() || mc.player.isFallFlying())) {
