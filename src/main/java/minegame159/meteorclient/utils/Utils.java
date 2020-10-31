@@ -111,65 +111,37 @@ public class Utils {
     }
 
     public static String getEnchantShortName(Enchantment enchantment) {
-        if (enchantment == Enchantments.FIRE_PROTECTION) {
+        if (Enchantments.FIRE_PROTECTION.equals(enchantment)) {
             return "F Prot";
-        }
-        if (enchantment == Enchantments.FEATHER_FALLING) {
+        } else if (Enchantments.FEATHER_FALLING.equals(enchantment)) {
             return "Fea Fa";
-        }
-        if (enchantment == Enchantments.BLAST_PROTECTION) {
+        } else if (Enchantments.BLAST_PROTECTION.equals(enchantment)) {
             return "B Prot";
-        }
-        if (enchantment == Enchantments.PROJECTILE_PROTECTION) {
+        } else if (Enchantments.PROJECTILE_PROTECTION.equals(enchantment)) {
             return "P Prot";
-        }
-        if (enchantment == Enchantments.AQUA_AFFINITY) {
+        } else if (Enchantments.AQUA_AFFINITY.equals(enchantment)) {
             return "Aqua A";
-        }
-        if (enchantment == Enchantments.THORNS) {
-            return "Thorns";
-        }
-        if (enchantment == Enchantments.DEPTH_STRIDER) {
+        } else if (Enchantments.DEPTH_STRIDER.equals(enchantment)) {
             return "Depth S";
-        }
-        if (enchantment == Enchantments.FROST_WALKER) {
+        } else if (Enchantments.FROST_WALKER.equals(enchantment)) {
             return "Frost W";
-        }
-        if (enchantment == Enchantments.BINDING_CURSE) {
+        } else if (Enchantments.BINDING_CURSE.equals(enchantment)) {
             return "Curse B";
-        }
-        if (enchantment == Enchantments.SMITE) {
-            return "Smite";
-        }
-        if (enchantment == Enchantments.BANE_OF_ARTHROPODS) {
+        } else if (Enchantments.BANE_OF_ARTHROPODS.equals(enchantment)) {
             return "Bane A";
-        }
-        if (enchantment == Enchantments.FIRE_ASPECT) {
+        } else if (Enchantments.FIRE_ASPECT.equals(enchantment)) {
             return "Fire A";
-        }
-        if (enchantment == Enchantments.SILK_TOUCH) {
+        } else if (Enchantments.SILK_TOUCH.equals(enchantment)) {
             return "Silk T";
-        }
-        if (enchantment == Enchantments.POWER) {
-            return "Power";
-        }
-        if (enchantment == Enchantments.PUNCH) {
-            return "Punch";
-        }
-        if (enchantment == Enchantments.FLAME) {
-            return "Flame";
-        }
-        if (enchantment == Enchantments.LUCK_OF_THE_SEA) {
+        } else if (Enchantments.LUCK_OF_THE_SEA.equals(enchantment)) {
             return "Luck S";
-        }
-        if (enchantment == Enchantments.QUICK_CHARGE) {
+        } else if (Enchantments.QUICK_CHARGE.equals(enchantment)) {
             return "Quick C";
-        }
-        if (enchantment == Enchantments.VANISHING_CURSE) {
+        } else if (Enchantments.VANISHING_CURSE.equals(enchantment)) {
             return "Curse V";
         }
 
-        return enchantment.getName(0).getString().substring(0, 4);
+        return enchantment.getName(0).getString().substring(0, 6);
     }
 
     public static int search(String text, String filter) {

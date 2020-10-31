@@ -35,9 +35,9 @@ public class AutoArmor extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
     private final Setting<Prot> mode = sgGeneral.add(new EnumSetting.Builder<Prot>().name("prioritize").description("Which protection to prioritize.").defaultValue(Prot.Protection).build());
     private final Setting<Boolean> pauseInInventory = sgGeneral.add(new BoolSetting.Builder().name("pause-in-inventory").description("Stops moving armour when you are in an inventory").defaultValue(false).build());
-    private final Setting<Boolean> bProtLegs = sgGeneral.add(new BoolSetting.Builder().name("blast-protection-leggings").description("Prioritizes blast protection on leggings").defaultValue(true).build());
+    private final Setting<Boolean> prioritizeLeggings = sgGeneral.add(new BoolSetting.Builder().name("blast-protection-leggings").description("Prioritizes blast protection on leggings").defaultValue(true).build());
     private final Setting<Boolean> preferMending = sgGeneral.add(new BoolSetting.Builder().name("prefer-mending").description("Prefers to equip mending than non mending.").defaultValue(true).build());
-    private final Setting<Integer> weight = sgGeneral.add(new IntSetting.Builder().name("weight").description("How preferred mending is.").defaultValue(2).min(1).max(10).sliderMax(4).build());
+    private final Setting<Integer> mendingWeight = sgGeneral.add(new IntSetting.Builder().name("weight").description("How preferred mending is.").defaultValue(2).min(1).max(10).sliderMax(4).build());
     private final Setting<List<Enchantment>> avoidEnch = sgGeneral.add(new EnchListSetting.Builder().name("avoided-enchantments").description("Enchantments that will only be equipped as a last resort.").defaultValue(setDefaultValue()).build());
     private final Setting<Boolean> banBinding = sgGeneral.add(new BoolSetting.Builder().name("ban-binding").description("Stops you from putting on any item with Curse of Binding").defaultValue(false).build());
     private final Setting<Boolean> antiBreak = sgGeneral.add(new BoolSetting.Builder().name("anti-break").description("Tries to stop your armor getting broken.").defaultValue(true).build());
@@ -58,11 +58,9 @@ public class AutoArmor extends ToggleModule {
             return;
         }
 
-        if (mc.currentScreen != null && mc.player.inventory.size() < 44) {
-            return;
-        } else if (mc.player.abilities.creativeMode) {
-            return;
-        } else if (pauseInInventory.get() && mc.currentScreen instanceof InventoryScreen) {
+        if (mc.currentScreen != null && mc.player.inventory.size() < 44
+                || mc.player.abilities.creativeMode
+                || pauseInInventory.get() && mc.currentScreen instanceof InventoryScreen) {
             return;
         }
 
@@ -71,20 +69,22 @@ public class AutoArmor extends ToggleModule {
             delayLeft = 0;
             didSkip = true;
         }
+
         if (delayLeft > 0) {
             delayLeft--;
             return;
         } else {
             delayLeft = delay.get();
         }
-        Prot preMode = mode.get();
+
         if (didSkip) {
             delayLeft = switchCooldown.get();
             didSkip = false;
         }
-        ItemStack itemStack;
+
+        Prot preMode = mode.get();
         for (int a = 0; a < 4; a++) {
-            itemStack = mc.player.inventory.getArmorStack(a);
+            ItemStack itemStack = mc.player.inventory.getArmorStack(a);
             currentBest = 0;
             currentProt = 0;
             currentBlast = 0;
@@ -94,14 +94,11 @@ public class AutoArmor extends ToggleModule {
             currentToughness = 0;
             currentUnbreaking = 0;
             currentMending = 0;
-            if ((ignoreElytra.get() || ModuleManager.INSTANCE.get(ChestSwap.class).isActive()) && itemStack.getItem() == Items.ELYTRA) {
-                continue;
-            }
-            if (EnchantmentHelper.hasBindingCurse(itemStack)) {
+            if ((ignoreElytra.get() || EnchantmentHelper.hasBindingCurse(itemStack) || ModuleManager.INSTANCE.get(ChestSwap.class).isActive()) && itemStack.getItem() == Items.ELYTRA) {
                 continue;
             }
             if (itemStack.getItem() instanceof ArmorItem) {
-                if (a == 1 && bProtLegs.get()) {
+                if (a == 1 && prioritizeLeggings.get()) {
                     mode.set(Prot.Blast_Protection);
                 }
                 getCurrentScore(itemStack);
@@ -157,7 +154,7 @@ public class AutoArmor extends ToggleModule {
         score += 2 * (((ArmorItem) itemStack.getItem()).method_26353() - currentToughness);
         score += EnchantmentHelper.getLevel(Enchantments.UNBREAKING, itemStack) - currentUnbreaking;
         if (preferMending.get() && (EnchantmentHelper.getLevel(Enchantments.MENDING, itemStack) - currentMending) > 0) {
-            score += weight.get();
+            score += mendingWeight.get();
         }
         return score;
     }
@@ -176,16 +173,21 @@ public class AutoArmor extends ToggleModule {
 
     private boolean explosionNear() {
         for (Entity entity : mc.world.getEntities()) {
-            if (entity instanceof EndCrystalEntity && DamageCalcUtils.crystalDamage(mc.player, entity.getPos()) > boomDamage.get()) {
+            if (entity instanceof EndCrystalEntity
+                    && DamageCalcUtils.crystalDamage(mc.player, entity.getPos()) > boomDamage.get()) {
                 return true;
             }
         }
-        if (!mc.world.getDimension().isBedWorking()) {
-            for (BlockEntity blockEntity : mc.world.blockEntities) {
-                BlockPos pos = blockEntity.getPos();
-                if (blockEntity instanceof BedBlockEntity && DamageCalcUtils.bedDamage(mc.player, new Vec3d(pos.getX(), pos.getY(), pos.getZ())) > boomDamage.get()) {
-                    return true;
-                }
+
+        if (mc.world.getDimension().isBedWorking()) {
+            return false;
+        }
+
+        for (BlockEntity blockEntity : mc.world.blockEntities) {
+            BlockPos pos = blockEntity.getPos();
+            if (blockEntity instanceof BedBlockEntity
+                    && DamageCalcUtils.bedDamage(mc.player, new Vec3d(pos.getX(), pos.getY(), pos.getZ())) > boomDamage.get()) {
+                return true;
             }
         }
         return false;
@@ -199,7 +201,10 @@ public class AutoArmor extends ToggleModule {
     }
 
     public enum Prot {
-        Protection(Enchantments.PROTECTION), Blast_Protection(Enchantments.BLAST_PROTECTION), Fire_Protection(Enchantments.FIRE_PROTECTION), Projectile_Protection(Enchantments.PROJECTILE_PROTECTION);
+        Protection(Enchantments.PROTECTION),
+        Blast_Protection(Enchantments.BLAST_PROTECTION),
+        Fire_Protection(Enchantments.FIRE_PROTECTION),
+        Projectile_Protection(Enchantments.PROJECTILE_PROTECTION);
 
         private final Enchantment enchantment;
 

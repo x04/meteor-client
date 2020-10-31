@@ -41,6 +41,7 @@ public class AutoExp extends ToggleModule {
     private boolean wasKillActive = false;
     private boolean wasCrystalActive = false;
     private float lastHealth;
+
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         if (event.getType() != TickEvent.Type.POST) {
             return;

@@ -30,16 +30,12 @@ public class AutoLog extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
     private final Setting<Integer> health = sgGeneral.add(new IntSetting.Builder().name("health").description("Disconnects when health is lower or equal to this value.").defaultValue(6).min(0).max(20).sliderMax(20).build());
-
     private final Setting<Boolean> smart = sgGeneral.add(new BoolSetting.Builder().name("smart").description("Disconnects when you are about to take too much damage.").defaultValue(true).build());
-
     private final Setting<Boolean> onlyTrusted = sgGeneral.add(new BoolSetting.Builder().name("only-trusted").description("Disconnects when non-trusted player appears in your render distance.").defaultValue(false).build());
-
     private final Setting<Boolean> instantDeath = sgGeneral.add(new BoolSetting.Builder().name("32k").description("Logs out out if someone near you can insta kill you").defaultValue(false).build());
-
     private final Setting<Boolean> crystalLog = sgGeneral.add(new BoolSetting.Builder().name("crystal-log").description("Log you out when there is a crystal nearby.").defaultValue(false).build());
-
     private final Setting<Integer> range = sgGeneral.add(new IntSetting.Builder().name("range").description("How close a crystal has to be to log.").defaultValue(4).min(1).max(10).sliderMax(5).build());
+
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         if (event.getType() != TickEvent.Type.POST) {
             return;

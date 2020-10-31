@@ -22,13 +22,11 @@ import net.minecraft.util.math.Direction;
 
 public class AutoAnvil extends ToggleModule {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-
     private final Setting<Double> range = sgGeneral.add(new DoubleSetting.Builder().name("range").description("How far can the players be.").defaultValue(4).min(0).build());
-
     private final Setting<Integer> height = sgGeneral.add(new IntSetting.Builder().name("height").description("How high to place the anvils.").defaultValue(5).min(0).max(10).sliderMin(0).sliderMax(10).build());
-
     private final Setting<Boolean> placeButton = sgGeneral.add(new BoolSetting.Builder().name("place-button").description("Auto places a button beneath the target.").defaultValue(false).build());
     private PlayerEntity target = null;
+
     @EventHandler private final Listener<TickEvent> onTick = new Listener<>(event -> {
         if (event.getType() != TickEvent.Type.POST) {
             return;
@@ -69,15 +67,16 @@ public class AutoAnvil extends ToggleModule {
             }
         }
 
+        float distToTarget = Float.MAX_VALUE;
         for (PlayerEntity player : mc.world.getPlayers()) {
-            if (player == mc.player || !FriendManager.INSTANCE.attack(player) || !player.isAlive() || mc.player.distanceTo(player) > range.get()) {
+            float distToPlayer = mc.player.distanceTo(player);
+            if (player == mc.player || !FriendManager.INSTANCE.attack(player) || !player.isAlive() || distToPlayer > range.get()) {
                 continue;
             }
 
-            if (target == null) {
+            if (target == null || distToTarget > distToPlayer) {
                 target = player;
-            } else if (mc.player.distanceTo(target) > mc.player.distanceTo(player)) {
-                target = player;
+                distToTarget = distToPlayer;
             }
         }
 
@@ -104,6 +103,7 @@ public class AutoAnvil extends ToggleModule {
             mc.player.inventory.selectedSlot = prevSlot;
         }
     });
+
     @EventHandler private final Listener<OpenScreenEvent> onOpenScreen = new Listener<>(event -> {
         if (target != null && event.screen instanceof AnvilScreen) {
             event.cancel();
